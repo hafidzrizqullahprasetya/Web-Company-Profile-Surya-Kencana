@@ -8,7 +8,7 @@ class OurClient extends Model
 {
     public function products()
     {
-        return $this->hasMany(Product::class, 'client_id');
+        return $this->hasMany(Product::class, 'client_id');//
     }
     
 }
