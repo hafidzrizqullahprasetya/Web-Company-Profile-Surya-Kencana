@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\VisionMission;
 
 class VisionMissionSeeder extends Seeder
 {
@@ -12,6 +13,11 @@ class VisionMissionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        for($i = 1; $i <= 5; $i++) {
+            VisionMission::create([
+                'vision' => fake()->sentence(),
+                'mission' => fake()->sentence(),
+            ]);
+        }
     }
 }

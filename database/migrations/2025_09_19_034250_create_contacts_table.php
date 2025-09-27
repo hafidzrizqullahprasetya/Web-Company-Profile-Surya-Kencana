@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->string('email');
-            $table->string('maps_url');
+            $table->string('map_url');
             $table->timestamps();
         });
     }
