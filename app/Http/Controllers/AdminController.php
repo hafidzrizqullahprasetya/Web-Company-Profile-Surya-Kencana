@@ -25,6 +25,11 @@ class AdminController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
         $Admin = Admin::create($request->all());
         return response()->json([
             "message" => "Admin created successfully",
@@ -34,6 +39,11 @@ class AdminController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'username' => 'sometimes|required|string',
+            'password' => 'sometimes|required|string',
+        ]);
+
         $Admin = Admin::find($id);
         if ($Admin) {
             $Admin->update($request->all());

@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Hash;
+
+
+class AuthController extends Controller
+{
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $admin = Admin::where('username', $request->username)->first();
+
+        if ($admin && Hash::check($request->password, $admin->password)) {
+            $token = $admin->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login successful',
+                'token' => $token,
+                'admin' => [
+                    'id' => $admin->id,
+                    'username' => $admin->username
+                ]
+            ]);
+        } else {
+             return response()->json(['message' => 'Invalid username or password'], 401);
+        }        
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logout successful']);
+    }
+}

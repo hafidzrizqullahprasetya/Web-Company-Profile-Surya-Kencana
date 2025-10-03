@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'description', 'image_path', 'price'];
+    protected $fillable = ['client_id','name', 'description', 'image_path', 'price'];
 
     public function client()
     {

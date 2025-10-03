@@ -13,12 +13,9 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        for($i = 1; $i <= 5; $i++) {
-            Admin::create([
-                'username' => fake()->userName(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => bcrypt('password'),
-            ]);
-        }
+        Admin::create([
+            'username' => "admin123",
+            'password' => "password123",
+        ]);
     }
 }

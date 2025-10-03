@@ -26,8 +26,8 @@ class VisionMissionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-        'vision' => 'required_without:mission|string',
-        'mission' => 'required_without:vision|string',
+        'vision' => 'required|string',
+        'mission' => 'required|string',
         ]);
 
         $visionMission = VisionMission::create($request->all());
