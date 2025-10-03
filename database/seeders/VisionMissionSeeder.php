@@ -8,16 +8,11 @@ use App\Models\VisionMission;
 
 class VisionMissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        for($i = 1; $i <= 5; $i++) {
-            VisionMission::create([
-                'vision' => fake()->sentence(),
-                'mission' => fake()->sentence(),
-            ]);
-        }
+        VisionMission::create([
+            'vision' => fake()->sentence(3),
+            'mission' => fake()->sentence(3),
+        ]);
     }
 }

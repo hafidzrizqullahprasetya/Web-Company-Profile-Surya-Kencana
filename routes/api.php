@@ -11,13 +11,16 @@ use App\Http\Controllers\ProductController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+//Vision and Mission Routes
+Route::get('/vision-mission', [VisionMissionController::class, 'index']);
+
+//Product Routes
+Route::get('/product', [ProductController::class, 'index']);
+Route::get('/product/{id}', [ProductController::class, 'show']);
+
 Route::middleware('auth:sanctum')->group(function () {
     //Vision and Mission Routes
-    Route::get('/vision-mission', [VisionMissionController::class, 'index']);
-    Route::get('/vision-mission/{id}', [VisionMissionController::class, 'show']);
-    Route::post('/vision-mission', [VisionMissionController::class, 'store']);
     Route::put('/vision-mission/{id}', [VisionMissionController::class, 'update']);
-    Route::delete('/vision-mission/{id}', [VisionMissionController::class, 'destroy']);
 
     //Admin Routes
     Route::get('/admin', [AdminController::class, 'index']);
@@ -27,9 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
 
     //Product Routes
-    Route::get('/product', [ProductController::class, 'index']);
-    Route::get('/product/{id}', [ProductController::class, 'show']);
     Route::post('/product', [ProductController::class, 'store']);
     Route::put('/product/{id}', [ProductController::class, 'update']);
+    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 
 });

@@ -63,9 +63,7 @@ class ProductController extends Controller
         ]);
 
         $product = Product::find($id);
-        // Handle file upload if exists
         if ($request->hasFile('image')) {
-            // Delete old image if needed
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
                 Storage::disk('public')->delete($product->image_path);
             }
@@ -84,7 +82,20 @@ class ProductController extends Controller
         ]);
     }
 
-    
+    public function destroy($id)
+    {
+        $product = Product::find($id);
+        if ($product) {
+            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+
+            $product->delete();
+            return response()->json(['message' => 'Product deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    }    
 
 
 }
