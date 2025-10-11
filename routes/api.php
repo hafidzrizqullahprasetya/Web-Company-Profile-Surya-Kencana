@@ -5,9 +5,11 @@ use App\Http\Controllers\VisionMissionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OurClientController;
+use App\Http\Controllers\ContactController;
 
 
-// Authentication Routes
+//Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
@@ -18,9 +20,20 @@ Route::get('/vision-mission', [VisionMissionController::class, 'index']);
 Route::get('/product', [ProductController::class, 'index']);
 Route::get('/product/{id}', [ProductController::class, 'show']);
 
+//Client Routes
+Route::get('/our-client', [OurClientController::class, 'index']);
+Route::get('/our-client/{id}', [OurClientController::class, 'show']);
+
+//Contact Routes
+Route::get('/contact', [ContactController::class, 'index']);
+
+//Middleware Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
     //Vision and Mission Routes
-    Route::put('/vision-mission/{id}', [VisionMissionController::class, 'update']);
+    Route::put('/vision-mission', [VisionMissionController::class, 'update']);
+
+    //Contact Routes
+    Route::put('/contact', [ContactController::class, 'update']);
 
     //Admin Routes
     Route::get('/admin', [AdminController::class, 'index']);
@@ -35,4 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/product/{id}', [ProductController::class, 'update']);
     Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 
+    //Client Routes
+    Route::post('/our-client', [OurClientController::class, 'store']);
+    Route::post('/our-client/{id}', [OurClientController::class, 'update']);
+    Route::put('/our-client/{id}', [OurClientController::class, 'update']);
+    Route::delete('/our-client/{id}', [OurClientController::class, 'destroy']);
 });

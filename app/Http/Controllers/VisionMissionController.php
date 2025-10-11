@@ -13,14 +13,14 @@ class VisionMissionController extends Controller
         return response()->json($visionMissions);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $request->validate([
             'vision' => 'sometimes|required|string',
             'mission' => 'sometimes|required|string',
         ]);
 
-        $visionMission = VisionMission::find($id);
+        $visionMission = VisionMission::first();
         if ($visionMission) {
             $visionMission->update($request->all());
             return response()->json([

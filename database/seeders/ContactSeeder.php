@@ -14,10 +14,10 @@ class ContactSeeder extends Seeder
     public function run(): void
     {
         Contact::create([
-            'address' => fake()->address(),
-            'phone' => fake()->phoneNumber(),
-            'email' => fake()->unique()->safeEmail(),
-            'map_url'=> fake()->url(),
+            "address" => "Jl Mulyosari, Tumut, Sumbersari, Kec. Moyudan, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55563",
+            "phone" => "088902947368",
+            "email" => "suryakencana@gmail.com",
+            "map_url" => "https://maps.app.goo.gl/uwCvY1VCJAVK4mANA/"
         ]);
         
     }

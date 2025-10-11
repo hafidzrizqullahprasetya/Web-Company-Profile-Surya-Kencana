@@ -50,41 +50,39 @@ class ProductController extends Controller
     ], 201);
     }
 
-    
-
     public function update(Request $request, $id)
-{   
-    $product = Product::find($id);
-    if (!$product) {
-        return response()->json(['message' => 'Product not found'], 404);
-    }
-
-    $request->validate([
-        'client_id' => 'sometimes|integer',
-        'name' => 'sometimes|string',
-        'price' => 'sometimes|numeric',
-        'description' => 'sometimes|string',
-        'image_path' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:5120'
-    ]);
-
-    if ($request->hasFile('image_path')) {
-        if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
-            Storage::disk('public')->delete($product->image_path);
+    {   
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
         }
 
-        $imagePath = $request->file('image_path')->store('products', 'public');
-        $product->image_path = $imagePath;
+        $request->validate([
+            'client_id' => 'sometimes|integer',
+            'name' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'description' => 'sometimes|string',
+            'image_path' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:5120'
+        ]);
+
+        if ($request->hasFile('image_path')) {
+            if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+
+            $imagePath = $request->file('image_path')->store('products', 'public');
+            $product->image_path = $imagePath;
+        }
+
+        $updateData = $request->only(['client_id', 'name', 'price', 'description']);
+        $product->fill($updateData);
+        $product->save();
+
+        return response()->json([
+            'message' => 'Product updated successfully',
+            'data' => $product->fresh()
+        ]);
     }
-
-    $updateData = $request->only(['client_id', 'name', 'price', 'description']);
-    $product->fill($updateData);
-    $saved = $product->save();
-
-    return response()->json([
-        'message' => 'Product updated successfully',
-        'data' => $product->fresh()
-    ]);
-}
 
     public function destroy($id)
     {
