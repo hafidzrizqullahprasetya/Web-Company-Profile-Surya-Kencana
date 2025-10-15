@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OurClientController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\TestimonialController;
 
 
 //Authentication Routes
@@ -26,6 +27,9 @@ Route::get('/our-client/{id}', [OurClientController::class, 'show']);
 
 //Contact Routes
 Route::get('/contact', [ContactController::class, 'index']);
+
+//Testimonial Routes
+Route::get('/testimonial', [TestimonialController::class, 'index']);
 
 //Middleware Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -53,4 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/our-client/{id}', [OurClientController::class, 'update']);
     Route::put('/our-client/{id}', [OurClientController::class, 'update']);
     Route::delete('/our-client/{id}', [OurClientController::class, 'destroy']);
+
+    //Testimonial Routes
+    Route::post('/testimonial', [TestimonialController::class, 'store']);
+    Route::put('/testimonial/{id}', [TestimonialController::class, 'update']);
+    Route::delete('/testimonial/{id}', [TestimonialController::class, 'destroy']);
 });

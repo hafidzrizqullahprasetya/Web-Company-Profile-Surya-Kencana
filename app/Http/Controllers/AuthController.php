@@ -12,8 +12,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|min:6|max:255',
         ]);
 
         $admin = Admin::where('username', $request->username)->first();
@@ -36,8 +36,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logout successful']);
+        $user = $request->user();
+        /** @var \Laravel\Sanctum\PersonalAccessToken|null $token */
+        $token = $user->currentAccessToken();
+        
+        if ($token) {
+            $token->delete();
+            return response()->json(['message' => 'Logout successful']);
+        }
+        
+        return response()->json(['message' => 'No active token found'], 401);
     }
 }
