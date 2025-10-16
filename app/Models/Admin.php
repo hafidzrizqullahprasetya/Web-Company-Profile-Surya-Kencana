@@ -11,6 +11,7 @@ class Admin extends Model
     use HasApiTokens;
     
     protected $fillable = ['username', 'password'];
+    protected $hidden = ['password'];
 
     public function setPasswordAttribute($value)
     {

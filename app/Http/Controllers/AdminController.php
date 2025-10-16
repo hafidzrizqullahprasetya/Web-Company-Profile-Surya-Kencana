@@ -13,16 +13,6 @@ class AdminController extends Controller
         return response()->json($admins);
     }
 
-    public function show($id)
-    {
-        $Admin = Admin::find($id);
-        if ($Admin) {
-            return response()->json($Admin);
-        } else {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
-    }
-
     public function store(Request $request)
     {
         $request->validate([

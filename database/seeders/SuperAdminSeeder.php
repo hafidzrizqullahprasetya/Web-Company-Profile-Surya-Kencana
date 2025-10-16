@@ -13,11 +13,9 @@ class SuperAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        for($i = 1; $i <= 5; $i++) {
-            SuperAdmin::create([
-                'username' => fake()->userName(),
-                'password' => bcrypt('password123'),
-            ]);
-        }
+        SuperAdmin::create([
+            'username' => 'superadmin',
+            'password' => 'superadmin123',
+        ]);
     }
 }
