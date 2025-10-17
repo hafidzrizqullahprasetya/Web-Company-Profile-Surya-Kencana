@@ -1,212 +1,233 @@
-import axios from 'axios';
+import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    Accept: 'application/json',
   },
-  timeout: 10000 // 10 detik timeout
-});
+  timeout: 10000,
+})
 
-// Interceptor untuk request (opsional, untuk menambahkan token dll)
 apiClient.interceptors.request.use(
   (config) => {
-    // Bisa tambahkan token di sini jika perlu
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
   },
   (error) => {
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
-// Interceptor untuk response (opsional, untuk handle error global)
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle error global di sini
     if (error.response) {
-      // Server merespon dengan status code diluar range 2xx
-      console.error('Response Error:', error.response.data);
+      console.error('Response Error:', error.response.data)
+      if (error.response.status === 401) {
+        localStorage.removeItem('token')
+      }
     } else if (error.request) {
-      // Request dibuat tapi tidak ada response
-      console.error('Request Error:', error.request);
+      console.error('Request Error:', error.request)
     } else {
-      // Error lainnya
-      console.error('Error:', error.message);
+      console.error('Error:', error.message)
     }
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
-// Interface untuk type safety
-export interface VisiMisi {
+export interface VisionMission {
   id: number
-  judul?: string
-  visi: string
-  misi: string
-  gambar?: string
-}
-export interface Kontak {
-  id: number;
-  alamat: string;
-  telepon: string;
-  email: string;
-  maps_link: string;
+  vision: string
+  mission: string
 }
 
-export interface Testimoni {
-  id: number;
-  nama_client: string;
-  instansi: string;
-  isi: string;
-  tanggal: string;
+export interface Admin {
+  id: number
+  name: string
+  email: string
 }
 
-export interface Riwayat {
-  id: number;
-  judul: string;
-  deskripsi: string;
-  tahun: string;
+export interface Product {
+  id: number
+  nama: string
+  deskripsi: string
+  gambar: string
+  harga: number
+  client_id: number
 }
 
-export interface OurClient {
-  id: number;
-  nama_client: string;
-  instansi: string;
-  logo: string;
+export interface LoginRequest {
+  email: string
+  password: string
 }
 
-export interface Produk {
-  id: number;
-  nama: string;
-  deskripsi: string;
-  gambar: string;
-  harga: number;
-  client_id: number;
-}
-
-// API Service
-export default {
-  // ===== VISI MISI =====
-  async getVisiMisi() {
-    try {
-      const response = await apiClient.get<VisiMisi>('/visi-misi');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching visi misi:', error);
-      throw error;
-    }
-  },
-
-  // ===== KONTAK =====
-  async getKontak() {
-    try {
-      const response = await apiClient.get<Kontak>('/kontak');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching kontak:', error);
-      throw error;
-    }
-  },
-
-  // ===== TESTIMONI =====
-  async getTestimoni() {
-    try {
-      const response = await apiClient.get<Testimoni[]>('/testimoni');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching testimoni:', error);
-      throw error;
-    }
-  },
-
-  async getTestimoniById(id: number) {
-    try {
-      const response = await apiClient.get<Testimoni>(`/testimoni/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching testimoni by id:', error);
-      throw error;
-    }
-  },
-
-  // ===== RIWAYAT =====
-  async getRiwayat() {
-    try {
-      const response = await apiClient.get<Riwayat[]>('/riwayat');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching riwayat:', error);
-      throw error;
-    }
-  },
-
-  async getRiwayatById(id: number) {
-    try {
-      const response = await apiClient.get<Riwayat>(`/riwayat/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching riwayat by id:', error);
-      throw error;
-    }
-  },
-
-  // ===== OUR CLIENT =====
-  async getOurClient() {
-    try {
-      const response = await apiClient.get<OurClient[]>('/our-client');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching our client:', error);
-      throw error;
-    }
-  },
-
-  async getOurClientById(id: number) {
-    try {
-      const response = await apiClient.get<OurClient>(`/our-client/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching our client by id:', error);
-      throw error;
-    }
-  },
-
-  // ===== PRODUK =====
-  async getProduk() {
-    try {
-      const response = await apiClient.get<Produk[]>('/produk');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching produk:', error);
-      throw error;
-    }
-  },
-
-  async getProdukById(id: number) {
-    try {
-      const response = await apiClient.get<Produk>(`/produk/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching produk by id:', error);
-      throw error;
-    }
-  },
-
-  async getProdukByClient(clientId: number) {
-    try {
-      const response = await apiClient.get<Produk[]>(`/produk/client/${clientId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching produk by client:', error);
-      throw error;
-    }
+export interface LoginResponse {
+  token: string
+  user: {
+    id: number
+    name: string
+    email: string
   }
-};
+}
+
+export default {
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
+    try {
+      const response = await apiClient.post<LoginResponse>('/login', credentials)
+      localStorage.setItem('token', response.data.token)
+      return response.data
+    } catch (error) {
+      console.error('Error logging in:', error)
+      throw error
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post('/logout')
+      localStorage.removeItem('token')
+    } catch (error) {
+      console.error('Error logging out:', error)
+      throw error
+    }
+  },
+
+  async getVisionMission(): Promise<VisionMission> {
+    try {
+      const response = await apiClient.get<VisionMission[]>('/vision-mission')
+      if (response.data.length === 0) {
+        throw new Error('Data Visi Misi tidak ditemukan');
+      }
+      return response.data[0]!
+    } catch (error) {
+      console.error('Error fetching vision mission:', error)
+      throw error
+    }
+  },
+
+  async createVisionMission(data: Omit<VisionMission, 'id'>): Promise<VisionMission> {
+    try {
+      const response = await apiClient.post<VisionMission>('/vision-mission', data)
+      return response.data
+    } catch (error) {
+      console.error('Error creating vision mission:', error)
+      throw error
+    }
+  },
+
+  async updateVisionMission(id: number, data: Partial<VisionMission>): Promise<VisionMission> {
+    try {
+      const response = await apiClient.put<VisionMission>(`/vision-mission/${id}`, data)
+      return response.data
+    } catch (error) {
+      console.error('Error updating vision mission:', error)
+      throw error
+    }
+  },
+
+  async deleteVisionMission(id: number): Promise<void> {
+    try {
+      await apiClient.delete(`/vision-mission/${id}`)
+    } catch (error) {
+      console.error('Error deleting vision mission:', error)
+      throw error
+    }
+  },
+
+  // ===== ADMIN ===== (sesuai backend: /admin)
+  async getAdmins(): Promise<Admin[]> {
+    try {
+      const response = await apiClient.get<Admin[]>('/admin')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching admins:', error)
+      throw error
+    }
+  },
+
+  async getAdminById(id: number): Promise<Admin> {
+    try {
+      const response = await apiClient.get<Admin>(`/admin/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching admin by id:', error)
+      throw error
+    }
+  },
+
+  async createAdmin(data: Omit<Admin, 'id'>): Promise<Admin> {
+    try {
+      const response = await apiClient.post<Admin>('/admin', data)
+      return response.data
+    } catch (error) {
+      console.error('Error creating admin:', error)
+      throw error
+    }
+  },
+
+  async updateAdmin(id: number, data: Partial<Admin>): Promise<Admin> {
+    try {
+      const response = await apiClient.put<Admin>(`/admin/${id}`, data)
+      return response.data
+    } catch (error) {
+      console.error('Error updating admin:', error)
+      throw error
+    }
+  },
+
+  async deleteAdmin(id: number): Promise<void> {
+    try {
+      await apiClient.delete(`/admin/${id}`)
+    } catch (error) {
+      console.error('Error deleting admin:', error)
+      throw error
+    }
+  },
+
+  // ===== PRODUCT ===== (sesuai backend: /product)
+  async getProducts(): Promise<Product[]> {
+    try {
+      const response = await apiClient.get<Product[]>('/product')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      throw error
+    }
+  },
+
+  async getProductById(id: number): Promise<Product> {
+    try {
+      const response = await apiClient.get<Product>(`/product/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching product by id:', error)
+      throw error
+    }
+  },
+
+  async createProduct(data: Omit<Product, 'id'>): Promise<Product> {
+    try {
+      const response = await apiClient.post<Product>('/product', data)
+      return response.data
+    } catch (error) {
+      console.error('Error creating product:', error)
+      throw error
+    }
+  },
+
+  async updateProduct(id: number, data: Partial<Product>): Promise<Product> {
+    try {
+      const response = await apiClient.put<Product>(`/product/${id}`, data)
+      return response.data
+    } catch (error) {
+      console.error('Error updating product:', error)
+      throw error
+    }
+  },
+}

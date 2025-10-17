@@ -1,8 +1,6 @@
-<!-- filepath: /Users/hafidzprasetya/Documents/GitHub/frontend-compro/src/components/frontend/VisiMisi.vue -->
 <template>
   <section class="visi-misi-section" id="visi-misi">
     <div class="container">
-      <!-- Section Header -->
       <div class="section-header">
         <div class="section-badge">
           <span class="badge-text">TENTANG KAMI</span>
@@ -13,17 +11,28 @@
           MERGE.
         </h2>
 
-        <!-- About Paragraph -->
         <div class="about-text">
           <p>
-            {{ visiMisi?.tentang || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' }}
+            {{
+              visiMisi?.tentang ||
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            }}
           </p>
         </div>
       </div>
 
+      <div v-if="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading vision and mission...</p>
+      </div>
+
+      <div v-else-if="error" class="error-container">
+        <p class="error-message">{{ error }}</p>
+        <button @click="retryFetch" class="retry-btn">Retry</button>
+      </div>
+
       <!-- Main Content Grid -->
-      <div class="content-grid">
-        <!-- Mission Card (Left) -->
+      <div v-else-if="visiMisi" class="content-grid">
         <div class="mission-card">
           <div class="card-decoration">
             <div class="decoration-line"></div>
@@ -53,25 +62,9 @@
           </div>
           <div class="card-content">
             <p class="card-text">
-              {{
-                visiMisi?.misi ||
-                'We are committed to delivering outstanding real estate experiences by providing personalized service, expert guidance, and innovative solutions that exceed our clients expectations in every transaction.'
-              }}
+              {{ visiMisi.mission }}
             </p>
           </div>
-          <!-- <div class="card-footer">
-            <div class="mission-stats">
-              <div class="stat-item">
-                <span class="stat-number">100+</span>
-                <span class="stat-label">Projects</span>
-              </div>
-              <div class="stat-divider"></div>
-              <div class="stat-item">
-                <span class="stat-number">15+</span>
-                <span class="stat-label">Years</span>
-              </div>
-            </div>
-          </div> -->
         </div>
 
         <!-- Vision Card (Right) -->
@@ -109,28 +102,9 @@
           </div>
           <div class="card-content">
             <p class="card-text">
-              {{
-                visiMisi?.visi ||
-                'To be the leading real estate company that transforms dreams into reality through innovative solutions, exceptional service, and creating lasting relationships with our valued clients.'
-              }}
+              {{ visiMisi.vision }}
             </p>
           </div>
-          <!-- <div class="card-footer">
-            <div class="vision-features">
-              <div class="feature-item">
-                <div class="feature-icon">✓</div>
-                <span class="feature-text">Expert Guidance</span>
-              </div>
-              <div class="feature-item">
-                <div class="feature-icon">✓</div>
-                <span class="feature-text">Innovative Solutions</span>
-              </div>
-              <div class="feature-item">
-                <div class="feature-icon">✓</div>
-                <span class="feature-text">Client Satisfaction</span>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
 
@@ -147,36 +121,39 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import api, { type VisionMission } from '@/services/api'
 
-interface VisiMisiData {
-  judul: string
-  tentang: string
-  visi: string
-  misi: string
-}
-
-const visiMisi = ref<VisiMisiData | null>(null)
+const visiMisi = ref<VisionMission | null>(null)
 const isLoading = ref(true)
+const error = ref<string | null>(null)
 
-// Dummy data
-const dummyData: VisiMisiData = {
-  judul: 'About Our Company',
-  tentang: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  visi: 'To be the leading real estate company that transforms dreams into reality through innovative solutions, exceptional service, and creating lasting relationships with our valued clients.',
-  misi: 'We are committed to delivering outstanding real estate experiences by providing personalized service, expert guidance, and innovative solutions that exceed our clients expectations in every transaction.'
-}
+const TOKEN = '1|iY8GANtu5p3qOvjWAhGETnGyCBCy0SCc5KXtpo6uf24b0fa8'
 
-onMounted(async () => {
+const fetchVisionMission = async () => {
   try {
     isLoading.value = true
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    visiMisi.value = dummyData
-  } catch (error) {
-    console.error('Error loading visi misi:', error)
-    visiMisi.value = dummyData
+    error.value = null
+    localStorage.setItem('token', TOKEN)
+
+    const data = await api.getVisionMission()
+    visiMisi.value = data
+
+    console.log('Data visi misi:', data)
+  } catch (err) {
+    console.error('Error fetching visi misi:', err)
+    const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to load data'
+    error.value = message
   } finally {
     isLoading.value = false
   }
+}
+
+const retryFetch = () => {
+  fetchVisionMission()
+}
+
+onMounted(() => {
+  fetchVisionMission()
 })
 </script>
 
@@ -251,6 +228,74 @@ onMounted(async () => {
   line-height: 1.7;
   color: rgb(var(--text-gray));
   margin: 0;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(229, 243, 70, 0.3);
+  border-top: 4px solid rgb(var(--primary));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  color: rgb(var(--text-gray));
+  font-size: 16px;
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.retry-btn {
+  background: rgb(var(--primary));
+  color: rgb(var(--secondary));
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: rgba(229, 243, 70, 0.9);
+  transform: translateY(-2px);
 }
 
 /* Content Grid - Updated for 2 columns */
