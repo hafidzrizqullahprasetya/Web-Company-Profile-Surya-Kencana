@@ -16,8 +16,8 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|min:6|max:255',
         ]);
 
         $Admin = Admin::create($request->all());
@@ -30,8 +30,8 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'sometimes|required|string',
-            'password' => 'sometimes|required|string',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|min:6|max:255',
         ]);
 
         $Admin = Admin::find($id);

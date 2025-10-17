@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function adminlogin(Request $request)
+    public function adminLogin(Request $request)
     {
         $request->validate([
             'username' => 'required|string|max:255',
@@ -35,7 +35,7 @@ class AuthController extends Controller
         }
     }
 
-    public function superadminlogin(Request $request){
+    public function superAdminLogin(Request $request){
         $request->validate([
             'username' => 'required|string|max:255',
             'password' => 'required|string|min:6|max:255',

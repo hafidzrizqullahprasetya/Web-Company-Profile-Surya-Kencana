@@ -11,8 +11,8 @@ use App\Http\Controllers\TestimonialController;
 
 
 //Authentication Routes
-Route::post('admin/login', [AuthController::class, 'adminlogin']);
-Route::post('superadmin/login', [AuthController::class, 'superadminlogin']);
+Route::post('admin/login', [AuthController::class, 'adminLogin']);
+Route::post('superadmin/login', [AuthController::class, 'superAdminLogin']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 //Vision and Mission Routes
