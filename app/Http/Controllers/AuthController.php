@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function adminLogin(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'username' => 'required|string|max:255',
@@ -18,7 +18,6 @@ class AuthController extends Controller
         ]);
 
         $admin = Admin::where('username', $request->username)->first();
-
         if ($admin && Hash::check($request->password, $admin->password)) {
             $token = $admin->createToken('auth_token')->plainTextToken;
 
@@ -30,19 +29,9 @@ class AuthController extends Controller
                     'username' => $admin->username
                 ]
             ]);
-        } else{
-            return response()->json(['message' => 'Invalid username or password'], 401);
         }
-    }
 
-    public function superAdminLogin(Request $request){
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'required|string|min:6|max:255',
-        ]);
-        
         $superadmin = SuperAdmin::where('username', $request->username)->first();
-
         if ($superadmin && Hash::check($request->password, $superadmin->password)) {
             $token = $superadmin->createToken('auth_token')->plainTextToken;
 
@@ -54,9 +43,10 @@ class AuthController extends Controller
                     'username' => $superadmin->username
                 ]
             ]);
-        } else{
-            return response()->json(['message' => 'Invalid username or password'], 401);
         }
+
+        return response()->json(['message' => 'Invalid username or password'], 401);
+
     }
 
     public function logout(Request $request)
@@ -64,12 +54,12 @@ class AuthController extends Controller
         $user = $request->user();
         /** @var \Laravel\Sanctum\PersonalAccessToken|null $token */
         $token = $user->currentAccessToken();
-        
+
         if ($token) {
             $token->delete();
             return response()->json(['message' => 'Logout successful']);
         }
-        
+
         return response()->json(['message' => 'No active token found'], 401);
     }
 }
