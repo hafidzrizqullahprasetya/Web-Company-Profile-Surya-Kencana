@@ -1,107 +1,94 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <section class="visi-misi-section" id="visi-misi">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-badge">
-          <span class="badge-text">TENTANG KAMI</span>
+  <section class="relative py-32 bg-white overflow-hidden" id="visi-misi">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-20">
+        <div class="inline-block mb-6">
+          <span
+            class="bg-primary text-cream-light px-6 py-3 text-xs font-semibold uppercase tracking-widest rounded-md"
+          >
+            TENTANG KAMI
+          </span>
         </div>
-        <h2 class="section-title">
+        <h2
+          class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-epilogue font-bold text-secondary leading-tight uppercase tracking-wide mb-10"
+        >
           CREATE YOUR STORY IN A PLACE<br />
-          WHERE <span class="highlight">DREAMS</span> AND REALITY<br />
+          WHERE
+          <span class="text-secondary relative"
+            >DREAMS
+            <div class="absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10"></div
+          ></span>
+          AND REALITY<br />
           MERGE.
         </h2>
-
-        <div class="about-text">
-          <p>
-            {{
-              visiMisi?.tentang ||
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
-            }}
-          </p>
-        </div>
       </div>
 
-      <div v-if="isLoading" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p>Loading vision and mission...</p>
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-center">
+        <div
+          class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"
+        ></div>
+        <p class="text-gray-600 text-base">Loading vision and mission...</p>
       </div>
 
-      <div v-else-if="error" class="error-container">
-        <p class="error-message">{{ error }}</p>
-        <button @click="retryFetch" class="retry-btn">Retry</button>
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-16 text-center">
+        <p class="text-red-500 text-base mb-4 font-medium">{{ error }}</p>
+        <button
+          @click="retryFetch"
+          class="bg-primary text-secondary px-6 py-3 text-sm font-semibold rounded-md transition-all duration-300 hover:bg-primary-dark hover:-translate-y-0.5"
+        >
+          Retry
+        </button>
       </div>
 
       <!-- Main Content Grid -->
-      <div v-else-if="visiMisi" class="content-grid">
-        <div class="mission-card">
-          <div class="card-decoration">
-            <div class="decoration-line"></div>
-          </div>
-          <div class="card-header">
-            <div class="card-icon-wrapper">
-              <div class="icon-bg">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
+      <div v-else-if="visiMisi" class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+        <div
+          class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
+        >
+          <div
+            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/30"
+          ></div>
+          <div class="mb-8">
+            <div
+              class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
+            >
+              <i-lucide:star class="w-7 h-7" style="color: white" />
             </div>
-            <h3 class="card-title">MISI KAMI</h3>
-            <div class="title-underline"></div>
+            <h3 class="text-2xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
+              MISI KAMI
+            </h3>
+            <div class="w-16 h-0.5 bg-white"></div>
           </div>
-          <div class="card-content">
-            <p class="card-text">
+          <div>
+            <p class="text-base leading-relaxed text-white/90">
               {{ visiMisi.mission }}
             </p>
           </div>
         </div>
 
         <!-- Vision Card (Right) -->
-        <div class="vision-card">
-          <div class="card-decoration">
-            <div class="decoration-dots">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </div>
+        <div
+          class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
+        >
+          <div class="absolute top-5 right-5 flex gap-1.5">
+            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
+            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
+            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
           </div>
-          <div class="card-header">
-            <div class="card-icon-wrapper">
-              <div class="icon-bg">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
-                </svg>
-              </div>
+          <div class="mb-8">
+            <div
+              class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
+            >
+              <i-lucide:eye class="w-7 h-7" style="color: white" />
             </div>
-            <h3 class="card-title">VISI KAMI</h3>
-            <div class="title-underline"></div>
+            <h3 class="text-2xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
+              VISI KAMI
+            </h3>
+            <div class="w-16 h-0.5 bg-white"></div>
           </div>
-          <div class="card-content">
-            <p class="card-text">
+          <div>
+            <p class="text-base leading-relaxed text-white/90">
               {{ visiMisi.vision }}
             </p>
           </div>
@@ -109,10 +96,13 @@
       </div>
 
       <!-- CTA Button -->
-      <div class="cta-section">
-        <router-link to="/contact" class="cta-button">
-          <span class="cta-text">Hubungi Kami</span>
-          <div class="cta-arrow">→</div>
+      <div class="text-center">
+        <router-link
+          to="/contact"
+          class="inline-flex items-center bg-primary text-cream px-10 py-5 text-base font-semibold uppercase tracking-wide rounded-lg shadow-soft transition-all duration-300 hover:bg-primary-dark hover:-translate-y-1 hover:shadow-lg gap-3"
+        >
+          <span>Hubungi Kami</span>
+          <i-lucide:arrow-right class="w-5 h-5" />
         </router-link>
       </div>
     </div>
@@ -127,21 +117,21 @@ const visiMisi = ref<VisionMission | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
-const TOKEN = '1|iY8GANtu5p3qOvjWAhGETnGyCBCy0SCc5KXtpo6uf24b0fa8'
-
 const fetchVisionMission = async () => {
   try {
     isLoading.value = true
     error.value = null
-    localStorage.setItem('token', TOKEN)
-
     const data = await api.getVisionMission()
-    visiMisi.value = data
-
-    console.log('Data visi misi:', data)
+    if (data.length > 0) {
+      visiMisi.value = data[0]
+    } else {
+      error.value = 'Vision and mission data not found'
+    }
   } catch (err) {
     console.error('Error fetching visi misi:', err)
-    const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to load data'
+    const message =
+      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      'Failed to load data'
     error.value = message
   } finally {
     isLoading.value = false
@@ -156,490 +146,3 @@ onMounted(() => {
   fetchVisionMission()
 })
 </script>
-
-<style scoped>
-/* Section Styles */
-.visi-misi-section {
-  position: relative;
-  padding: 120px 0;
-  background: rgb(var(--bg-primary));
-  overflow: hidden;
-}
-
-/* Section Header */
-.section-header {
-  text-align: center;
-  margin-bottom: 80px;
-}
-
-.section-badge {
-  display: inline-block;
-  margin-bottom: 24px;
-}
-
-.badge-text {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  padding: 12px 24px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  display: inline-block;
-}
-
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  color: rgb(var(--secondary));
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: 'Epilogue', sans-serif;
-}
-
-.highlight {
-  color: rgb(var(--secondary));
-  position: relative;
-  z-index: 1;
-}
-
-.highlight::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 20px;
-  width: 100%;
-  height: 12px;
-  background: rgb(var(--primary));
-  opacity: 1;
-  z-index: -1;
-}
-
-/* About Text */
-.about-text {
-  max-width: 800px;
-  margin: 40px auto 0;
-  text-align: center;
-}
-
-.about-text p {
-  font-size: 18px;
-  line-height: 1.7;
-  color: rgb(var(--text-gray));
-  margin: 0;
-}
-
-/* Loading State */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(229, 243, 70, 0.3);
-  border-top: 4px solid rgb(var(--primary));
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-container p {
-  color: rgb(var(--text-gray));
-  font-size: 16px;
-}
-
-/* Error State */
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.error-message {
-  color: #e74c3c;
-  font-size: 16px;
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-
-.retry-btn {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.retry-btn:hover {
-  background: rgba(229, 243, 70, 0.9);
-  transform: translateY(-2px);
-}
-
-/* Content Grid - Updated for 2 columns */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: stretch;
-  margin-bottom: 80px;
-}
-
-/* Card Base Styles */
-.mission-card,
-.vision-card {
-  position: relative;
-  padding: 50px 40px 40px;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.mission-card:hover,
-.vision-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
-}
-
-/* Mission Card (Dark Theme) */
-.mission-card {
-  background: rgb(var(--secondary));
-  color: rgb(var(--text-white));
-}
-
-.mission-card .card-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-}
-
-.decoration-line {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, rgb(var(--primary)), rgba(229, 243, 70, 0.3));
-}
-
-/* Vision Card (Light Theme) */
-.vision-card {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  border: 1px solid rgba(229, 243, 70, 0.2);
-}
-
-.vision-card .card-decoration {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-.decoration-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  background: rgb(var(--primary));
-  border-radius: 50%;
-  opacity: 0.6;
-}
-
-/* Vision Card dots - Updated color */
-.vision-card .decoration-dots .dot {
-  background: rgb(var(--secondary));
-  opacity: 0.6;
-}
-
-/* Card Headers */
-.card-header {
-  margin-bottom: 30px;
-}
-
-.card-icon-wrapper {
-  margin-bottom: 20px;
-}
-
-.icon-bg {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.mission-card .icon-bg {
-  background: rgba(229, 243, 70, 0.2);
-  color: rgb(var(--primary));
-}
-
-.vision-card .icon-bg {
-  background: rgba(28, 24, 23, 0.1);
-  color: rgb(var(--secondary));
-}
-
-.card-title {
-  font-size: 24px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-  font-family: 'Epilogue', sans-serif;
-}
-
-.mission-card .card-title {
-  color: rgb(var(--primary));
-}
-
-.vision-card .card-title {
-  color: rgb(var(--secondary));
-}
-
-.title-underline {
-  width: 60px;
-  height: 3px;
-  background: rgb(var(--bg-primary));
-  margin-bottom: 20px;
-}
-
-/* Card Content */
-.card-text {
-  font-size: 16px;
-  line-height: 1.8;
-  margin-bottom: 30px;
-}
-
-.mission-card .card-text {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.vision-card .card-text {
-  color: rgb(var(--text-gray));
-}
-
-/* Card Footers */
-.card-footer {
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 1px solid rgba(229, 243, 70, 0.2);
-}
-
-/* Mission Stats */
-.mission-stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-number {
-  display: block;
-  font-size: 28px;
-  font-weight: 700;
-  color: rgb(var(--primary));
-  font-family: 'Epilogue', sans-serif;
-}
-
-.stat-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: rgba(229, 243, 70, 0.3);
-}
-
-/* Vision Features */
-.vision-features {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.feature-icon {
-  width: 24px;
-  height: 24px;
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.feature-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgb(var(--text-gray));
-}
-
-/* CTA Section */
-.cta-section {
-  text-align: center;
-}
-
-.cta-button {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  padding: 20px 40px;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(229, 243, 70, 0.3);
-}
-
-.cta-button:hover {
-  background: rgb(var(--primary-dark));
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(229, 243, 70, 0.4);
-}
-
-.cta-arrow {
-  font-size: 18px;
-  transition: transform 0.3s ease;
-}
-
-.cta-button:hover .cta-arrow {
-  transform: translateX(4px);
-}
-
-/* Responsive Design - Updated */
-@media (max-width: 1199px) {
-  .content-grid {
-    gap: 40px;
-  }
-
-  .mission-card,
-  .vision-card {
-    padding: 40px 30px 30px;
-  }
-}
-
-@media (max-width: 991px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .about-text p {
-    font-size: 16px;
-  }
-
-  .visi-misi-section {
-    padding: 80px 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .section-title {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-  }
-
-  .about-text {
-    margin: 30px auto 0;
-  }
-
-  .about-text p {
-    font-size: 15px;
-  }
-
-  .mission-card,
-  .vision-card {
-    padding: 35px 25px 25px;
-  }
-
-  .card-title {
-    font-size: 20px;
-  }
-
-  .card-text {
-    font-size: 14px;
-  }
-
-  .section-header {
-    margin-bottom: 50px;
-  }
-
-  .mission-stats {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .stat-divider {
-    width: 40px;
-    height: 1px;
-  }
-}
-
-@media (max-width: 480px) {
-  .badge-text {
-    padding: 10px 20px;
-    font-size: 11px;
-  }
-
-  .mission-card,
-  .vision-card {
-    padding: 30px 20px 20px;
-  }
-
-  .card-title {
-    font-size: 18px;
-  }
-
-  .cta-button {
-    padding: 16px 32px;
-    font-size: 14px;
-  }
-}
-</style>

@@ -1,202 +1,93 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <section class="hero-section" id="home">
-    <div class="hero-slide">
-      <div class="slide-inner" :style="{ backgroundImage: `url(${heroData.background})` }">
-        <div class="slide-overlay"></div>
+  <section
+    class="relative w-full min-h-screen flex flex-col justify-between overflow-hidden"
+    id="home"
+  >
+    <div class="flex-1 flex items-center justify-start relative z-10">
+      <div
+        class="absolute inset-0 w-full h-full bg-cover bg-center"
+        :style="{ backgroundImage: `url(${heroData.background})` }"
+      ></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-secondary/60 to-secondary/80 z-10"></div>
 
-        <div class="container">
-          <div class="hero-content">
-            <div class="slide-content">
-              <div class="location-badge">
-                <span class="location-text">
-                  <svg class="location-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M21 10C21 17 12 23 12 23S3 17 3 10C3 5.02944 7.02944 1 12 1C16.9706 1 21 5.02944 21 10Z"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" />
-                  </svg>
-                  {{ heroData.location }}
-                </span>
-              </div>
+      <div class="container mx-auto px-4 relative z-20">
+        <div class="flex items-center justify-start min-h-[60vh]">
+          <div class="max-w-[700px] text-white text-left">
+            <div class="mb-6 animate-fade-in">
+              <span
+                class="text-white font-semibold text-sm py-2.5 px-6 bg-cream/20 backdrop-blur-md rounded-full inline-flex items-center gap-2 border border-cream/30 animate-slide-in-left"
+              >
+                <i-lucide:map-pin class="flex-shrink-0 text-primary w-3.5 h-3.5 !text-white" />
+                {{ heroData.location }}
+              </span>
+            </div>
 
-              <div class="hero-title">
-                <h1 class="title-text">
-                  {{ heroData.title }}
-                </h1>
-              </div>
+            <div class="my-6 animate-fade-in animation-delay-200">
+              <h1
+                class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-epilogue font-extrabold uppercase text-white leading-tight mb-6 tracking-wider drop-shadow-lg text-left"
+              >
+                {{ heroData.title }}
+              </h1>
+            </div>
 
-              <div class="hero-cta">
-                <a href="#kontak" class="hero-btn">
-                  <span class="btn-text">Mulai Sekarang</span>
-                </a>
-              </div>
+            <div class="animate-fade-in animation-delay-400">
+              <a
+                href="#kontak"
+                class="inline-flex items-center bg-primary text-white px-12 py-5 text-base font-semibold uppercase transition-all duration-300 no-underline tracking-wide rounded-lg shadow-soft hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-lg gap-3"
+              >
+                <span>Hubungi Kami</span>
+                <i-lucide:arrow-up-right class="w-5 h-5 !text-white" />
+              </a>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="background-text">
-          <span class="bg-text-number">01</span>
-          <span class="bg-text-multiplier">X</span>
-          <span class="bg-text-dimension">960</span>
-        </div>
+      <div
+        class="absolute right-[5%] top-[30%] z-5 font-epilogue font-black opacity-[0.08] pointer-events-none flex flex-col items-end leading-none"
+      >
+        <span
+          class="text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-white font-black leading-none"
+          >SU</span
+        >
+        <span
+          class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white font-black leading-none"
+          >RYA</span
+        >
+        <span
+          class="text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-white font-black leading-none"
+          >KEN</span
+        >
+        <span
+          class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white font-black leading-none"
+          >CANA</span
+        >
       </div>
     </div>
 
-    <div class="property-details">
-      <div class="property-stats">
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 6L20 6L18 20H6L4 6Z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M2 2L4 6"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M14 12L10 16L14 20"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+    <div class="relative z-20 bg-primary/95 backdrop-blur-md border-t border-cream/20">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 max-w-[1400px] mx-auto px-5 py-8"
+      >
+        <div
+          v-for="(stat, idx) in stats"
+          :key="idx"
+          class="text-center flex-1 relative transition-transform duration-300 hover:-translate-y-1.25"
+        >
+          <div
+            class="flex items-center justify-center w-20 h-20 bg-cream/10 rounded-full mx-auto mb-4 text-primary transition-all duration-300 border-2 border-cream/20 hover:bg-cream/20 hover:scale-110 hover:text-cream"
+          >
+            <component :is="stat.icon" class="w-8 h-8" />
           </div>
-          <div class="stat-number">{{ heroData.conveyorMachines }}</div>
-          <div class="stat-label">CONVEYOR</div>
-        </div>
-
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+          <div
+            class="text-4xl font-epilogue font-extrabold text-white mb-2 transition-all duration-300 hover:scale-110 hover:text-cream leading-tight"
+          >
+            {{ stat.value }}
           </div>
-          <div class="stat-number">{{ heroData.packagingMachines }}</div>
-          <div class="stat-label">PACKAGING</div>
-        </div>
-
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 2L2 7L12 12L22 7L12 2Z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M2 17L12 22L22 17"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M2 12L12 17L22 12"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+          <div class="text-xs font-semibold uppercase text-white tracking-wider">
+            {{ stat.label }}
           </div>
-          <div class="stat-number">{{ heroData.sortingMachines }}</div>
-          <div class="stat-label">SORTING</div>
-        </div>
-
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M14.5 2H6C5.89543 2 5.79163 2.02148 5.69686 2.06301L2 4V20C2 20.5523 2.44772 21 3 21H21C21.5523 21 22 20.5523 22 20V8L14.5 2Z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M14 2V8H20"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M10 12H16"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M10 16H16"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <div class="stat-number">{{ heroData.cncMachines }}</div>
-          <div class="stat-label">CNC CUTTING</div>
-        </div>
-
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12.5 2C16.6421 2 20 5.35786 20 9.5V14.5C20 18.6421 16.6421 22 12.5 22H4V2H12.5Z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M4 7H20"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M4 12H20"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M4 17H12"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <div class="stat-number">{{ heroData.roboticMachines }}</div>
-          <div class="stat-label">ROBOTIC</div>
         </div>
       </div>
     </div>
@@ -204,278 +95,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+
+import ILucideSettings from '~icons/lucide/settings'
+import ILucideBuilding from '~icons/lucide/building'
+import ILucideUsers from '~icons/lucide/users'
+import ILucideCalendar from '~icons/lucide/calendar'
+import ILucideShieldCheck from '~icons/lucide/shield-check'
 
 const heroData = ref({
   background:
-    'https://plus.unsplash.com/premium_photo-1682144572574-2305752c0f63?q=80&w=1738&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  location: 'Sleman, Yogyakarta',
-  title: 'SOLUTION FOR YOUR AUTOMATION MACHINERY',
-  conveyorMachines: 15,
-  packagingMachines: 12,
-  sortingMachines: 8,
-  cncMachines: 6,
-  roboticMachines: 4,
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  location: 'Jakarta, Indonesia',
+  title: 'MESIN TERBAIK UNTUK INDUSTRI ANDA',
+  machines: 500,
+  clients: 200,
+  customers: 5000,
+  experienceYears: 15,
+  trustYears: 20,
 })
+
+const stats = computed(() => [
+  {
+    icon: ILucideSettings,
+    value: heroData.value.machines,
+    label: 'MESIN DIPRODUKSI',
+  },
+  {
+    icon: ILucideBuilding,
+    value: heroData.value.clients,
+    label: 'KLIEN',
+  },
+  {
+    icon: ILucideUsers,
+    value: heroData.value.customers,
+    label: 'PELANGGAN',
+  },
+  {
+    icon: ILucideCalendar,
+    value: heroData.value.experienceYears,
+    label: 'TAHUN PENGALAMAN',
+  },
+  {
+    icon: ILucideShieldCheck,
+    value: heroData.value.trustYears,
+    label: 'TERPERCAYA',
+  },
+])
 </script>
-
-<style scoped>
-/* Hero Section */
-.hero-section {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.hero-slide {
-  width: 100%;
-  height: 100%;
-}
-
-/* Slide Styles */
-.slide-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: flex-start;
-  padding-top: 130px;
-}
-
-.slide-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1;
-}
-
-/* Hero Content */
-.hero-content {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin-top: 20px;
-}
-
-.slide-content {
-  max-width: 600px;
-}
-
-/* Location Badge */
-.location-badge {
-  margin-bottom: 2rem;
-}
-
-.location-text {
-  color: rgb(var(--text-white));
-  font-weight: 600;
-  font-size: 14px;
-  padding: 8px 20px;
-  background: rgba(28, 24, 23, 0.8);
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.location-icon {
-  flex-shrink: 0;
-  color: rgb(var(--primary));
-}
-
-/* Hero Title */
-.hero-title {
-  margin: 2rem 0;
-}
-
-.title-text {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: rgb(var(--text-white));
-  line-height: 1.1;
-  margin-bottom: 2rem;
-  letter-spacing: 2px;
-}
-
-/* Hero Button */
-.hero-btn {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  padding: 16px 32px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  letter-spacing: 1px;
-}
-
-.hero-btn:hover {
-  background: rgb(var(--primary-dark));
-  transform: translateY(-2px);
-}
-
-/* Background Text */
-.background-text {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-  font-family: 'Epilogue', sans-serif;
-  font-weight: 900;
-  opacity: 0.1;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
-
-.bg-text-number,
-.bg-text-dimension {
-  font-size: clamp(8rem, 15vw, 20rem);
-  color: rgb(var(--text-white));
-  line-height: 0.8;
-}
-
-.bg-text-multiplier {
-  font-size: clamp(6rem, 12vw, 16rem);
-  color: rgb(var(--text-white));
-  margin: 0 2rem;
-  line-height: 0.8;
-}
-
-.property-details {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  background: rgb(var(--primary));
-}
-
-.property-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 40px 20px;
-  flex: 1;
-  position: relative;
-}
-
-.stat-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 60px;
-  background: rgba(28, 24, 23, 0.2);
-}
-
-/* Stat Icon */
-.stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: rgba(28, 24, 23, 0.1);
-  border-radius: 50%;
-  margin: 0 auto 16px;
-  color: rgb(var(--secondary));
-  transition: all 0.3s ease;
-}
-
-.stat-item:hover .stat-icon {
-  background: rgba(28, 24, 23, 0.2);
-  transform: scale(1.1);
-}
-
-.stat-number {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgb(var(--secondary));
-  margin-bottom: 8px;
-  font-family: 'Epilogue', sans-serif;
-  transition: all 0.3s ease;
-}
-
-.stat-item:hover .stat-number {
-  transform: scale(1.05);
-}
-
-.stat-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: rgba(28, 24, 23, 0.8);
-  letter-spacing: 1px;
-}
-
-.stat-cta {
-  padding: 30px 20px;
-}
-
-.take-tour-btn {
-  background: rgb(var(--primary));
-  color: rgb(var(--secondary));
-  padding: 15px 30px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
-}
-
-.take-tour-btn:hover {
-  background: rgb(var(--primary-dark));
-  transform: translateY(-2px);
-}
-
-/* Responsive */
-@media (max-width: 991px) {
-  .background-text {
-    display: none;
-  }
-
-  .property-stats {
-    flex-wrap: wrap;
-  }
-
-  .stat-item {
-    flex: 0 0 20%;
-  }
-}
-
-@media (max-width: 768px) {
-  .title-text {
-    font-size: clamp(2rem, 6vw, 3rem);
-  }
-
-  .property-stats {
-    flex-direction: column;
-  }
-
-  .stat-item {
-    width: 100%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-}
-</style>

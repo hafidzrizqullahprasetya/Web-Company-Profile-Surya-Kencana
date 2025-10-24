@@ -18,7 +18,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.14",
+    "@fontsource/inter": "^5.2.8",
     "axios": "^1.12.2",
     "odometer": "^0.4.8",
     "owl.carousel": "^2.3.4",
@@ -28,6 +28,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.70",
     "@playwright/test": "^1.55.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/jquery": "^3.5.33",
@@ -48,9 +49,11 @@
     "jsdom": "^27.0.0",
     "npm-run-all2": "^8.0.4",
     "postcss": "^8.5.6",
-    "prettier": "3.6.2",
-    "tailwindcss": "^4.1.14",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^3.4.18",
     "typescript": "5.9.2",
+    "unplugin-icons": "^22.5.0",
+    "unplugin-vue-components": "^30.0.0",
     "vite": "^7.1.7",
     "vite-plugin-vue-devtools": "^8.0.2",
     "vitest": "^3.2.4",

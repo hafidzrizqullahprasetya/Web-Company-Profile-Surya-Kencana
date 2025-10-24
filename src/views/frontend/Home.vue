@@ -6,10 +6,10 @@
     <VisiMisi />
     <Produk />
     <Riwayat />
-    <!-- <OurClient />
+    <OurClient />
     <Testimoni />
     <Kontak />
-    <Footer /> -->
+    <Footer />
   </div>
 </template>
 
@@ -20,10 +20,10 @@ import Hero from '@/components/frontend/Hero.vue'
 import VisiMisi from '@/components/frontend/VisiMisi.vue'
 import Produk from '@/components/frontend/Produk.vue'
 import Riwayat from '@/components/frontend/Riwayat.vue'
-// import OurClient from '@/components/frontend/OurClient.vue'
-// import Testimoni from '@/components/frontend/Testimoni.vue'
-// import Kontak from '@/components/frontend/Kontak.vue'
-// import Footer from '@/components/frontend/Footer.vue'
+import OurClient from '@/components/frontend/OurClient.vue'
+import Testimoni from '@/components/frontend/Testimoni.vue'
+import Kontak from '@/components/frontend/Kontak.vue'
+import Footer from '@/components/frontend/Footer.vue'
 
 // Dummy Data untuk Testing
 const dummyData = {
@@ -136,49 +136,49 @@ const dummyData = {
   clients: [
     {
       id: 1,
-      nama_client: 'ABC Corp',
+      client_name: 'ABC Corp',
       instansi: 'ABC Corporation',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=ABC+Corp&font=raleway'
     },
     {
       id: 2,
-      nama_client: 'Tech Solutions',
+      client_name: 'Tech Solutions',
       instansi: 'Tech Solutions Inc',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Tech+Solutions&font=raleway'
     },
     {
       id: 3,
-      nama_client: 'Global Ventures',
+      client_name: 'Global Ventures',
       instansi: 'Global Ventures',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Global+Ventures&font=raleway'
     },
     {
       id: 4,
-      nama_client: 'Prime Industries',
+      client_name: 'Prime Industries',
       instansi: 'Prime Industries',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Prime+Industries&font=raleway'
     },
     {
       id: 5,
-      nama_client: 'Elite Group',
+      client_name: 'Elite Group',
       instansi: 'Elite Group',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Elite+Group&font=raleway'
     },
     {
       id: 6,
-      nama_client: 'Summit Holdings',
+      client_name: 'Summit Holdings',
       instansi: 'Summit Holdings',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Summit+Holdings&font=raleway'
     },
     {
       id: 7,
-      nama_client: 'Metro Bank',
+      client_name: 'Metro Bank',
       instansi: 'Metro Bank Indonesia',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Metro+Bank&font=raleway'
     },
     {
       id: 8,
-      nama_client: 'Star Property',
+      client_name: 'Star Property',
       instansi: 'Star Property Group',
       logo: 'https://placehold.co/150x80/F5F6E4/1C1817?text=Star+Property&font=raleway'
     }
@@ -187,42 +187,42 @@ const dummyData = {
   testimoni: [
     {
       id: 1,
-      nama_client: 'Robert Johnson',
+      client_name: 'Robert Johnson',
       instansi: 'Business Owner',
       isi: 'Excellent service and beautiful properties. The team was very professional and helped us find our dream home. Highly recommended! They went above and beyond to ensure we were satisfied.',
       tanggal: '2024-01-15'
     },
     {
       id: 2,
-      nama_client: 'Maria Garcia',
+      client_name: 'Maria Garcia',
       instansi: 'Entrepreneur',
       isi: 'Outstanding experience from start to finish. They made the buying process smooth and stress-free. Very happy with our purchase! The attention to detail was impressive.',
       tanggal: '2024-02-10'
     },
     {
       id: 3,
-      nama_client: 'James Martinez',
+      client_name: 'James Martinez',
       instansi: 'Investor',
       isi: 'Professional team with great attention to detail. They understood exactly what we were looking for and delivered beyond expectations. Best investment decision ever!',
       tanggal: '2024-03-05'
     },
     {
       id: 4,
-      nama_client: 'Lisa Anderson',
+      client_name: 'Lisa Anderson',
       instansi: 'Corporate Executive',
       isi: 'Best real estate company I have worked with. Transparent, honest, and truly cares about their clients. Will definitely work with them again for future investments.',
       tanggal: '2024-03-20'
     },
     {
       id: 5,
-      nama_client: 'Michael Chen',
+      client_name: 'Michael Chen',
       instansi: 'IT Consultant',
       isi: 'Amazing experience! The digital platform made everything so easy and convenient. The property quality exceeded our expectations. Highly professional team!',
       tanggal: '2024-04-12'
     },
     {
       id: 6,
-      nama_client: 'Sarah Williams',
+      client_name: 'Sarah Williams',
       instansi: 'Doctor',
       isi: 'Found our perfect family home thanks to their dedicated team. They listened to our needs and provided excellent options. Very satisfied with the service!',
       tanggal: '2024-05-08'

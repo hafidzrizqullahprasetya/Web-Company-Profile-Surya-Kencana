@@ -1,74 +1,109 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <footer class="wpo-site-footer bg-gray-900">
-    <div class="wpo-upper-footer py-20">
+  <footer class="bg-primary">
+    <div class="py-20">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <!-- About Widget -->
-          <div class="widget about-widget">
-            <div class="logo mb-6">
+          <div>
+            <div class="mb-6">
               <router-link to="/">
-                <img src="https://placehold.co/150x50/E5F346/1C1817?text=SUQAT" alt="Suqat Logo" class="max-w-[150px]">
+                <img
+                  src="https://placehold.co/150x50/F5F6E4/1C1817?text=SURYA+KENCANA"
+                  alt="Surya Kencana Logo"
+                  class="max-w-[150px]"
+                />
               </router-link>
             </div>
-            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-              Your trusted partner in finding the perfect property. We provide quality real estate solutions with integrity and excellence.
+            <p class="text-white/80 text-sm leading-relaxed mb-6">
+              Your trusted partner in finding the perfect property. We provide quality real estate
+              solutions with integrity and excellence.
             </p>
-            <ul class="social-links flex space-x-3">
+            <ul class="flex space-x-3">
               <li>
-                <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-yellow-400 text-white hover:text-gray-900 rounded-full flex items-center justify-center transition-all duration-300">
-                  <i class="ti-facebook"></i>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
+                >
+                  <i-lucide:facebook class="w-4 h-4" />
                 </a>
               </li>
               <li>
-                <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-yellow-400 text-white hover:text-gray-900 rounded-full flex items-center justify-center transition-all duration-300">
-                  <i class="ti-twitter-alt"></i>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
+                >
+                  <i-lucide:twitter class="w-4 h-4" />
                 </a>
               </li>
               <li>
-                <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-yellow-400 text-white hover:text-gray-900 rounded-full flex items-center justify-center transition-all duration-300">
-                  <i class="ti-instagram"></i>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
+                >
+                  <i-lucide:instagram class="w-4 h-4" />
                 </a>
               </li>
               <li>
-                <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-yellow-400 text-white hover:text-gray-900 rounded-full flex items-center justify-center transition-all duration-300">
-                  <i class="ti-linkedin"></i>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
+                >
+                  <i-lucide:linkedin class="w-4 h-4" />
                 </a>
               </li>
             </ul>
           </div>
 
           <!-- Quick Links -->
-          <div class="widget link-widget">
-            <h3 class="text-white text-xl font-semibold mb-6 uppercase">Quick Links</h3>
+          <div>
+            <h3 class="text-white text-xl font-semibold mb-6 uppercase relative">
+              Quick Links
+              <div class="absolute -bottom-1 left-0 w-12 h-0.5 bg-cream"></div>
+            </h3>
             <ul class="space-y-3">
               <li>
-                <router-link to="/" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <router-link
+                  to="/"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Home
                 </router-link>
               </li>
               <li>
-                <a href="#visi-misi" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#visi-misi"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   About Us
                 </a>
               </li>
               <li>
-                <a href="#produk" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#produk"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Products
                 </a>
               </li>
               <li>
-                <a href="#testimoni" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#testimoni"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Testimonials
                 </a>
               </li>
               <li>
-                <a href="#kontak" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#kontak"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Contact
                 </a>
               </li>
@@ -76,36 +111,54 @@
           </div>
 
           <!-- Services -->
-          <div class="widget link-widget">
-            <h3 class="text-white text-xl font-semibold mb-6 uppercase">Our Services</h3>
+          <div>
+            <h3 class="text-white text-xl font-semibold mb-6 uppercase relative">
+              Our Services
+              <div class="absolute -bottom-1 left-0 w-12 h-0.5 bg-cream"></div>
+            </h3>
             <ul class="space-y-3">
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Property Sales
                 </a>
               </li>
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Property Rental
                 </a>
               </li>
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Property Management
                 </a>
               </li>
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Investment Consulting
                 </a>
               </li>
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-300 flex items-center">
-                  <i class="fi flaticon-next text-xs mr-2"></i>
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                >
+                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
                   Legal Assistance
                 </a>
               </li>
@@ -113,30 +166,39 @@
           </div>
 
           <!-- Contact Info -->
-          <div class="widget contact-widget">
-            <h3 class="text-white text-xl font-semibold mb-6 uppercase">Contact Info</h3>
+          <div>
+            <h3 class="text-white text-xl font-semibold mb-6 uppercase relative">
+              Contact Info
+              <div class="absolute -bottom-1 left-0 w-12 h-0.5 bg-cream"></div>
+            </h3>
             <ul class="space-y-4">
               <li class="flex items-start">
-                <i class="fi flaticon-placeholder text-yellow-400 text-xl mr-3 mt-1"></i>
+                <i-lucide:map-pin class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
                 <div>
-                  <span class="text-gray-400 text-sm">
-                    Jl. Sudirman No. 123,<br>
+                  <span class="text-white/80 text-sm">
+                    Jl. Sudirman No. 123,<br />
                     Jakarta Pusat, DKI Jakarta 10220
                   </span>
                 </div>
               </li>
               <li class="flex items-start">
-                <i class="fi flaticon-phone-call text-yellow-400 text-xl mr-3 mt-1"></i>
+                <i-lucide:phone class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
                 <div>
-                  <a href="tel:+622112345678" class="text-gray-400 text-sm hover:text-yellow-400 transition-colors">
+                  <a
+                    href="tel:+622112345678"
+                    class="text-white/80 text-sm hover:text-cream transition-colors"
+                  >
                     +62 21 1234 5678
                   </a>
                 </div>
               </li>
               <li class="flex items-start">
-                <i class="fi flaticon-email text-yellow-400 text-xl mr-3 mt-1"></i>
+                <i-lucide:mail class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
                 <div>
-                  <a href="mailto:info@suqatestate.com" class="text-gray-400 text-sm hover:text-yellow-400 transition-colors">
+                  <a
+                    href="mailto:info@suqatestate.com"
+                    class="text-white/80 text-sm hover:text-cream transition-colors"
+                  >
                     info@suqatestate.com
                   </a>
                 </div>
@@ -148,21 +210,27 @@
     </div>
 
     <!-- Lower Footer -->
-    <div class="wpo-lower-footer py-6 border-t border-gray-800">
+    <div class="py-6 border-t border-secondary/20">
       <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="copyright text-gray-400 text-sm mb-3 md:mb-0">
-            <p>&copy; {{ currentYear }} Suqat Real Estate. All rights reserved.</p>
+          <div class="text-white/80 text-sm mb-3 md:mb-0">
+            <p>&copy; {{ currentYear }} Surya Kencana. All rights reserved.</p>
           </div>
-          <div class="footer-menu">
+          <div>
             <ul class="flex space-x-6">
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 text-sm transition-colors duration-300">
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream text-sm transition-colors duration-300"
+                >
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#" class="text-gray-400 hover:text-yellow-400 text-sm transition-colors duration-300">
+                <a
+                  href="#"
+                  class="text-white/80 hover:text-cream text-sm transition-colors duration-300"
+                >
                   Terms & Conditions
                 </a>
               </li>
@@ -173,15 +241,13 @@
     </div>
 
     <!-- Scroll to Top Button -->
-    <div class="scroll-to-top">
-      <button
-        @click="scrollToTop"
-        :class="{ 'show': showScrollTop }"
-        class="fixed bottom-8 right-8 w-12 h-12 bg-yellow-400 hover:bg-yellow-300 text-gray-900 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 invisible z-50"
-      >
-        <i class="ti-arrow-up text-xl"></i>
-      </button>
-    </div>
+    <button
+      @click="scrollToTop"
+      :class="{ 'opacity-100 visible': showScrollTop, 'opacity-0 invisible': !showScrollTop }"
+      class="fixed bottom-8 right-8 w-12 h-12 bg-cream hover:bg-cream/90 text-secondary rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-50"
+    >
+      <i-lucide:arrow-up class="w-5 h-5" />
+    </button>
   </footer>
 </template>
 
@@ -198,7 +264,7 @@ const handleScroll = () => {
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
-    behavior: 'smooth'
+    behavior: 'smooth',
   })
 }
 
@@ -210,50 +276,3 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
-
-<style scoped>
-.wpo-site-footer {
-  position: relative;
-}
-
-.social-links a {
-  font-size: 14px;
-}
-
-.widget h3 {
-  position: relative;
-  padding-bottom: 15px;
-}
-
-.widget h3::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 50px;
-  height: 2px;
-  background: #E5F346;
-}
-
-.scroll-to-top button.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.scroll-to-top button:hover {
-  transform: translateY(-3px);
-}
-
-/* Responsive */
-@media (max-width: 767px) {
-  .footer-menu ul {
-    flex-direction: column;
-    gap: 0.75rem;
-    text-align: center;
-  }
-
-  .social-links {
-    justify-content: center;
-  }
-}
-</style>
