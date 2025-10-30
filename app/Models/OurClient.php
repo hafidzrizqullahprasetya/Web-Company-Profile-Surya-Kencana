@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
-
 class OurClient extends Model
 {
-    protected $fillable = ['client_name', 'institution', 'logo_path'];
-    protected $appends = ['logo_url'];
+    protected $fillable = [
+        'client_name',
+        'institution',
+        'logo_path',
+    ];
 
-    public function products()
+    protected function logoUrl(): Attribute
     {
-        return $this->hasMany(Product::class, 'client_id');
-    }
-
-    public function logoUrl(): Attribute{
         return Attribute::make(
-            get: fn() => asset('storage/'. $this->logo_path),
+            get: fn () => $this->logo_path ? (str_starts_with($this->logo_path, 'http') ? $this->logo_path : asset('storage/' . $this->logo_path)) : null,
         );
     }
 }
