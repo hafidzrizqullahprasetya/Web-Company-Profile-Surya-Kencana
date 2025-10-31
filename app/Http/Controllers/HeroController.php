@@ -34,29 +34,54 @@ class HeroController extends Controller
             $hero = new Hero();
         }
 
+        // All fields are optional
         $request->validate([
-            'location' => 'sometimes|string|max:255',
-            'title' => 'sometimes|string',
-            'machines' => 'sometimes|integer|min:0',
-            'clients' => 'sometimes|integer|min:0',
-            'customers' => 'sometimes|integer|min:0',
-            'experience_years' => 'sometimes|integer|min:0',
-            'trust_years' => 'sometimes|integer|min:0',
-            'background' => 'sometimes|image|mimes:jpeg,png,jpg,gif,webp|max:102400', // max 100MB
+            'location' => 'nullable|string|max:255',
+            'title' => 'nullable|string',
+            'machines' => 'nullable|integer|min:0',
+            'clients' => 'nullable|integer|min:0',
+            'customers' => 'nullable|integer|min:0',
+            'experience_years' => 'nullable|integer|min:0',
+            'trust_years' => 'nullable|integer|min:0',
+            'backgrounds' => 'nullable|array',
+            'backgrounds.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:102400', // max 100MB per image
+            'deleted_backgrounds' => 'nullable|array', // Array of paths to delete
         ]);
 
-        // Handle background image upload
-        if ($request->hasFile('background')) {
-            // Delete old image if exists
-            if ($hero->background && Storage::disk('public')->exists($hero->background)) {
-                Storage::disk('public')->delete($hero->background);
+        // Handle multiple background images upload
+        if ($request->hasFile('backgrounds')) {
+            $existingBackgrounds = $hero->backgrounds ?? [];
+            $newBackgrounds = [];
+
+            foreach ($request->file('backgrounds') as $file) {
+                $path = $file->store('heroes', 'public');
+                $newBackgrounds[] = $path;
             }
 
-            $backgroundPath = $request->file('background')->store('heroes', 'public');
-            $hero->background = $backgroundPath;
+            // Merge with existing backgrounds
+            $hero->backgrounds = array_merge($existingBackgrounds, $newBackgrounds);
         }
 
-        // Update other fields
+        // Handle deleting specific backgrounds
+        if ($request->has('deleted_backgrounds') && is_array($request->deleted_backgrounds)) {
+            $existingBackgrounds = $hero->backgrounds ?? [];
+
+            foreach ($request->deleted_backgrounds as $pathToDelete) {
+                // Remove from array
+                $existingBackgrounds = array_filter($existingBackgrounds, function($path) use ($pathToDelete) {
+                    return $path !== $pathToDelete;
+                });
+
+                // Delete file from storage
+                if (Storage::disk('public')->exists($pathToDelete)) {
+                    Storage::disk('public')->delete($pathToDelete);
+                }
+            }
+
+            $hero->backgrounds = array_values($existingBackgrounds); // Re-index array
+        }
+
+        // Update other fields only if provided
         $updateData = $request->only([
             'location',
             'title',
@@ -66,6 +91,11 @@ class HeroController extends Controller
             'experience_years',
             'trust_years'
         ]);
+
+        // Remove null values to avoid overwriting existing data with null
+        $updateData = array_filter($updateData, function($value) {
+            return $value !== null;
+        });
 
         $hero->fill($updateData);
         $hero->save();

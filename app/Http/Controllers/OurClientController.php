@@ -284,7 +284,7 @@ class OurClientController extends Controller
         $request->validate([
             'client_name' => 'required|string',
             'institution' => 'required|string',
-            'logo_path' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:102400' // 100MB in KB
+            'logo_path' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:102400' // 100MB in KB
         ]);
 
         if ($request->hasFile('logo_path')) {
