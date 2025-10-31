@@ -9,12 +9,35 @@ export const authService = {
   // Get current user info (would typically decode the token or make an API call)
   getCurrentUser() {
     const token = localStorage.getItem('token')
-    if (!token) return null
+    const userStr = localStorage.getItem('user')
+    if (!token || !userStr) return null
 
-    // In a real application with JWT, you would decode the token to get user info
-    // For Sanctum, you might want to make an API request to get user info
-    // For now, we'll return basic info if token exists
-    return token ? { id: 1, name: 'Admin User', email: 'admin@example.com' } : null
+    try {
+      return JSON.parse(userStr)
+    } catch (e) {
+      console.error('Error parsing user data:', e)
+      return null
+    }
+  },
+
+  // Get the user role
+  getUserRole(): string | null {
+    return localStorage.getItem('userRole')
+  },
+
+  // Check if user is an admin (not superadmin)
+  isAdmin(): boolean {
+    return this.isAuthenticated() && this.getUserRole() === 'admin'
+  },
+
+  // Check if user is a super admin
+  isSuperAdmin(): boolean {
+    return this.isAuthenticated() && this.getUserRole() === 'superadmin'
+  },
+
+  // Check if user has admin privileges (admin or superadmin)
+  hasAdminPrivileges(): boolean {
+    return this.isAuthenticated() && (this.isAdmin() || this.isSuperAdmin())
   },
 
   // Clear authentication data
@@ -25,17 +48,5 @@ export const authService = {
   // Get the current token
   getToken(): string | null {
     return localStorage.getItem('token')
-  },
-
-  // Check if user has admin privileges
-  isAdmin(): boolean {
-
-    return this.isAuthenticated()
-  },
-
-  // Check if user has super admin privileges
-  isSuperAdmin(): boolean {
-
-    return this.isAuthenticated()
   }
 }

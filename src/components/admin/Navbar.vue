@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <header class="bg-white shadow-sm">
+  <header class="bg-primary shadow-sm text-white sticky top-0 z-40">
     <div class="flex items-center justify-between p-4">
-      <h2 class="text-xl font-semibold text-gray-800 capitalize">
+      <h2 class="text-xl font-semibold text-white capitalize">
         {{
           typeof $route.name === 'string'
             ? $route.name.replace('admin-', '').replace('-', ' ')
@@ -11,16 +11,16 @@
       </h2>
       <div class="flex items-center relative">
         <div class="mr-4 text-right">
-          <p class="text-sm font-medium text-gray-900">
+          <p class="text-sm font-medium text-white">
             {{ currentUser?.username || 'Admin User' }}
           </p>
-          <p class="text-xs text-gray-500">{{ isAdminSuperadmin ? 'Super Admin' : 'Admin' }}</p>
+          <p class="text-xs text-cream">{{ isAdminSuperadmin ? 'Super Admin' : 'Admin' }}</p>
         </div>
         <button
           @click.stop="toggleDropdown"
-          class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition"
+          class="w-10 h-10 rounded-full bg-cream bg-opacity-20 flex items-center justify-center hover:bg-opacity-30 transition"
         >
-          <span class="text-primary font-medium">{{
+          <span class="text-cream font-medium">{{
             initials(currentUser?.username || 'Admin')
           }}</span>
         </button>
@@ -30,7 +30,7 @@
           ref="dropdown"
           v-show="isDropdownOpen"
           @click.stop
-          class="absolute right-0 top-12 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border"
+          class="absolute right-0 top-14 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border"
         >
           <div class="py-1">
             <button

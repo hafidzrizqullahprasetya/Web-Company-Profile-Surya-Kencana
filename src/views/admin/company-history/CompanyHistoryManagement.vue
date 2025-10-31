@@ -1,10 +1,9 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="min-h-screen bg-gray-50 p-6">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Client</h1>
-      <p class="text-gray-600 mt-2">Kelola daftar client perusahaan Anda</p>
+      <h1 class="text-3xl font-bold text-gray-900">Manajemen Riwayat Perusahaan</h1>
+      <p class="text-gray-600 mt-2">Kelola timeline dan pencapaian perusahaan Anda</p>
     </div>
 
     <!-- Action Bar -->
@@ -13,7 +12,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Cari client..."
+          placeholder="Cari riwayat..."
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
         />
       </div>
@@ -24,7 +23,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Client
+        Tambah Riwayat
       </button>
     </div>
 
@@ -33,49 +32,63 @@
       <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
     </div>
 
-    <!-- Clients Grid -->
-    <div v-else-if="filteredClients.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="client in filteredClients"
-        :key="client.id"
-        class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
-      >
-        <!-- Client Logo -->
-        <div class="relative h-32 bg-gray-100 overflow-hidden flex items-center justify-center p-4">
-          <img
-            v-if="client.logo_url"
-            :src="client.logo_url"
-            :alt="client.client_name"
-            class="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300"
-            @error="handleImageError"
-          />
-          <div v-else class="text-gray-400 text-sm">Tidak ada logo</div>
-          <div class="absolute top-3 right-3 flex gap-2">
-            <button
-              @click="openModal(client)"
-              class="p-2 bg-white/90 text-primary rounded-lg hover:bg-white transition shadow-sm"
-              title="Edit"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button
-              @click="confirmDelete(client)"
-              class="p-2 bg-white/90 text-red-500 rounded-lg hover:bg-white transition shadow-sm"
-              title="Hapus"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
+    <!-- Timeline View -->
+    <div v-else-if="filteredHistories.length > 0" class="relative">
+      <!-- Timeline Line -->
+      <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300"></div>
 
-        <!-- Client Info -->
-        <div class="p-5">
-          <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ client.client_name }}</h3>
-          <p class="text-sm text-gray-600 line-clamp-2">{{ client.institution || 'Tidak ada institusi' }}</p>
+      <!-- Timeline Items -->
+      <div class="space-y-8">
+        <div
+          v-for="history in filteredHistories"
+          :key="history.id"
+          class="relative pl-20 group"
+        >
+          <!-- Year Badge -->
+          <div class="absolute left-0 flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full font-bold text-sm shadow-lg">
+            {{ history.tahun }}
+          </div>
+
+          <!-- Content Card -->
+          <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <!-- Image if exists -->
+            <div v-if="history.image_url" class="relative h-48 bg-gray-200 overflow-hidden">
+              <img
+                :src="history.image_url"
+                :alt="history.judul"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                @error="handleImageError"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-3">
+                <h3 class="text-xl font-bold text-gray-900">{{ history.judul }}</h3>
+                <div class="flex gap-2">
+                  <button
+                    @click="openModal(history)"
+                    class="p-2 text-primary hover:bg-primary/10 rounded-lg transition"
+                    title="Edit"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="confirmDelete(history)"
+                    class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                    title="Hapus"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <p class="text-gray-600">{{ history.deskripsi }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -83,14 +96,14 @@
     <!-- Empty State -->
     <div v-else class="text-center py-20">
       <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-600 text-lg">Belum ada client</p>
+      <p class="text-gray-600 text-lg">Belum ada riwayat perusahaan</p>
       <button
         @click="openModal()"
         class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
       >
-        Tambah Client Pertama
+        Tambah Riwayat Pertama
       </button>
     </div>
 
@@ -103,7 +116,7 @@
       <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <h2 class="text-2xl font-bold text-gray-900">
-            {{ editMode ? 'Edit Client' : 'Tambah Client Baru' }}
+            {{ editMode ? 'Edit Riwayat' : 'Tambah Riwayat Baru' }}
           </h2>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,44 +126,61 @@
         </div>
 
         <form @submit.prevent="handleSubmit" class="p-6 space-y-5">
-          <!-- Nama Client -->
+          <!-- Tahun -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Nama Client <span class="text-red-500">*</span>
+              Tahun <span class="text-red-500">*</span>
             </label>
             <input
-              v-model="formData.client_name"
+              v-model.number="formData.tahun"
+              type="number"
+              :min="1900"
+              :max="new Date().getFullYear() + 10"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+              placeholder="2024"
+            />
+          </div>
+
+          <!-- Judul -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Judul <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="formData.judul"
               type="text"
               required
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="Contoh: PT Sejahtera Indonesia"
+              placeholder="Contoh: Pendirian Perusahaan"
             />
           </div>
 
-          <!-- Institusi -->
+          <!-- Deskripsi -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Institusi
+              Deskripsi <span class="text-red-500">*</span>
             </label>
-            <input
-              v-model="formData.institution"
-              type="text"
+            <textarea
+              v-model="formData.deskripsi"
+              required
+              rows="4"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="Nama institusi atau perusahaan"
-            />
+              placeholder="Deskripsikan pencapaian atau peristiwa penting..."
+            ></textarea>
           </div>
 
-          <!-- Logo -->
+          <!-- Gambar -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Logo {{ !editMode ? '*' : '' }}
+              Gambar Album
             </label>
             <ImageUpload
-              v-model="logoFile"
-              label="Upload Logo"
+              v-model="imageFile"
+              label="Upload Gambar"
               accept="image/*"
               :max-size="104857600"
-              :current-image-url="currentLogoUrl"
+              :current-image-url="currentImageUrl"
             />
           </div>
 
@@ -173,7 +203,7 @@
               :disabled="isSubmitting"
               class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Client' }}</span>
+              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Riwayat' }}</span>
               <span v-else class="flex items-center justify-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -200,9 +230,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Client?</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Riwayat?</h3>
           <p class="text-sm text-gray-500 mb-6">
-            Apakah Anda yakin ingin menghapus client <strong>{{ clientToDelete?.client_name }}</strong>?
+            Apakah Anda yakin ingin menghapus riwayat <strong>{{ historyToDelete?.judul }}</strong>?
             Tindakan ini tidak dapat dibatalkan.
           </p>
           <div class="flex gap-3">
@@ -213,7 +243,7 @@
               Batal
             </button>
             <button
-              @click="deleteClient"
+              @click="deleteHistory"
               :disabled="isDeleting"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition"
             >
@@ -228,13 +258,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import api, { type OurClient } from '@/services/api'
+import api, { type CompanyHistory } from '@/services/api'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { useToast } from '@/composables/useToast'
 
 const toast = useToast()
 
-const clients = ref<OurClient[]>([])
+const histories = ref<CompanyHistory[]>([])
 const isLoading = ref(true)
 const searchQuery = ref('')
 const showModal = ref(false)
@@ -243,66 +273,70 @@ const editMode = ref(false)
 const isSubmitting = ref(false)
 const isDeleting = ref(false)
 const errorMessage = ref('')
-const logoFile = ref<File | null>(null)
-const currentLogoUrl = ref<string | null>(null)
-const clientToDelete = ref<OurClient | null>(null)
+const imageFile = ref<File | null>(null)
+const currentImageUrl = ref<string | null>(null)
+const historyToDelete = ref<CompanyHistory | null>(null)
 
 const formData = ref({
-  client_name: '',
-  institution: '',
+  tahun: new Date().getFullYear(),
+  judul: '',
+  deskripsi: '',
 })
 
 const editingId = ref<number | null>(null)
 
-const filteredClients = computed(() => {
-  if (!searchQuery.value) return clients.value
+const filteredHistories = computed(() => {
+  if (!searchQuery.value) return histories.value
   const query = searchQuery.value.toLowerCase()
-  return clients.value.filter(c =>
-    c.client_name.toLowerCase().includes(query) ||
-    (c.institution && c.institution.toLowerCase().includes(query))
+  return histories.value.filter(h =>
+    h.judul.toLowerCase().includes(query) ||
+    h.deskripsi.toLowerCase().includes(query) ||
+    h.tahun.toString().includes(query)
   )
 })
 
-const fetchClients = async () => {
+const fetchHistories = async () => {
   try {
     isLoading.value = true
-    const data = await api.getClients()
-    clients.value = data
+    const data = await api.getCompanyHistories()
+    histories.value = data
   } catch (error) {
-    console.error('Error fetching clients:', error)
-    toast.error('Gagal memuat data client')
+    console.error('Error fetching histories:', error)
+    toast.error('Gagal memuat data riwayat')
   } finally {
     isLoading.value = false
   }
 }
 
-const openModal = (client?: OurClient) => {
-  if (client) {
+const openModal = (history?: CompanyHistory) => {
+  if (history) {
     editMode.value = true
-    editingId.value = client.id
+    editingId.value = history.id
     formData.value = {
-      client_name: client.client_name,
-      institution: client.institution || '',
+      tahun: history.tahun,
+      judul: history.judul,
+      deskripsi: history.deskripsi,
     }
-    currentLogoUrl.value = client.logo_url || null
+    currentImageUrl.value = history.image_url || null
   } else {
     editMode.value = false
     editingId.value = null
     formData.value = {
-      client_name: '',
-      institution: '',
+      tahun: new Date().getFullYear(),
+      judul: '',
+      deskripsi: '',
     }
-    currentLogoUrl.value = null
+    currentImageUrl.value = null
   }
-  logoFile.value = null
+  imageFile.value = null
   errorMessage.value = ''
   showModal.value = true
 }
 
 const closeModal = () => {
   showModal.value = false
-  logoFile.value = null
-  currentLogoUrl.value = null
+  imageFile.value = null
+  currentImageUrl.value = null
 }
 
 const handleSubmit = async () => {
@@ -311,31 +345,28 @@ const handleSubmit = async () => {
     errorMessage.value = ''
 
     const formDataToSend = new FormData()
-    formDataToSend.append('client_name', formData.value.client_name)
-    formDataToSend.append('institution', formData.value.institution)
+    formDataToSend.append('tahun', String(formData.value.tahun))
+    formDataToSend.append('judul', formData.value.judul)
+    formDataToSend.append('deskripsi', formData.value.deskripsi)
 
-    if (logoFile.value) {
-      formDataToSend.append('logo_path', logoFile.value)
+    if (imageFile.value) {
+      formDataToSend.append('image', imageFile.value)
     }
 
     if (editMode.value && editingId.value) {
-      await api.updateClient(editingId.value, formDataToSend)
-      toast.success('Client berhasil diperbarui!')
+      await api.updateCompanyHistory(editingId.value, formDataToSend)
+      toast.success('Riwayat berhasil diperbarui!')
     } else {
-      if (!logoFile.value) {
-        errorMessage.value = 'Logo wajib diisi'
-        return
-      }
-      await api.createClient(formDataToSend)
-      toast.success('Client berhasil ditambahkan!')
+      await api.createCompanyHistory(formDataToSend)
+      toast.success('Riwayat berhasil ditambahkan!')
     }
 
-    await fetchClients()
+    await fetchHistories()
     closeModal()
   } catch (error) {
-    console.error('Error saving client:', error)
+    console.error('Error saving history:', error)
     const axiosError = error as { response?: { data?: { message?: string } } }
-    const message = axiosError.response?.data?.message || 'Gagal menyimpan client'
+    const message = axiosError.response?.data?.message || 'Gagal menyimpan riwayat'
     errorMessage.value = message
     toast.error(message)
   } finally {
@@ -343,24 +374,24 @@ const handleSubmit = async () => {
   }
 }
 
-const confirmDelete = (client: OurClient) => {
-  clientToDelete.value = client
+const confirmDelete = (history: CompanyHistory) => {
+  historyToDelete.value = history
   showDeleteModal.value = true
 }
 
-const deleteClient = async () => {
-  if (!clientToDelete.value) return
+const deleteHistory = async () => {
+  if (!historyToDelete.value) return
 
   try {
     isDeleting.value = true
-    await api.deleteClient(clientToDelete.value.id)
-    toast.success('Client berhasil dihapus!')
-    await fetchClients()
+    await api.deleteCompanyHistory(historyToDelete.value.id)
+    toast.success('Riwayat berhasil dihapus!')
+    await fetchHistories()
     showDeleteModal.value = false
-    clientToDelete.value = null
+    historyToDelete.value = null
   } catch (error) {
-    console.error('Error deleting client:', error)
-    toast.error('Gagal menghapus client')
+    console.error('Error deleting history:', error)
+    toast.error('Gagal menghapus riwayat')
   } finally {
     isDeleting.value = false
   }
@@ -368,10 +399,10 @@ const deleteClient = async () => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  target.src = 'https://placehold.co/400x200/e5e7eb/6b7280?text=No+Logo'
+  target.src = 'https://placehold.co/600x300/e5e7eb/6b7280?text=No+Image'
 }
 
 onMounted(() => {
-  fetchClients()
+  fetchHistories()
 })
 </script>

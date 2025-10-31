@@ -3,8 +3,8 @@
   <div class="min-h-screen bg-gray-50 p-6">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Client</h1>
-      <p class="text-gray-600 mt-2">Kelola daftar client perusahaan Anda</p>
+      <h1 class="text-3xl font-bold text-gray-900">Manajemen Produk</h1>
+      <p class="text-gray-600 mt-2">Kelola produk mesin industri Anda</p>
     </div>
 
     <!-- Action Bar -->
@@ -13,7 +13,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Cari client..."
+          placeholder="Cari produk..."
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
         />
       </div>
@@ -24,7 +24,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Client
+        Tambah Produk
       </button>
     </div>
 
@@ -33,26 +33,24 @@
       <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
     </div>
 
-    <!-- Clients Grid -->
-    <div v-else-if="filteredClients.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Products Grid -->
+    <div v-else-if="filteredProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        v-for="client in filteredClients"
-        :key="client.id"
+        v-for="product in filteredProducts"
+        :key="product.id"
         class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
       >
-        <!-- Client Logo -->
-        <div class="relative h-32 bg-gray-100 overflow-hidden flex items-center justify-center p-4">
+        <!-- Product Image -->
+        <div class="relative h-48 bg-gray-200 overflow-hidden">
           <img
-            v-if="client.logo_url"
-            :src="client.logo_url"
-            :alt="client.client_name"
-            class="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300"
+            :src="getImageUrl(product.image_path)"
+            :alt="product.name"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             @error="handleImageError"
           />
-          <div v-else class="text-gray-400 text-sm">Tidak ada logo</div>
           <div class="absolute top-3 right-3 flex gap-2">
             <button
-              @click="openModal(client)"
+              @click="openModal(product)"
               class="p-2 bg-white/90 text-primary rounded-lg hover:bg-white transition shadow-sm"
               title="Edit"
             >
@@ -61,7 +59,7 @@
               </svg>
             </button>
             <button
-              @click="confirmDelete(client)"
+              @click="confirmDelete(product)"
               class="p-2 bg-white/90 text-red-500 rounded-lg hover:bg-white transition shadow-sm"
               title="Hapus"
             >
@@ -72,10 +70,13 @@
           </div>
         </div>
 
-        <!-- Client Info -->
+        <!-- Product Info -->
         <div class="p-5">
-          <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ client.client_name }}</h3>
-          <p class="text-sm text-gray-600 line-clamp-2">{{ client.institution || 'Tidak ada institusi' }}</p>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ product.name }}</h3>
+          <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ product.description }}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-2xl font-bold text-primary">{{ formatPrice(product.price) }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -83,14 +84,14 @@
     <!-- Empty State -->
     <div v-else class="text-center py-20">
       <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
-      <p class="text-gray-600 text-lg">Belum ada client</p>
+      <p class="text-gray-600 text-lg">Belum ada produk</p>
       <button
         @click="openModal()"
         class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
       >
-        Tambah Client Pertama
+        Tambah Produk Pertama
       </button>
     </div>
 
@@ -103,7 +104,7 @@
       <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <h2 class="text-2xl font-bold text-gray-900">
-            {{ editMode ? 'Edit Client' : 'Tambah Client Baru' }}
+            {{ editMode ? 'Edit Produk' : 'Tambah Produk Baru' }}
           </h2>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,44 +114,59 @@
         </div>
 
         <form @submit.prevent="handleSubmit" class="p-6 space-y-5">
-          <!-- Nama Client -->
+          <!-- Nama Produk -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Nama Client <span class="text-red-500">*</span>
+              Nama Produk <span class="text-red-500">*</span>
             </label>
             <input
-              v-model="formData.client_name"
+              v-model="formData.name"
               type="text"
               required
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="Contoh: PT Sejahtera Indonesia"
+              placeholder="Contoh: Mesin CNC 5 Axis"
             />
           </div>
 
-          <!-- Institusi -->
+          <!-- Harga -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Institusi
+              Harga (Rp) <span class="text-red-500">*</span>
             </label>
             <input
-              v-model="formData.institution"
-              type="text"
+              v-model.number="formData.price"
+              type="number"
+              required
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="Nama institusi atau perusahaan"
+              placeholder="250000000"
             />
           </div>
 
-          <!-- Logo -->
+          <!-- Deskripsi -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Logo {{ !editMode ? '*' : '' }}
+              Deskripsi <span class="text-red-500">*</span>
+            </label>
+            <textarea
+              v-model="formData.description"
+              required
+              rows="4"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+              placeholder="Deskripsikan produk Anda..."
+            ></textarea>
+          </div>
+
+          <!-- Gambar Produk -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Gambar Produk {{ !editMode ? '*' : '' }}
             </label>
             <ImageUpload
-              v-model="logoFile"
-              label="Upload Logo"
+              v-model="imageFile"
+              label="Upload Gambar"
               accept="image/*"
               :max-size="104857600"
-              :current-image-url="currentLogoUrl"
+              :current-image-url="currentImageUrl || undefined"
             />
           </div>
 
@@ -173,7 +189,7 @@
               :disabled="isSubmitting"
               class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Client' }}</span>
+              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Produk' }}</span>
               <span v-else class="flex items-center justify-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -200,9 +216,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Client?</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Produk?</h3>
           <p class="text-sm text-gray-500 mb-6">
-            Apakah Anda yakin ingin menghapus client <strong>{{ clientToDelete?.client_name }}</strong>?
+            Apakah Anda yakin ingin menghapus produk <strong>{{ productToDelete?.name }}</strong>?
             Tindakan ini tidak dapat dibatalkan.
           </p>
           <div class="flex gap-3">
@@ -213,7 +229,7 @@
               Batal
             </button>
             <button
-              @click="deleteClient"
+              @click="deleteProduct"
               :disabled="isDeleting"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition"
             >
@@ -228,13 +244,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import api, { type OurClient } from '@/services/api'
+import api, { type Product } from '@/services/api'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { useToast } from '@/composables/useToast'
 
 const toast = useToast()
 
-const clients = ref<OurClient[]>([])
+const products = ref<Product[]>([])
 const isLoading = ref(true)
 const searchQuery = ref('')
 const showModal = ref(false)
@@ -243,66 +259,72 @@ const editMode = ref(false)
 const isSubmitting = ref(false)
 const isDeleting = ref(false)
 const errorMessage = ref('')
-const logoFile = ref<File | null>(null)
-const currentLogoUrl = ref<string | null>(null)
-const clientToDelete = ref<OurClient | null>(null)
+const imageFile = ref<File | null>(null)
+const currentImageUrl = ref<string | null>(null)
+const productToDelete = ref<Product | null>(null)
 
 const formData = ref({
-  client_name: '',
-  institution: '',
+  client_id: 1, // Default client_id (hidden from user)
+  name: '',
+  price: 0,
+  description: '',
 })
 
 const editingId = ref<number | null>(null)
 
-const filteredClients = computed(() => {
-  if (!searchQuery.value) return clients.value
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) return products.value
   const query = searchQuery.value.toLowerCase()
-  return clients.value.filter(c =>
-    c.client_name.toLowerCase().includes(query) ||
-    (c.institution && c.institution.toLowerCase().includes(query))
+  return products.value.filter(p =>
+    p.name.toLowerCase().includes(query) ||
+    p.description.toLowerCase().includes(query)
   )
 })
 
-const fetchClients = async () => {
+const fetchProducts = async () => {
   try {
     isLoading.value = true
-    const data = await api.getClients()
-    clients.value = data
+    const data = await api.getProducts()
+    products.value = data
   } catch (error) {
-    console.error('Error fetching clients:', error)
-    toast.error('Gagal memuat data client')
+    console.error('Error fetching products:', error)
+    toast.error('Gagal memuat data produk')
   } finally {
     isLoading.value = false
   }
 }
 
-const openModal = (client?: OurClient) => {
-  if (client) {
+const openModal = (product?: Product) => {
+  if (product) {
     editMode.value = true
-    editingId.value = client.id
+    editingId.value = product.id
     formData.value = {
-      client_name: client.client_name,
-      institution: client.institution || '',
+      client_id: product.client_id,
+      name: product.name,
+      price: product.price,
+      description: product.description,
     }
-    currentLogoUrl.value = client.logo_url || null
+    currentImageUrl.value = product.image_path ? getImageUrl(product.image_path) : null
   } else {
     editMode.value = false
     editingId.value = null
     formData.value = {
-      client_name: '',
-      institution: '',
+      client_id: 1, // Default client_id
+      name: '',
+      price: 0,
+      description: '',
     }
-    currentLogoUrl.value = null
+    currentImageUrl.value = null
   }
-  logoFile.value = null
+  imageFile.value = null
   errorMessage.value = ''
   showModal.value = true
 }
 
 const closeModal = () => {
   showModal.value = false
-  logoFile.value = null
-  currentLogoUrl.value = null
+  imageFile.value = null
+  currentImageUrl.value = null
 }
 
 const handleSubmit = async () => {
@@ -311,31 +333,33 @@ const handleSubmit = async () => {
     errorMessage.value = ''
 
     const formDataToSend = new FormData()
-    formDataToSend.append('client_name', formData.value.client_name)
-    formDataToSend.append('institution', formData.value.institution)
+    formDataToSend.append('client_id', String(formData.value.client_id))
+    formDataToSend.append('name', formData.value.name)
+    formDataToSend.append('price', String(formData.value.price))
+    formDataToSend.append('description', formData.value.description)
 
-    if (logoFile.value) {
-      formDataToSend.append('logo_path', logoFile.value)
+    if (imageFile.value) {
+      formDataToSend.append('image_path', imageFile.value)
     }
 
     if (editMode.value && editingId.value) {
-      await api.updateClient(editingId.value, formDataToSend)
-      toast.success('Client berhasil diperbarui!')
+      await api.updateProduct(editingId.value, formDataToSend)
+      toast.success('Produk berhasil diperbarui!')
     } else {
-      if (!logoFile.value) {
-        errorMessage.value = 'Logo wajib diisi'
+      if (!imageFile.value) {
+        errorMessage.value = 'Gambar produk wajib diisi'
         return
       }
-      await api.createClient(formDataToSend)
-      toast.success('Client berhasil ditambahkan!')
+      await api.createProduct(formDataToSend)
+      toast.success('Produk berhasil ditambahkan!')
     }
 
-    await fetchClients()
+    await fetchProducts()
     closeModal()
   } catch (error) {
-    console.error('Error saving client:', error)
+    console.error('Error saving product:', error)
     const axiosError = error as { response?: { data?: { message?: string } } }
-    const message = axiosError.response?.data?.message || 'Gagal menyimpan client'
+    const message = axiosError.response?.data?.message || 'Gagal menyimpan produk'
     errorMessage.value = message
     toast.error(message)
   } finally {
@@ -343,35 +367,54 @@ const handleSubmit = async () => {
   }
 }
 
-const confirmDelete = (client: OurClient) => {
-  clientToDelete.value = client
+const confirmDelete = (product: Product) => {
+  productToDelete.value = product
   showDeleteModal.value = true
 }
 
-const deleteClient = async () => {
-  if (!clientToDelete.value) return
+const deleteProduct = async () => {
+  if (!productToDelete.value) return
 
   try {
     isDeleting.value = true
-    await api.deleteClient(clientToDelete.value.id)
-    toast.success('Client berhasil dihapus!')
-    await fetchClients()
+    await api.deleteProduct(productToDelete.value.id)
+    toast.success('Produk berhasil dihapus!')
+    await fetchProducts()
     showDeleteModal.value = false
-    clientToDelete.value = null
+    productToDelete.value = null
   } catch (error) {
-    console.error('Error deleting client:', error)
-    toast.error('Gagal menghapus client')
+    console.error('Error deleting product:', error)
+    toast.error('Gagal menghapus produk')
   } finally {
     isDeleting.value = false
   }
 }
 
+const getImageUrl = (imagePath: string | undefined): string => {
+  if (!imagePath) {
+    return 'https://placehold.co/400x300/e5e7eb/6b7280?text=No+Image'
+  }
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath
+  }
+  return `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://127.0.0.1:8000'}/storage/${imagePath}`
+}
+
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  target.src = 'https://placehold.co/400x200/e5e7eb/6b7280?text=No+Logo'
+  target.src = 'https://placehold.co/400x300/e5e7eb/6b7280?text=No+Image'
+}
+
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price)
 }
 
 onMounted(() => {
-  fetchClients()
+  fetchProducts()
 })
 </script>

@@ -7,20 +7,13 @@
           <span
             class="bg-primary text-cream-light px-6 py-3 text-xs font-semibold uppercase tracking-widest rounded-md"
           >
-            TENTANG KAMI
+            {{ siteSettings?.visi_misi_label || 'TENTANG KAMI' }}
           </span>
         </div>
         <h2
           class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-epilogue font-bold text-secondary leading-tight uppercase tracking-wide mb-10"
+          v-html="siteSettings?.visi_misi_title || 'CREATE YOUR STORY IN A PLACE<br />WHERE <span class=\'text-secondary relative\'>DREAMS<div class=\'absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10\'></div></span> AND REALITY<br />MERGE.'"
         >
-          CREATE YOUR STORY IN A PLACE<br />
-          WHERE
-          <span class="text-secondary relative"
-            >DREAMS
-            <div class="absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10"></div
-          ></span>
-          AND REALITY<br />
-          MERGE.
         </h2>
       </div>
 
@@ -111,24 +104,33 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import api, { type VisionMission } from '@/services/api'
+import api, { type VisionMission, type SiteSetting } from '@/services/api'
 
 const visiMisi = ref<VisionMission | null>(null)
+const siteSettings = ref<SiteSetting | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
-const fetchVisionMission = async () => {
+const fetchData = async () => {
   try {
     isLoading.value = true
     error.value = null
-    const data = await api.getVisionMission()
-    if (data.length > 0) {
-      visiMisi.value = data[0]
+
+    // Fetch both vision/mission and site settings
+    const [visiMisiData, settingsData] = await Promise.all([
+      api.getVisionMission(),
+      api.getSiteSettings()
+    ])
+
+    if (visiMisiData.length > 0) {
+      visiMisi.value = visiMisiData[0]
     } else {
       error.value = 'Vision and mission data not found'
     }
+
+    siteSettings.value = settingsData
   } catch (err) {
-    console.error('Error fetching visi misi:', err)
+    console.error('Error fetching data:', err)
     const message =
       (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
       'Failed to load data'
@@ -139,10 +141,10 @@ const fetchVisionMission = async () => {
 }
 
 const retryFetch = () => {
-  fetchVisionMission()
+  fetchData()
 }
 
 onMounted(() => {
-  fetchVisionMission()
+  fetchData()
 })
 </script>

@@ -2,7 +2,7 @@
 <template>
   <aside
     :class="{
-      'bg-primary text-white shadow-lg min-h-screen transition-all duration-300': true,
+      'bg-primary text-white shadow-lg min-h-screen transition-all duration-300 sticky top-0 h-screen': true,
       'w-64': isOpen,
       'w-20': !isOpen,
     }"
@@ -11,12 +11,13 @@
       <h1 v-if="isOpen" class="text-xl text-white font-bold">Admin Panel</h1>
       <button
         @click="toggleSidebar"
-        class="p-2 hover:bg-primary-light rounded-lg transition ml-auto"
+        class="p-2 hover:bg-primary-light rounded-lg transition"
       >
-        <i-lucide:menu class="w-5 h-5" />
+        <i-lucide:menu v-if="isOpen" class="w-5 h-5" />
+        <i-lucide:sidebar class="w-5 h-5" v-else />
       </button>
     </div>
-    <nav class="p-3">
+    <nav class="p-3 overflow-y-auto h-[calc(100vh-76px)]">
       <ul class="space-y-2">
         <li>
           <router-link
@@ -75,7 +76,7 @@
             :title="!isOpen ? 'Testimonial' : ''"
           >
             <i-lucide:message-circle :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
-            <span v-if="isOpen">Testimonial</span>
+            <span v-if="isOpen">Testimoni</span>
           </router-link>
         </li>
         <li>
@@ -108,6 +109,51 @@
             <span v-if="isOpen">Kontak</span>
           </router-link>
         </li>
+        <li>
+          <router-link
+            :to="{ name: 'admin-hero' }"
+            :class="{
+              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
+              'bg-cream text-primary': $route.name === 'admin-hero',
+              'hover:bg-cream hover:text-primary': $route.name !== 'admin-hero',
+              'justify-center': !isOpen,
+            }"
+            :title="!isOpen ? 'Bagian Hero' : ''"
+          >
+            <i-lucide:layout :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
+            <span v-if="isOpen">Bagian Hero</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link
+            :to="{ name: 'admin-company-history' }"
+            :class="{
+              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
+              'bg-cream text-primary': $route.name === 'admin-company-history',
+              'hover:bg-cream hover:text-primary': $route.name !== 'admin-company-history',
+              'justify-center': !isOpen,
+            }"
+            :title="!isOpen ? 'Company History' : ''"
+          >
+            <i-lucide:calendar :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
+            <span v-if="isOpen">Riwayat Perusahaan</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link
+            :to="{ name: 'admin-settings' }"
+            :class="{
+              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
+              'bg-cream text-primary': $route.name === 'admin-settings',
+              'hover:bg-cream hover:text-primary': $route.name !== 'admin-settings',
+              'justify-center': !isOpen,
+            }"
+            :title="!isOpen ? 'Pengaturan Situs' : ''"
+          >
+            <i-lucide:settings :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
+            <span v-if="isOpen">Pengaturan Situs</span>
+          </router-link>
+        </li>
         <li v-if="isAdminSuperadmin">
           <router-link
             :to="{ name: 'admin-history' }"
@@ -117,10 +163,10 @@
               'hover:bg-cream hover:text-primary': $route.name !== 'admin-history',
               'justify-center': !isOpen,
             }"
-            :title="!isOpen ? 'Admin Management' : ''"
+            :title="!isOpen ? 'Manajemen Admin' : ''"
           >
-            <i-lucide:settings :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
-            <span v-if="isOpen">Admin Management</span>
+            <i-lucide:user-cog :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'" />
+            <span v-if="isOpen">Manajemen Admin</span>
           </router-link>
         </li>
       </ul>
@@ -143,13 +189,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 
 const router = useRouter()
 const isAdminSuperadmin = ref(false)
 const isOpen = ref(true)
+
+// Check if user is superadmin (for now, we'll check if token exists - can be enhanced with role checking)
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    // For now, all logged-in users can access admin management
+    // TODO: Add proper role checking when backend supports it
+    isAdminSuperadmin.value = true
+  }
+})
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value

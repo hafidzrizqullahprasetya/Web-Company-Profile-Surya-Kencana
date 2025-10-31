@@ -7,19 +7,13 @@
           <span
             class="bg-white text-secondary px-6 py-3 text-xs font-semibold uppercase tracking-widest"
           >
-            TESTIMONIAL
+            {{ siteSettings?.testimoni_label || 'TESTIMONIAL' }}
           </span>
         </div>
         <h2
+          v-html="siteSettings?.testimoni_title || 'PENGALAMAN<br><span class=\'text-white relative\'>PELANGGAN<div class=\'absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10\'></div></span><br>KAMI.'"
           class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-epilogue font-bold text-white leading-tight uppercase tracking-wide mb-10"
-        >
-          PENGALAMAN
-          <span class="text-white relative"
-            >PELANGGAN
-            <div class="absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10"></div></span
-          ><br />
-          KAMI.
-        </h2>
+        ></h2>
       </div>
 
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-center">
@@ -127,9 +121,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import api, { type Testimonial } from '@/services/api'
+import api, { type Testimonial, type SiteSetting } from '@/services/api'
 
 const testimonials = ref<Testimonial[]>([])
+const siteSettings = ref<SiteSetting | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 const startIndex = ref(0)
@@ -151,8 +146,12 @@ const fetchTestimonials = async () => {
   try {
     isLoading.value = true
     error.value = null
-    const response = await api.getTestimonials()
-    testimonials.value = response
+    const [testimonialsData, settingsData] = await Promise.all([
+      api.getTestimonials(),
+      api.getSiteSettings()
+    ])
+    testimonials.value = testimonialsData
+    siteSettings.value = settingsData
     console.log('Testimonials data:', testimonials.value)
   } catch (err) {
     console.error('Error fetching testimonials:', err)

@@ -51,6 +51,9 @@ export interface Admin {
   id: number
   name: string
   email: string
+  created_at?: string
+  updated_at?: string
+  password?: string
 }
 
 export interface Product {
@@ -60,6 +63,7 @@ export interface Product {
   image_path: string
   price: number
   client_id: number
+  image_urls?: string[]
 }
 
 export interface OurClient {
@@ -80,10 +84,57 @@ export interface Testimonial {
 
 export interface Contact {
   id: number
-  address: string
-  phone: string
-  email: string
-  map_url: string
+  address?: string
+  phone?: string
+  email?: string
+  map_url?: string
+}
+
+export interface Hero {
+  id: number
+  background: string
+  background_url: string
+  backgrounds: string[]
+  background_urls: string[]
+  location: string
+  title: string
+  machines: number
+  clients: number
+  customers: number
+  experience_years: number
+  trust_years: number
+}
+
+export interface CompanyHistory {
+  id: number
+  tahun: number
+  judul: string
+  deskripsi: string
+  image_path: string | null
+  image_url: string | null
+  images: string[]
+  image_urls: string[]
+}
+
+export interface SiteSetting {
+  id: number
+  company_name: string
+  company_logo: string | null
+  company_logo_url: string | null
+  hero_title: string
+  hero_subtitle: string
+  visi_misi_label: string
+  visi_misi_title: string
+  produk_label: string
+  produk_title: string
+  clients_label: string
+  clients_title: string
+  riwayat_label: string
+  riwayat_title: string
+  testimoni_label: string
+  testimoni_title: string
+  kontak_label: string
+  kontak_title: string
 }
 
 export interface LoginRequest {
@@ -97,29 +148,35 @@ export interface LoginResponse {
   admin: {
     id: number
     username: string
+    role?: string
   }
 }
 
 export default {
-  async adminLogin(credentials: LoginRequest): Promise<LoginResponse> {
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>('/admin/login', credentials)
+      // Use the existing backend login endpoint
+      const response = await apiClient.post<LoginResponse>('/login', credentials)
       const data = response.data
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.admin))
+      localStorage.setItem('user', JSON.stringify(data.admin || { id: 0, username: credentials.username }))
+      // Role will be set in the Login component based on credentials
       return data
     } catch (error) {
-      console.error('Error logging in as admin:', error)
+      console.error('Error logging in:', error)
       throw error
     }
   },
 
-  async superAdminLogin(credentials: LoginRequest): Promise<LoginResponse> {
+  async loginSuperAdmin(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>('/superadmin/login', credentials)
+      // Since the backend might not have a dedicated superadmin endpoint,
+      // we'll use the general login and let the login component handle role assignment
+      const response = await apiClient.post<LoginResponse>('/login', credentials)
       const data = response.data
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.admin))
+      localStorage.setItem('user', JSON.stringify(data.admin || { id: 0, username: credentials.username }))
+      // Role will be set in the Login component
       return data
     } catch (error) {
       console.error('Error logging in as superadmin:', error)
@@ -235,9 +292,13 @@ export default {
     }
   },
 
-  async createProduct(data: Omit<Product, 'id'>): Promise<Product> {
+  async createProduct(data: FormData): Promise<Product> {
     try {
-      const response = await apiClient.post<Product>('/product', data)
+      const response = await apiClient.post<Product>('/product', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       return response.data
     } catch (error) {
       console.error('Error creating product:', error)
@@ -245,9 +306,13 @@ export default {
     }
   },
 
-  async updateProduct(id: number, data: Partial<Product>): Promise<Product> {
+  async updateProduct(id: number, data: FormData): Promise<Product> {
     try {
-      const response = await apiClient.put<Product>(`/product/${id}`, data)
+      const response = await apiClient.post<Product>(`/product/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       return response.data
     } catch (error) {
       console.error('Error updating product:', error)
@@ -285,9 +350,13 @@ export default {
     }
   },
 
-  async createClient(data: Omit<OurClient, 'id'>): Promise<OurClient> {
+  async createClient(data: FormData): Promise<OurClient> {
     try {
-      const response = await apiClient.post<OurClient>('/our-client', data)
+      const response = await apiClient.post<OurClient>('/our-client', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       return response.data
     } catch (error) {
       console.error('Error creating client:', error)
@@ -295,9 +364,13 @@ export default {
     }
   },
 
-  async updateClient(id: number, data: Partial<OurClient>): Promise<OurClient> {
+  async updateClient(id: number, data: FormData): Promise<OurClient> {
     try {
-      const response = await apiClient.put<OurClient>(`/our-client/${id}`, data)
+      const response = await apiClient.post<OurClient>(`/our-client/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       return response.data
     } catch (error) {
       console.error('Error updating client:', error)
@@ -381,6 +454,126 @@ export default {
       return response.data
     } catch (error) {
       console.error('Error updating contact:', error)
+      throw error
+    }
+  },
+
+  // ===== HERO ===== (sesuai backend: /hero)
+  async getHero(): Promise<Hero[]> {
+    try {
+      const response = await apiClient.get<Hero[]>('/hero')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching hero:', error)
+      throw error
+    }
+  },
+
+  async updateHero(data: FormData | Partial<Hero>): Promise<Hero> {
+    try {
+      const config = data instanceof FormData ? {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      } : {}
+
+      // Use POST for FormData (multipart), PUT for JSON
+      const response = data instanceof FormData
+        ? await apiClient.post<Hero>('/hero', data, config)
+        : await apiClient.put<Hero>('/hero', data)
+
+      return response.data
+    } catch (error) {
+      console.error('Error updating hero:', error)
+      throw error
+    }
+  },
+
+  // ===== COMPANY HISTORY ===== (sesuai backend: /company-history)
+  async getCompanyHistories(): Promise<CompanyHistory[]> {
+    try {
+      const response = await apiClient.get<CompanyHistory[]>('/company-history')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching company histories:', error)
+      throw error
+    }
+  },
+
+  async getCompanyHistoryById(id: number): Promise<CompanyHistory> {
+    try {
+      const response = await apiClient.get<CompanyHistory>(`/company-history/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching company history by id:', error)
+      throw error
+    }
+  },
+
+  async createCompanyHistory(data: FormData): Promise<CompanyHistory> {
+    try {
+      const response = await apiClient.post<CompanyHistory>('/company-history', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error creating company history:', error)
+      throw error
+    }
+  },
+
+  async updateCompanyHistory(id: number, data: FormData): Promise<CompanyHistory> {
+    try {
+      const response = await apiClient.post<CompanyHistory>(`/company-history/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error updating company history:', error)
+      throw error
+    }
+  },
+
+  async deleteCompanyHistory(id: number): Promise<void> {
+    try {
+      await apiClient.delete(`/company-history/${id}`)
+    } catch (error) {
+      console.error('Error deleting company history:', error)
+      throw error
+    }
+  },
+
+  // ===== SITE SETTINGS ===== (sesuai backend: /site-settings)
+  async getSiteSettings(): Promise<SiteSetting> {
+    try {
+      const response = await apiClient.get<SiteSetting>('/site-settings')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching site settings:', error)
+      throw error
+    }
+  },
+
+  async updateSiteSettings(data: FormData | Partial<SiteSetting>): Promise<SiteSetting> {
+    try {
+      const config = data instanceof FormData ? {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      } : {}
+
+      // Use POST for FormData (multipart), PUT for JSON
+      const response = data instanceof FormData
+        ? await apiClient.post<SiteSetting>('/site-settings', data, config)
+        : await apiClient.put<SiteSetting>('/site-settings', data)
+
+      return response.data
+    } catch (error) {
+      console.error('Error updating site settings:', error)
       throw error
     }
   },

@@ -31,7 +31,7 @@ const router = createRouter({
         {
           path: 'produk',
           name: 'admin-product',
-          component: () => import('@/views/admin/produk/ProductManagement.vue'),
+          component: () => import('@/views/admin/produk/ManajemenProduk.vue'),
           meta: { requiresAuth: true },
         },
         {
@@ -64,6 +64,24 @@ const router = createRouter({
           component: () => import('@/views/admin/riwayat/AdminManagement.vue'),
           meta: { requiresAuth: true, requiresSuperAdmin: true },
         },
+        {
+          path: 'hero',
+          name: 'admin-hero',
+          component: () => import('@/views/admin/hero/HeroManagement.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'company-history',
+          name: 'admin-company-history',
+          component: () => import('@/views/admin/company-history/CompanyHistoryManagement.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'settings',
+          name: 'admin-settings',
+          component: () => import('@/views/admin/settings/SiteSettings.vue'),
+          meta: { requiresAuth: true },
+        },
       ],
     },
   ],
@@ -88,13 +106,18 @@ router.beforeEach((to, from, next) => {
   const requiresSuperAdmin = to.matched.some((record) => record.meta.requiresSuperAdmin)
 
   if (requiresAuth && !token) {
-
     next({
       name: 'login',
       query: { redirect: to.fullPath },
     })
-  } else if (requiresSuperAdmin && token) {
-    next()
+  } else if (requiresAuth && token) {
+    const userRole = localStorage.getItem('userRole')
+    if (requiresSuperAdmin && userRole !== 'superadmin') {
+      // If route requires superadmin and user is not superadmin, redirect to admin dashboard
+      next({ name: 'admin-dashboard' })
+    } else {
+      next()
+    }
   } else {
     next()
   }
