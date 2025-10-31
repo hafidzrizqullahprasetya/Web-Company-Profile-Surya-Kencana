@@ -13,6 +13,8 @@ class OurClient extends Model
         'logo_path',
     ];
 
+    protected $appends = ['logo_url'];
+
     protected function logoUrl(): Attribute
     {
         return Attribute::make(
