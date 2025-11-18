@@ -3,21 +3,34 @@
   <footer class="bg-primary">
     <div class="py-20">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- About Widget -->
           <div>
             <div class="mb-6">
               <router-link to="/">
-                <img
-                  src="https://placehold.co/150x50/F5F6E4/1C1817?text=SURYA+KENCANA"
-                  alt="Surya Kencana Logo"
-                  class="max-w-[150px]"
-                />
+                <!-- Loading skeleton -->
+                <div
+                  v-if="!siteSettings?.company_logo_url"
+                  class="max-w-[150px] h-12 bg-white/20 animate-pulse rounded"
+                ></div>
+                <!-- Logo -->
+                <picture v-else>
+                  <source
+                    :srcset="siteSettings.company_logo_url.replace(/\.(jpg|jpeg|png)$/, '.webp')"
+                    type="image/webp"
+                  />
+                  <source :srcset="siteSettings.company_logo_url" type="image/png" />
+                  <img
+                    v-lazy="siteSettings.company_logo_url"
+                    :alt="siteSettings.company_name + ' Logo'"
+                    class="max-w-[150px]"
+                  />
+                </picture>
               </router-link>
             </div>
             <p class="text-white/80 text-sm leading-relaxed mb-6">
-              Your trusted partner in finding the perfect property. We provide quality real estate
-              solutions with integrity and excellence.
+              {{ siteSettings?.company_name || 'Your Company' }} - Your trusted partner in
+              industrial machinery solutions.
             </p>
             <ul class="flex space-x-3">
               <li>
@@ -25,7 +38,7 @@
                   href="#"
                   class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
                 >
-                  <i-lucide:facebook class="w-4 h-4" />
+                  <font-awesome-icon :icon="['fab', 'facebook']" class="w-4 h-4" />
                 </a>
               </li>
               <li>
@@ -33,7 +46,7 @@
                   href="#"
                   class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
                 >
-                  <i-lucide:twitter class="w-4 h-4" />
+                  <font-awesome-icon :icon="['fab', 'twitter']" class="w-4 h-4" />
                 </a>
               </li>
               <li>
@@ -41,7 +54,7 @@
                   href="#"
                   class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
                 >
-                  <i-lucide:instagram class="w-4 h-4" />
+                  <font-awesome-icon :icon="['fab', 'instagram']" class="w-4 h-4" />
                 </a>
               </li>
               <li>
@@ -49,7 +62,7 @@
                   href="#"
                   class="w-10 h-10 bg-secondary/20 hover:bg-cream text-white hover:text-secondary rounded-full flex items-center justify-center transition-all duration-300"
                 >
-                  <i-lucide:linkedin class="w-4 h-4" />
+                  <font-awesome-icon :icon="['fab', 'linkedin']" class="w-4 h-4" />
                 </a>
               </li>
             </ul>
@@ -63,103 +76,63 @@
             </h3>
             <ul class="space-y-3">
               <li>
-                <router-link
-                  to="/"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                <a
+                  href="#home"
+                  @click="(e) => scrollToSection(e, 'home')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
                 >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
                   Home
-                </router-link>
+                </a>
               </li>
               <li>
                 <a
                   href="#visi-misi"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                  @click="(e) => scrollToSection(e, 'visi-misi')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
                 >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
                   About Us
                 </a>
               </li>
               <li>
                 <a
                   href="#produk"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                  @click="(e) => scrollToSection(e, 'produk')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
                 >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
                   Products
                 </a>
               </li>
               <li>
                 <a
-                  href="#testimoni"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                  href="#riwayat"
+                  @click="(e) => scrollToSection(e, 'riwayat')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
                 >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Testimonials
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
+                  Gallery
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#clients"
+                  @click="(e) => scrollToSection(e, 'clients')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
+                >
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
+                  Clients
                 </a>
               </li>
               <li>
                 <a
                   href="#kontak"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
+                  @click="(e) => scrollToSection(e, 'kontak')"
+                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center cursor-pointer"
                 >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
+                  <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-3 h-3 mr-2" />
                   Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Services -->
-          <div>
-            <h3 class="text-white text-xl font-semibold mb-6 uppercase relative">
-              Our Services
-              <div class="absolute -bottom-1 left-0 w-12 h-0.5 bg-cream"></div>
-            </h3>
-            <ul class="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
-                >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Property Sales
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
-                >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Property Rental
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
-                >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Property Management
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
-                >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Investment Consulting
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="text-white/80 hover:text-cream transition-colors duration-300 flex items-center"
-                >
-                  <i-lucide:arrow-right class="w-3 h-3 mr-2" />
-                  Legal Assistance
                 </a>
               </li>
             </ul>
@@ -171,39 +144,49 @@
               Contact Info
               <div class="absolute -bottom-1 left-0 w-12 h-0.5 bg-cream"></div>
             </h3>
-            <ul class="space-y-4">
-              <li class="flex items-start">
-                <i-lucide:map-pin class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+            <ul v-if="contactInfo" class="space-y-4">
+              <li v-if="contactInfo.address" class="flex items-start">
+                <font-awesome-icon
+                  :icon="['fas', 'map-marker-alt']"
+                  class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0"
+                />
                 <div>
-                  <span class="text-white/80 text-sm">
-                    Jl. Sudirman No. 123,<br />
-                    Jakarta Pusat, DKI Jakarta 10220
-                  </span>
+                  <span
+                    class="text-white/80 text-sm"
+                    v-html="contactInfo.address.replace(/\n/g, '<br>')"
+                  ></span>
                 </div>
               </li>
-              <li class="flex items-start">
-                <i-lucide:phone class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+              <li v-if="contactInfo.phone" class="flex items-start">
+                <font-awesome-icon
+                  :icon="['fas', 'phone']"
+                  class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0"
+                />
                 <div>
                   <a
-                    href="tel:+622112345678"
+                    :href="`tel:${contactInfo.phone}`"
                     class="text-white/80 text-sm hover:text-cream transition-colors"
                   >
-                    +62 21 1234 5678
+                    {{ contactInfo.phone }}
                   </a>
                 </div>
               </li>
-              <li class="flex items-start">
-                <i-lucide:mail class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+              <li v-if="contactInfo.email" class="flex items-start">
+                <font-awesome-icon
+                  :icon="['fas', 'envelope']"
+                  class="text-cream w-5 h-5 mr-3 mt-1 flex-shrink-0"
+                />
                 <div>
                   <a
-                    href="mailto:info@suqatestate.com"
+                    :href="`mailto:${contactInfo.email}`"
                     class="text-white/80 text-sm hover:text-cream transition-colors"
                   >
-                    info@suqatestate.com
+                    {{ contactInfo.email }}
                   </a>
                 </div>
               </li>
             </ul>
+            <div v-else class="text-white/60 text-sm">Loading contact information...</div>
           </div>
         </div>
       </div>
@@ -214,7 +197,10 @@
       <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="text-white/80 text-sm mb-3 md:mb-0">
-            <p>&copy; {{ currentYear }} Surya Kencana. All rights reserved.</p>
+            <p>
+              &copy; {{ currentYear }} {{ siteSettings?.company_name || 'Company Name' }}. All
+              rights reserved.
+            </p>
           </div>
           <div>
             <ul class="flex space-x-6">
@@ -246,16 +232,21 @@
       :class="{ 'opacity-100 visible': showScrollTop, 'opacity-0 invisible': !showScrollTop }"
       class="fixed bottom-8 right-8 w-12 h-12 bg-cream hover:bg-cream/90 text-secondary rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-50"
     >
-      <i-lucide:arrow-up class="w-5 h-5" />
+      <font-awesome-icon :icon="['fas', 'arrow-up']" class="w-5 h-5" />
     </button>
   </footer>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useLandingPageData } from '@/composables/useLandingPageData'
+
+const { data: landingPageData } = useLandingPageData()
 
 const showScrollTop = ref(false)
 const currentYear = computed(() => new Date().getFullYear())
+const contactInfo = computed(() => landingPageData.value?.contact || null)
+const siteSettings = computed(() => landingPageData.value?.siteSettings || null)
 
 const handleScroll = () => {
   showScrollTop.value = window.scrollY > 300
@@ -266,6 +257,29 @@ const scrollToTop = () => {
     top: 0,
     behavior: 'smooth',
   })
+}
+
+// Smooth scroll to section
+const scrollToSection = (event: Event, sectionId: string) => {
+  event.preventDefault()
+
+  const element = document.getElementById(sectionId)
+  if (element) {
+    const headerOffset = 120 // Height of fixed header
+    const elementPosition = element.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    })
+  } else if (sectionId === 'home') {
+    // If home, scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
 }
 
 onMounted(() => {

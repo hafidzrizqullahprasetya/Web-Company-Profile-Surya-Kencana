@@ -27,16 +27,50 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Network error - cannot connect to backend
+    if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED' || !error.response) {
+      console.error('Network Error: Cannot connect to backend')
+
+      // Determine if we're in admin panel or frontend
+      const isAdmin = window.location.pathname.startsWith('/admin')
+
+      // Redirect to appropriate error page
+      if (isAdmin && !window.location.pathname.includes('/admin/error')) {
+        window.location.href = '/admin/error?type=connection'
+      } else if (!isAdmin && !window.location.pathname.includes('/error')) {
+        window.location.href = '/error?type=connection'
+      }
+
+      return Promise.reject(error)
+    }
+
+    // Response error (4xx, 5xx)
     if (error.response) {
       console.error('Response Error:', error.response.data)
+
+      // Handle 401 Unauthorized
       if (error.response.status === 401) {
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
+
+        const isAdmin = window.location.pathname.startsWith('/admin')
+        if (isAdmin && !window.location.pathname.includes('/admin/login')) {
+          window.location.href = '/admin/login'
+        }
       }
-    } else if (error.request) {
-      console.error('Request Error:', error.request)
-    } else {
-      console.error('Error:', error.message)
+
+      // Handle 404 Not Found
+      if (error.response.status === 404) {
+        const isAdmin = window.location.pathname.startsWith('/admin')
+
+        if (isAdmin && !window.location.pathname.includes('/admin/error')) {
+          window.location.href = '/admin/error?type=404'
+        } else if (!isAdmin && !window.location.pathname.includes('/error')) {
+          window.location.href = '/error?type=404'
+        }
+      }
     }
+
     return Promise.reject(error)
   },
 )
@@ -49,8 +83,8 @@ export interface VisionMission {
 
 export interface Admin {
   id: number
-  name: string
-  email: string
+  username: string
+  email?: string
   created_at?: string
   updated_at?: string
   password?: string
@@ -61,9 +95,11 @@ export interface Product {
   name: string
   description: string
   image_path: string
+  image_url: string
   price: number
   client_id: number
-  image_urls?: string[]
+  images: string[]
+  image_urls: string[]
 }
 
 export interface OurClient {
@@ -137,6 +173,20 @@ export interface SiteSetting {
   kontak_title: string
 }
 
+// New interface for combined landing page data
+export interface LandingPageData {
+  cacheVersion?: number
+  lastUpdated?: string
+  hero: Hero | null
+  visionMission: VisionMission[]
+  products: Product[]
+  companyHistory: CompanyHistory[]
+  testimonials: Testimonial[]
+  clients: OurClient[]
+  contact: Contact | null
+  siteSettings: SiteSetting | null
+}
+
 export interface LoginRequest {
   username: string
   password: string
@@ -159,7 +209,10 @@ export default {
       const response = await apiClient.post<LoginResponse>('/login', credentials)
       const data = response.data
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.admin || { id: 0, username: credentials.username }))
+      localStorage.setItem(
+        'user',
+        JSON.stringify(data.admin || { id: 0, username: credentials.username }),
+      )
       // Role will be set in the Login component based on credentials
       return data
     } catch (error) {
@@ -170,12 +223,13 @@ export default {
 
   async loginSuperAdmin(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      // Since the backend might not have a dedicated superadmin endpoint,
-      // we'll use the general login and let the login component handle role assignment
       const response = await apiClient.post<LoginResponse>('/login', credentials)
       const data = response.data
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.admin || { id: 0, username: credentials.username }))
+      localStorage.setItem(
+        'user',
+        JSON.stringify(data.admin || { id: 0, username: credentials.username }),
+      )
       // Role will be set in the Login component
       return data
     } catch (error) {
@@ -471,16 +525,20 @@ export default {
 
   async updateHero(data: FormData | Partial<Hero>): Promise<Hero> {
     try {
-      const config = data instanceof FormData ? {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      } : {}
+      const config =
+        data instanceof FormData
+          ? {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          : {}
 
       // Use POST for FormData (multipart), PUT for JSON
-      const response = data instanceof FormData
-        ? await apiClient.post<Hero>('/hero', data, config)
-        : await apiClient.put<Hero>('/hero', data)
+      const response =
+        data instanceof FormData
+          ? await apiClient.post<Hero>('/hero', data, config)
+          : await apiClient.put<Hero>('/hero', data)
 
       return response.data
     } catch (error) {
@@ -560,20 +618,118 @@ export default {
 
   async updateSiteSettings(data: FormData | Partial<SiteSetting>): Promise<SiteSetting> {
     try {
-      const config = data instanceof FormData ? {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      } : {}
+      const config =
+        data instanceof FormData
+          ? {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          : {}
 
       // Use POST for FormData (multipart), PUT for JSON
-      const response = data instanceof FormData
-        ? await apiClient.post<SiteSetting>('/site-settings', data, config)
-        : await apiClient.put<SiteSetting>('/site-settings', data)
+      const response =
+        data instanceof FormData
+          ? await apiClient.post<SiteSetting>('/site-settings', data, config)
+          : await apiClient.put<SiteSetting>('/site-settings', data)
 
       return response.data
     } catch (error) {
       console.error('Error updating site settings:', error)
+      throw error
+    }
+  },
+
+  // ===== LANDING PAGE DATA (COMBINED) =====
+  // New method to fetch all landing page data in one request
+  async getLandingPageData(): Promise<LandingPageData> {
+    try {
+      const response = await apiClient.get<LandingPageData>('/landing-page')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page data:', error)
+      throw error
+    }
+  },
+
+  // ===== LANDING PAGE INDIVIDUAL ENDPOINTS =====
+  // Individual landing page endpoints for frontend components
+  async getLandingPageHero(): Promise<Hero[]> {
+    try {
+      const response = await apiClient.get<Hero[]>('/landing-page/hero')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page hero:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageVisionMission(): Promise<VisionMission[]> {
+    try {
+      const response = await apiClient.get<VisionMission[]>('/landing-page/vision-mission')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page vision mission:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageProducts(): Promise<Product[]> {
+    try {
+      const response = await apiClient.get<Product[]>('/landing-page/product')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page products:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageCompanyHistory(): Promise<CompanyHistory[]> {
+    try {
+      const response = await apiClient.get<CompanyHistory[]>('/landing-page/company-history')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page company history:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageTestimonials(): Promise<Testimonial[]> {
+    try {
+      const response = await apiClient.get<Testimonial[]>('/landing-page/testimonial')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page testimonials:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageClients(): Promise<OurClient[]> {
+    try {
+      const response = await apiClient.get<OurClient[]>('/landing-page/our-client')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page clients:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageContact(): Promise<Contact[]> {
+    try {
+      const response = await apiClient.get<Contact[]>('/landing-page/contact')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page contact:', error)
+      throw error
+    }
+  },
+
+  async getLandingPageSiteSettings(): Promise<SiteSetting> {
+    try {
+      const response = await apiClient.get<SiteSetting>('/landing-page/site-settings')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching landing page site settings:', error)
       throw error
     }
   },

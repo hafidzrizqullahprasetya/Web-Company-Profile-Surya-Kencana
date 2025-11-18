@@ -2,149 +2,194 @@
 <template>
   <section class="relative py-32 bg-white overflow-hidden" id="visi-misi">
     <div class="container mx-auto px-4">
-      <div class="text-center mb-20">
-        <div class="inline-block mb-6">
-          <span
-            class="bg-primary text-cream-light px-6 py-3 text-xs font-semibold uppercase tracking-widest rounded-md"
-          >
-            {{ siteSettings?.visi_misi_label || 'TENTANG KAMI' }}
-          </span>
-        </div>
-        <h2
-          class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-epilogue font-bold text-secondary leading-tight uppercase tracking-wide mb-10"
-          v-html="siteSettings?.visi_misi_title || 'CREATE YOUR STORY IN A PLACE<br />WHERE <span class=\'text-secondary relative\'>DREAMS<div class=\'absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10\'></div></span> AND REALITY<br />MERGE.'"
-        >
-        </h2>
-      </div>
-
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-center">
-        <div
-          class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"
-        ></div>
-        <p class="text-gray-600 text-base">Loading vision and mission...</p>
-      </div>
-
-      <div v-else-if="error" class="flex flex-col items-center justify-center py-16 text-center">
-        <p class="text-red-500 text-base mb-4 font-medium">{{ error }}</p>
-        <button
-          @click="retryFetch"
-          class="bg-primary text-secondary px-6 py-3 text-sm font-semibold rounded-md transition-all duration-300 hover:bg-primary-dark hover:-translate-y-0.5"
-        >
-          Retry
-        </button>
-      </div>
+      <SectionTitle
+        :label="siteSettings?.visi_misi_label"
+        :title="siteSettings?.visi_misi_title"
+        :icon="['fas', 'lightbulb']"
+        label-variant="default"
+        title-variant="default"
+      />
 
       <!-- Main Content Grid -->
-      <div v-else-if="visiMisi" class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
-        <div
-          class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
-        >
-          <div
-            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/30"
-          ></div>
-          <div class="mb-8">
+      <template v-if="isLoading || !visiMisi">
+        <!-- Skeleton cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+          <!-- Vision Skeleton (Left) -->
+          <div class="relative p-12 bg-primary text-white rounded-xl shadow-xl overflow-hidden">
             <div
-              class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
-            >
-              <i-lucide:star class="w-7 h-7" style="color: white" />
+              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/30"
+            ></div>
+            <div class="mb-8">
+              <div
+                class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 animate-pulse"
+              ></div>
+              <div class="w-24 h-6 bg-white/30 rounded animate-pulse mb-3"></div>
+              <div class="w-16 h-0.5 bg-white/30"></div>
             </div>
-            <h3 class="text-2xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
-              MISI KAMI
-            </h3>
-            <div class="w-16 h-0.5 bg-white"></div>
+            <div>
+              <div class="bg-white/20 h-4 rounded animate-pulse mb-2"></div>
+              <div class="bg-white/20 h-4 rounded animate-pulse mb-2 w-5/6"></div>
+              <div class="bg-white/20 h-4 rounded animate-pulse mb-2 w-4/6"></div>
+              <div class="bg-white/20 h-4 rounded animate-pulse w-3/6"></div>
+            </div>
           </div>
-          <div>
-            <p class="text-base leading-relaxed text-white/90">
-              {{ visiMisi.mission }}
-            </p>
-          </div>
-        </div>
 
-        <!-- Vision Card (Right) -->
-        <div
-          class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
-        >
-          <div class="absolute top-5 right-5 flex gap-1.5">
-            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
-            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
-            <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
-          </div>
-          <div class="mb-8">
-            <div
-              class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
-            >
-              <i-lucide:eye class="w-7 h-7" style="color: white" />
+          <!-- Mission Skeleton (Right) -->
+          <div class="relative p-12 bg-primary text-white rounded-xl shadow-xl overflow-hidden">
+            <div class="absolute top-5 right-5 flex gap-1.5">
+              <div class="w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+              <div class="w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+              <div class="w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
             </div>
-            <h3 class="text-2xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
-              VISI KAMI
-            </h3>
-            <div class="w-16 h-0.5 bg-white"></div>
-          </div>
-          <div>
-            <p class="text-base leading-relaxed text-white/90">
-              {{ visiMisi.vision }}
-            </p>
+            <div class="mb-8">
+              <div
+                class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-6 animate-pulse"
+              ></div>
+              <div class="w-24 h-6 bg-white/30 rounded animate-pulse mb-3"></div>
+              <div class="w-16 h-0.5 bg-white/30"></div>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-start gap-3">
+                <div class="w-2 h-2 bg-white/30 rounded-full mt-2 animate-pulse"></div>
+                <div class="flex-1 bg-white/20 h-4 rounded animate-pulse"></div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="w-2 h-2 bg-white/30 rounded-full mt-2 animate-pulse"></div>
+                <div class="flex-1 bg-white/20 h-4 rounded animate-pulse w-5/6"></div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="w-2 h-2 bg-white/30 rounded-full mt-2 animate-pulse"></div>
+                <div class="flex-1 bg-white/20 h-4 rounded animate-pulse w-4/6"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+          <!-- Vision Card  -->
+          <div
+            class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
+          >
+            <div
+              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/30"
+            ></div>
+            <div class="mb-8">
+              <div
+                class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
+              >
+                <font-awesome-icon :icon="['fas', 'eye']" class="w-8 h-8 text-white" />
+              </div>
+              <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
+                VISI KAMI
+              </h3>
+              <div class="w-16 h-0.5 bg-white"></div>
+            </div>
+            <div>
+              <p class="text-2xl leading-relaxed text-white">
+                {{ visiMisi.vision }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Mission Card  -->
+          <div
+            class="relative p-12 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden"
+          >
+            <div class="absolute top-5 right-5 flex gap-1.5">
+              <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
+              <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
+              <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
+            </div>
+            <div class="mb-8">
+              <div
+                class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
+              >
+                <font-awesome-icon :icon="['fas', 'star']" class="w-8 h-8 text-white" />
+              </div>
+              <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
+                MISI KAMI
+              </h3>
+              <div class="w-16 h-0.5 bg-white"></div>
+            </div>
+            <div>
+              <!-- Bullet Points for Mission -->
+              <ul class="space-y-4">
+                <li
+                  v-for="(item, index) in missionItems"
+                  :key="index"
+                  class="flex items-start gap-3 text-lg leading-relaxed text-white"
+                >
+                  <span class="flex-shrink-0 w-2 h-2 bg-white rounded-full mt-2 opacity-80"></span>
+                  <span>{{ item }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </template>
 
       <!-- CTA Button -->
       <div class="text-center">
-        <router-link
-          to="/contact"
-          class="inline-flex items-center bg-primary text-cream px-10 py-5 text-base font-semibold uppercase tracking-wide rounded-lg shadow-soft transition-all duration-300 hover:bg-primary-dark hover:-translate-y-1 hover:shadow-lg gap-3"
-        >
+        <BadgeButton :href="whatsappUrl" target="_blank">
           <span>Hubungi Kami</span>
-          <i-lucide:arrow-right class="w-5 h-5" />
-        </router-link>
+          <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-5 h-5" />
+        </BadgeButton>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import api, { type VisionMission, type SiteSetting } from '@/services/api'
+import { computed } from 'vue'
+import { useLandingPageData } from '@/composables/useLandingPageData'
+import SectionTitle from './SectionTitle.vue'
+import BadgeButton from './BadgeButton.vue'
 
-const visiMisi = ref<VisionMission | null>(null)
-const siteSettings = ref<SiteSetting | null>(null)
-const isLoading = ref(true)
-const error = ref<string | null>(null)
+const { data: landingPageData, isLoading } = useLandingPageData()
 
-const fetchData = async () => {
+const visiMisi = computed(() => {
+  if (!landingPageData.value?.visionMission || !landingPageData.value.visionMission.length) {
+    return null
+  }
+  return landingPageData.value.visionMission[0]
+})
+
+const missionItems = computed(() => {
+  if (!visiMisi.value?.mission) return []
+
+  // Try to parse as JSON array first
   try {
-    isLoading.value = true
-    error.value = null
+    const parsed = JSON.parse(visiMisi.value.mission)
+    if (Array.isArray(parsed)) {
+      return parsed
+    }
+  } catch {
+    // If not JSON, treat as plain text and return as single item
+  }
 
-    // Fetch both vision/mission and site settings
-    const [visiMisiData, settingsData] = await Promise.all([
-      api.getVisionMission(),
-      api.getSiteSettings()
-    ])
+  // Return as single item if not an array
+  return [visiMisi.value.mission]
+})
 
-    if (visiMisiData.length > 0) {
-      visiMisi.value = visiMisiData[0]
-    } else {
-      error.value = 'Vision and mission data not found'
+const siteSettings = computed(() => landingPageData.value?.siteSettings || null)
+const contactInfo = computed(() => landingPageData.value?.contact || null)
+
+const whatsappUrl = computed(() => {
+  if (contactInfo.value?.phone) {
+    const phoneNumber = contactInfo.value.phone.replace(/[^\d+]/g, '')
+    let formattedNumber = phoneNumber
+    if (phoneNumber.startsWith('0')) {
+      formattedNumber = '62' + phoneNumber.substring(1)
+    } else if (phoneNumber.startsWith('8')) {
+      formattedNumber = '62' + phoneNumber
     }
 
-    siteSettings.value = settingsData
-  } catch (err) {
-    console.error('Error fetching data:', err)
-    const message =
-      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-      'Failed to load data'
-    error.value = message
-  } finally {
-    isLoading.value = false
+    const message = encodeURIComponent(
+      'Halo, saya ingin bertanya tentang visi dan misi perusahaan.',
+    )
+    return `https://wa.me/${formattedNumber}?text=${message}`
   }
-}
-
-const retryFetch = () => {
-  fetchData()
-}
-
-onMounted(() => {
-  fetchData()
+  return '#'
 })
 </script>

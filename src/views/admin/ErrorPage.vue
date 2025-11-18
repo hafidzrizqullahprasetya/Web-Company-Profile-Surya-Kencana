@@ -1,0 +1,120 @@
+<template>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="max-w-2xl w-full text-center">
+      <!-- Error Code -->
+      <h1
+        class="text-9xl md:text-[12rem] font-bold text-primary mb-8 tracking-tighter animate-pulse"
+      >
+        {{ errorCode }}
+      </h1>
+
+      <!-- Error Title -->
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+        {{ errorTitle }}
+      </h2>
+
+      <!-- Loading Indicator for Connection Error -->
+      <div v-if="errorType === 'connection'" class="mt-8">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 0ms"
+          ></div>
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 150ms"
+          ></div>
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 300ms"
+          ></div>
+        </div>
+        <p class="text-gray-600 text-sm">Mencoba terhubung kembali ke server...</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { computed, onMounted, onUnmounted } from 'vue'
+import api from '@/services/api'
+
+const route = useRoute()
+
+// Get error type from route query
+const errorType = computed(() => (route.query.type as string) || '404')
+
+const errorCode = computed(() => {
+  switch (errorType.value) {
+    case 'connection':
+      return '500'
+    case 'unauthorized':
+      return '401'
+    case 'forbidden':
+      return '403'
+    case '404':
+    default:
+      return '404'
+  }
+})
+
+const errorTitle = computed(() => {
+  switch (errorType.value) {
+    case 'connection':
+      return 'Gagal Terhubung ke Server'
+    case 'unauthorized':
+      return 'Akses Tidak Diizinkan'
+    case 'forbidden':
+      return 'Akses Ditolak'
+    case '404':
+    default:
+      return 'Halaman Tidak Ditemukan'
+  }
+})
+
+// Auto retry for connection errors
+let retryInterval: number | undefined
+
+const checkConnection = async () => {
+  if (errorType.value === 'connection') {
+    try {
+      // Try to fetch site settings as a health check
+      await api.getSiteSettings()
+      // If successful, reload page to go back to admin dashboard
+      window.location.href = '/admin/dashboard'
+    } catch {
+      // Still can't connect, keep retrying
+      console.log('Still unable to connect, retrying...')
+    }
+  }
+}
+
+onMounted(() => {
+  if (errorType.value === 'connection') {
+    // Start checking connection every 3 seconds
+    retryInterval = window.setInterval(checkConnection, 3000)
+  }
+})
+
+onUnmounted(() => {
+  if (retryInterval) {
+    clearInterval(retryInterval)
+  }
+})
+</script>
+
+<style scoped>
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+</style>

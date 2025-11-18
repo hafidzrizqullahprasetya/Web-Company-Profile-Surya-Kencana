@@ -170,18 +170,97 @@
             ></textarea>
           </div>
 
-          <!-- Gambar -->
+          <!-- Gambar Utama -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Gambar Album
+              Gambar Utama (Opsional)
             </label>
             <ImageUpload
               v-model="imageFile"
-              label="Upload Gambar"
+              label="Upload Gambar Utama"
               accept="image/*"
               :max-size="104857600"
               :current-image-url="currentImageUrl"
             />
+          </div>
+
+          <!-- Gambar Album (Multiple Images) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Gambar Album (Opsional)
+            </label>
+
+            <!-- Existing Images -->
+            <div v-if="existingImages.length > 0" class="mb-3">
+              <p class="text-sm text-gray-600 mb-2">Gambar yang sudah ada:</p>
+              <div class="grid grid-cols-3 gap-2">
+                <div
+                  v-for="(img, index) in existingImages"
+                  :key="index"
+                  class="relative group"
+                >
+                  <img
+                    :src="img"
+                    class="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    @click="removeExistingImage(index)"
+                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- New Images Upload -->
+            <div>
+              <input
+                type="file"
+                ref="multipleImagesInput"
+                multiple
+                accept="image/*"
+                @change="handleMultipleImagesSelect"
+                class="hidden"
+              />
+              <button
+                type="button"
+                @click="$refs.multipleImagesInput.click()"
+                class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition text-gray-600 hover:text-primary"
+              >
+                <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Upload Gambar
+              </button>
+              <p class="text-xs text-gray-500 mt-1">Maks. 100MB per gambar</p>
+
+              <!-- Preview New Images -->
+              <div v-if="newImageFiles.length > 0" class="mt-3 grid grid-cols-3 gap-2">
+                <div
+                  v-for="(file, index) in newImageFiles"
+                  :key="index"
+                  class="relative group"
+                >
+                  <img
+                    :src="getPreviewUrl(file)"
+                    class="w-full h-24 object-cover rounded-lg border-2 border-primary"
+                  />
+                  <button
+                    type="button"
+                    @click="removeNewImage(index)"
+                    class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Error Message -->
@@ -277,6 +356,11 @@ const imageFile = ref<File | null>(null)
 const currentImageUrl = ref<string | null>(null)
 const historyToDelete = ref<CompanyHistory | null>(null)
 
+// Multiple images state
+const newImageFiles = ref<File[]>([])
+const existingImages = ref<string[]>([])
+const imagesToDelete = ref<string[]>([])
+
 const formData = ref({
   tahun: new Date().getFullYear(),
   judul: '',
@@ -318,6 +402,7 @@ const openModal = (history?: CompanyHistory) => {
       deskripsi: history.deskripsi,
     }
     currentImageUrl.value = history.image_url || null
+    existingImages.value = history.image_urls || []
   } else {
     editMode.value = false
     editingId.value = null
@@ -327,8 +412,11 @@ const openModal = (history?: CompanyHistory) => {
       deskripsi: '',
     }
     currentImageUrl.value = null
+    existingImages.value = []
   }
   imageFile.value = null
+  newImageFiles.value = []
+  imagesToDelete.value = []
   errorMessage.value = ''
   showModal.value = true
 }
@@ -337,6 +425,48 @@ const closeModal = () => {
   showModal.value = false
   imageFile.value = null
   currentImageUrl.value = null
+  newImageFiles.value = []
+  existingImages.value = []
+  imagesToDelete.value = []
+}
+
+// Multiple images handlers
+const handleMultipleImagesSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    const files = Array.from(target.files)
+    const MAX_SIZE = 104857600 // 100MB
+
+    const validFiles = files.filter(file => {
+      if (file.size > MAX_SIZE) {
+        toast.error(`File ${file.name} terlalu besar (maks. 100MB)`)
+        return false
+      }
+      return true
+    })
+
+    newImageFiles.value = [...newImageFiles.value, ...validFiles]
+  }
+  // Reset input
+  target.value = ''
+}
+
+const removeNewImage = (index: number) => {
+  newImageFiles.value = newImageFiles.value.filter((_, i) => i !== index)
+}
+
+const removeExistingImage = (index: number) => {
+  const imageUrl = existingImages.value[index]
+  // Extract path from URL for deletion
+  const pathMatch = imageUrl.match(/\/storage\/(.+)$/)
+  if (pathMatch && pathMatch[1]) {
+    imagesToDelete.value.push(pathMatch[1])
+  }
+  existingImages.value = existingImages.value.filter((_, i) => i !== index)
+}
+
+const getPreviewUrl = (file: File): string => {
+  return URL.createObjectURL(file)
 }
 
 const handleSubmit = async () => {
@@ -351,6 +481,20 @@ const handleSubmit = async () => {
 
     if (imageFile.value) {
       formDataToSend.append('image', imageFile.value)
+    }
+
+    // Append multiple images
+    if (newImageFiles.value.length > 0) {
+      newImageFiles.value.forEach(file => {
+        formDataToSend.append('images[]', file)
+      })
+    }
+
+    // Append images to delete
+    if (imagesToDelete.value.length > 0) {
+      imagesToDelete.value.forEach(path => {
+        formDataToSend.append('deleted_images[]', path)
+      })
     }
 
     if (editMode.value && editingId.value) {

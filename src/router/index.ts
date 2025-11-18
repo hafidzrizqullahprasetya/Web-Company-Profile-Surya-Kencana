@@ -84,6 +84,32 @@ const router = createRouter({
         },
       ],
     },
+    // Error Pages
+    {
+      path: '/error',
+      name: 'error',
+      component: () => import('@/views/ErrorPage.vue'),
+    },
+    {
+      path: '/admin/error',
+      name: 'admin-error',
+      component: () => import('@/views/admin/ErrorPage.vue'),
+    },
+    {
+      path: '/admin/login',
+      name: 'admin-login',
+      component: () => import('@/views/admin/Login.vue'),
+      meta: { requiresNoAuth: true },
+    },
+    // Catch-all 404 route - must be last
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: (to) => {
+        // Redirect to appropriate error page based on path
+        const isAdmin = to.path.startsWith('/admin')
+        return isAdmin ? '/admin/error?type=404' : '/error?type=404'
+      },
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

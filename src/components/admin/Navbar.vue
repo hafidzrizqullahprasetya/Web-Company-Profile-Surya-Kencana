@@ -7,7 +7,7 @@
           typeof $route.name === 'string'
             ? $route.name.replace('admin-', '').replace('-', ' ')
             : 'Dashboard'
-        }}
+        }}   
       </h2>
       <div class="flex items-center relative">
         <div class="mr-4 text-right">

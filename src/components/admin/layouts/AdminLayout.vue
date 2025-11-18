@@ -1,11 +1,12 @@
 <template>
-  <div class="flex min-h-screen bg-gray-50">
-    <!-- Sidebar -->
-    <aside class="bg-primary text-white shadow-lg w-64 min-h-screen sticky top-0 h-screen">
-      <div class="p-5 border-b border-primary-light">
-        <h1 class="text-xl text-white font-bold">Admin Panel</h1>
-      </div>
-      <nav class="p-3 overflow-y-auto h-[calc(100vh-76px)]">
+  <div class="min-h-screen bg-gray-50">
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="bg-primary text-white shadow-lg w-64 fixed left-0 top-0 h-screen z-50 overflow-y-auto">
+        <div class="p-5 border-b border-primary-light">
+          <h1 class="text-xl text-white font-bold">Admin Panel</h1>
+        </div>
+        <nav class="p-3">
         <ul class="space-y-2">
           <li>
             <router-link 
@@ -161,12 +162,12 @@
             </router-link>
           </li>
         </ul>
-      </nav>
-    </aside>
+        </nav>
+      </aside>
 
-    <div class="flex-1 flex flex-col">
-      <!-- Top Navigation Bar -->
-      <header class="bg-primary shadow-sm text-white sticky top-0 z-40">
+      <div class="flex-1 ml-64">
+        <!-- Top Navigation Bar -->
+        <header class="bg-primary shadow-sm text-white fixed top-0 right-0 left-64 z-40">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
@@ -208,14 +209,15 @@
             </div>
           </div>
         </div>
-      </header>
+        </header>
 
-      <!-- Main Content -->
-      <main class="flex-1 p-6 bg-gray-50 overflow-y-auto">
-        <div class="max-w-full">
-          <router-view />
-        </div>
-      </main>
+        <!-- Main Content -->
+        <main class="pt-[88px] p-6 bg-gray-50 min-h-screen">
+          <div class="max-w-full">
+            <router-view />
+          </div>
+        </main>
+      </div>
     </div>
 
     <!-- Toast Notifications -->

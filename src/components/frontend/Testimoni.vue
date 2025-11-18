@@ -2,170 +2,228 @@
 <template>
   <section class="relative py-32 bg-primary overflow-hidden" id="testimoni">
     <div class="container mx-auto px-4">
-      <div class="text-center mb-20">
-        <div class="inline-block mb-6">
-          <span
-            class="bg-white text-secondary px-6 py-3 text-xs font-semibold uppercase tracking-widest"
-          >
-            {{ siteSettings?.testimoni_label || 'TESTIMONIAL' }}
-          </span>
-        </div>
-        <h2
-          v-html="siteSettings?.testimoni_title || 'PENGALAMAN<br><span class=\'text-white relative\'>PELANGGAN<div class=\'absolute -bottom-1 left-0 w-full h-3 bg-primary -z-10\'></div></span><br>KAMI.'"
-          class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-epilogue font-bold text-white leading-tight uppercase tracking-wide mb-10"
-        ></h2>
-      </div>
+      <SectionTitle
+        :label="siteSettings?.testimoni_label"
+        :title="siteSettings?.testimoni_title"
+        :icon="['fas', 'comment-dots']"
+        label-variant="inverted"
+        title-variant="white"
+      />
 
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-center">
-        <div
-          class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"
-        ></div>
-        <p class="text-white text-base">Loading testimonials...</p>
-      </div>
-
-      <div v-else-if="error" class="flex flex-col items-center justify-center py-16 text-center">
-        <p class="text-red-500 text-base mb-4 font-medium">{{ error }}</p>
-        <button
-          @click="retryFetch"
-          class="bg-primary text-secondary px-6 py-3 text-sm font-semibold rounded-md transition-all duration-300 hover:bg-primary-dark hover:-translate-y-0.5"
-        >
-          Coba Lagi
-        </button>
-      </div>
-
-      <div v-else-if="testimonials.length > 0" class="flex flex-col items-center gap-8">
-        <!-- Testimonial Cards Container (Horizontal Slider) -->
-        <div class="relative w-full max-w-6xl overflow-hidden">
-          <div
-            class="flex gap-8 transition-transform duration-500 ease-in-out"
-            :style="{
-              transform: `translateX(-${startIndex * (100 / visibleCount)}%)`,
-              width: `${(testimonials.length / visibleCount) * 100}%`,
-            }"
-          >
-            <div
-              v-for="testimonial in testimonials"
-              :key="testimonial.id"
-              class="bg-white text-secondary p-8 rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex-shrink-0"
-              :style="{ width: `${100 / testimonials.length}%` }"
-            >
-              <div class="flex flex-col gap-4">
-                <div class="relative">
-                  <p class="text-secondary/90 text-base leading-relaxed italic pl-5">
-                    "{{ testimonial.feedback }}"
-                  </p>
+      <template v-if="isLoading || testimonials.length === 0">
+        <!-- Skeleton cards -->
+        <div class="flex flex-col items-center gap-12">
+          <!-- Testimonial Cards Grid (3 per page) -->
+          <div class="relative w-full max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div
+                v-for="n in 3"
+                :key="'skeleton-' + n"
+                class="bg-white rounded-2xl shadow-2xl overflow-hidden"
+              >
+                <!-- Card Header -->
+                <div class="bg-gradient-to-br from-cream to-cream-light p-6 relative">
                   <div
-                    class="absolute top-0 left-0 text-4xl text-primary/30 font-serif leading-none"
+                    class="absolute top-4 right-4 text-6xl text-primary/20 font-serif leading-none animate-pulse"
                   >
                     "
                   </div>
+                  <div class="flex gap-1 mb-3">
+                    <div class="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div class="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div class="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div class="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div class="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                  </div>
                 </div>
 
-                <div class="flex gap-1">
-                  <i-lucide:star
-                    v-for="star in 5"
-                    :key="star"
-                    class="w-4 h-4 text-yellow-400 fill-current"
-                  />
-                </div>
-              </div>
+                <!-- Card Body -->
+                <div class="p-6 pb-8">
+                  <div class="text-secondary/90 text-base leading-relaxed mb-6 min-h-[96px]">
+                    <div class="bg-gray-200 h-4 rounded animate-pulse mb-2"></div>
+                    <div class="bg-gray-200 h-4 rounded animate-pulse mb-2 w-5/6"></div>
+                    <div class="bg-gray-200 h-4 rounded animate-pulse mb-2 w-4/6"></div>
+                    <div class="bg-gray-200 h-4 rounded animate-pulse w-3/6"></div>
+                  </div>
 
-              <div class="flex items-center gap-4 mt-6">
-                <div class="flex-shrink-0">
-                  <img
-                    :src="`https://ui-avatars.com/api/?name=${testimonial.client_name}&background=F5F6E4&color=1C1817&size=70`"
-                    :alt="testimonial.client_name"
-                    class="w-14 h-14 rounded-full object-cover border-2 border-primary/50"
-                    @error="onImageError"
-                  />
-                </div>
-                <div class="flex flex-col gap-1">
-                  <h4 class="text-secondary font-bold text-base">{{ testimonial.client_name }}</h4>
-                  <p class="text-secondary/70 text-sm">{{ testimonial.institution }}</p>
-                  <p class="text-secondary/50 text-xs">{{ formatDate(testimonial.date) }}</p>
+                  <!-- Client Info -->
+                  <div class="flex items-center gap-4 pt-4 border-t border-gray-100">
+                    <div class="flex-shrink-0">
+                      <div
+                        class="w-16 h-16 rounded-full bg-gray-200 border-3 border-primary shadow-lg animate-pulse"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <div class="bg-gray-200 h-4 w-32 rounded animate-pulse"></div>
+                      <div class="bg-gray-200 h-3 w-24 rounded animate-pulse"></div>
+                      <div class="bg-gray-200 h-3 w-16 rounded animate-pulse"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Navigation Buttons (< >) -->
-        <div class="flex items-center gap-4">
-          <button
-            @click="prevTestimonials"
-            :disabled="startIndex === 0"
-            class="px-4 py-2 bg-white text-secondary rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            <i-lucide:chevron-left class="w-5 h-5" />
-          </button>
-          <span class="text-white text-sm">
-            {{ startIndex + 1 }} - {{ Math.min(startIndex + visibleCount, testimonials.length) }} of
-            {{ testimonials.length }}
-          </span>
-          <button
-            @click="nextTestimonials"
-            :disabled="startIndex + visibleCount >= testimonials.length"
-            class="px-4 py-2 bg-white text-secondary rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            <i-lucide:chevron-right class="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+          <!-- Skeleton Navigation Controls -->
+          <div class="flex flex-col items-center gap-6">
+            <!-- Page Dots -->
+            <div class="flex items-center gap-3">
+              <div
+                v-for="n in 4"
+                :key="'dot-skeleton-' + n"
+                class="w-3 h-3 bg-white/40 rounded-full animate-pulse"
+              ></div>
+            </div>
 
-      <div v-else class="text-center py-20">
-        <p class="text-white text-lg">Belum ada testimonial terdaftar.</p>
-      </div>
+            <!-- Navigation Buttons -->
+            <div class="flex items-center gap-6">
+              <div class="w-12 h-12 bg-white/40 rounded-full animate-pulse"></div>
+              <div
+                class="text-white text-sm font-semibold bg-white/10 px-6 py-2 rounded-full backdrop-blur-sm"
+              >
+                Page 1 of 1
+              </div>
+              <div class="w-12 h-12 bg-white/40 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex flex-col items-center gap-12">
+          <!-- Testimonial Cards with Sliding Animation -->
+          <div class="relative w-full max-w-7xl overflow-hidden">
+            <!-- Sliding Track -->
+            <div
+              class="flex transition-transform duration-700 ease-in-out"
+              :style="{ transform: `translateX(-${currentPage * 100}%)` }"
+            >
+              <!-- Each Page is a Slide -->
+              <div
+                v-for="(page, pageIndex) in paginatedTestimonials"
+                :key="`page-${pageIndex}`"
+                class="w-full flex-shrink-0"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+                  <div
+                    v-for="testimonial in page"
+                    :key="testimonial.id"
+                    class="bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] group"
+                  >
+                    <!-- Card Header with Quote Icon -->
+                    <div class="bg-gradient-to-br from-cream to-cream-light p-6 relative">
+                      <div
+                        class="absolute top-4 right-4 text-6xl text-primary font-serif leading-none"
+                      >
+                        "
+                      </div>
+                      <div class="flex gap-1 mb-3">
+                        <font-awesome-icon
+                          v-for="star in 5"
+                          :key="star"
+                          :icon="['fas', 'star']"
+                          class="w-5 h-5 text-yellow-500 drop-shadow-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6 pb-8">
+                      <p
+                        class="text-secondary/90 text-xl leading-relaxed mb-6 line-clamp-4 min-h-[96px]"
+                      >
+                        "{{ testimonial.feedback }}"
+                      </p>
+
+                      <div
+                        class="flex items-center gap-4 pt-4 border-t border-gray-100 bg-gradient-to-br from-cream to-cream-light p-4 rounded-lg -mx-2"
+                      >
+                        <div class="flex-shrink-0">
+                          <img
+                            :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.client_name)}&background=5C4033&color=FFFFFF&size=80&bold=true`"
+                            :alt="testimonial.client_name"
+                            class="w-16 h-16 rounded-full object-cover border-3 border-primary shadow-lg transition-transform duration-300 group-hover:scale-110"
+                            @error="onImageError"
+                          />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <h4 class="text-primary font-bold text-xl">
+                            {{ testimonial.client_name }}
+                          </h4>
+                          <p class="text-secondary font-semibold text-base">
+                            {{ testimonial.institution }}
+                          </p>
+                          <p class="text-primary/60 text-sm">
+                            {{ formatDate(testimonial.date) }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Controls -->
+          <Pagination
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            @prev="prevPage"
+            @next="nextPage"
+            @goto="goToPage"
+          />
+        </div>
+      </template>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import api, { type Testimonial, type SiteSetting } from '@/services/api'
+import { ref, computed } from 'vue'
+import { useLandingPageData } from '@/composables/useLandingPageData'
+import SectionTitle from './SectionTitle.vue'
+import Pagination from './Pagination.vue'
 
-const testimonials = ref<Testimonial[]>([])
-const siteSettings = ref<SiteSetting | null>(null)
-const isLoading = ref(true)
-const error = ref<string | null>(null)
-const startIndex = ref(0)
-const visibleCount = 3 // Show 3 cards
+const { data: landingPageData, isLoading } = useLandingPageData()
 
-const prevTestimonials = () => {
-  if (startIndex.value > 0) {
-    startIndex.value -= 1 // Geser 1 card ke kiri
+const testimonials = computed(() => landingPageData.value?.testimonials || [])
+const siteSettings = computed(() => landingPageData.value?.siteSettings || null)
+
+const currentPage = ref(0)
+const cardsPerPage = 3
+
+// Calculate total pages
+const totalPages = computed(() => {
+  return Math.ceil(testimonials.value.length / cardsPerPage)
+})
+
+// Paginate testimonials into pages (for sliding animation)
+const paginatedTestimonials = computed(() => {
+  const pages = []
+  for (let i = 0; i < totalPages.value; i++) {
+    const start = i * cardsPerPage
+    const end = start + cardsPerPage
+    pages.push(testimonials.value.slice(start, end))
+  }
+  return pages
+})
+
+const prevPage = () => {
+  if (currentPage.value > 0) {
+    currentPage.value--
   }
 }
 
-const nextTestimonials = () => {
-  if (startIndex.value + visibleCount < testimonials.value.length) {
-    startIndex.value += 1 // Geser 1 card ke kanan
+const nextPage = () => {
+  if (currentPage.value < totalPages.value - 1) {
+    currentPage.value++
   }
 }
 
-const fetchTestimonials = async () => {
-  try {
-    isLoading.value = true
-    error.value = null
-    const [testimonialsData, settingsData] = await Promise.all([
-      api.getTestimonials(),
-      api.getSiteSettings()
-    ])
-    testimonials.value = testimonialsData
-    siteSettings.value = settingsData
-    console.log('Testimonials data:', testimonials.value)
-  } catch (err) {
-    console.error('Error fetching testimonials:', err)
-    const message =
-      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-      'Gagal memuat data testimonial'
-    error.value = message
-  } finally {
-    isLoading.value = false
+const goToPage = (page: number) => {
+  if (page >= 0 && page < totalPages.value) {
+    currentPage.value = page
   }
-}
-
-const retryFetch = () => {
-  fetchTestimonials()
 }
 
 const formatDate = (dateString: string): string => {
@@ -180,10 +238,6 @@ const formatDate = (dateString: string): string => {
 const onImageError = (e: Event) => {
   const target = e.target as HTMLImageElement
   target.src =
-    'https://ui-avatars.com/api/?name=Testimoni+Guest&background=F5F6E4&color=1C1817&size=70'
+    'https://ui-avatars.com/api/?name=Testimoni+Guest&background=5C4033&color=FFFFFF&size=80&bold=true'
 }
-
-onMounted(() => {
-  fetchTestimonials()
-})
 </script>

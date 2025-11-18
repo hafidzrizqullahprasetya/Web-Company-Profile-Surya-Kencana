@@ -171,13 +171,14 @@
     <div class="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <h2 class="text-xl font-semibold text-gray-800 mb-6">Pratinjau Testimoni</h2>
 
-      <!-- Testimonial Preview Slider -->
-      <div class="overflow-hidden">
-        <div class="flex space-x-4 pb-4 overflow-x-auto scrollbar-hide">
+      <!-- Testimonial Preview Grid with Pagination -->
+      <div>
+        <!-- Testimonial Grid (max 4 per page) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div
-            v-for="testimonial in testimonials"
+            v-for="testimonial in currentPagePreviewTestimonials"
             :key="testimonial.id"
-            class="flex-shrink-0 w-80 bg-gray-50 rounded-lg p-6 border border-gray-200"
+            class="bg-gray-50 rounded-lg p-6 border border-gray-200"
           >
             <div class="flex items-center mb-4">
               <div
@@ -186,12 +187,14 @@
                 {{ testimonial.client_name.charAt(0).toUpperCase() }}
               </div>
               <div>
-                <h4 class="font-semibold text-gray-900">{{ testimonial.client_name }}</h4>
-                <p class="text-sm text-gray-600">{{ testimonial.institution }}</p>
+                <h4 class="font-semibold text-gray-900 text-sm">{{ testimonial.client_name }}</h4>
+                <p class="text-xs text-gray-600">{{ testimonial.institution }}</p>
               </div>
             </div>
-            <p class="text-gray-700 italic mb-4">"{{ testimonial.feedback }}"</p>
-            <div class="flex items-center text-gray-500 text-sm">
+            <p class="text-gray-700 italic mb-4 text-sm line-clamp-3">
+              "{{ testimonial.feedback }}"
+            </p>
+            <div class="flex items-center text-gray-500 text-xs">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -207,7 +210,7 @@
           <!-- Empty state if no testimonials -->
           <div
             v-if="testimonials.length === 0"
-            class="flex-shrink-0 w-80 bg-gray-50 rounded-lg p-6 border border-gray-200 flex items-center justify-center"
+            class="col-span-full bg-gray-50 rounded-lg p-6 border border-gray-200 flex items-center justify-center"
           >
             <div class="text-center text-gray-500">
               <svg
@@ -226,6 +229,61 @@
               <p>Belum ada testimoni</p>
               <p class="text-sm">Tambahkan testimoni pertama</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Pagination Controls for Preview -->
+        <div v-if="testimonials.length > 0" class="flex flex-col items-center gap-4">
+          <!-- Page Dots -->
+          <div class="flex items-center gap-3">
+            <button
+              v-for="page in visiblePreviewPageDots"
+              :key="page"
+              @click="goToPreviewPage(page)"
+              class="transition-all duration-300"
+              :class="
+                currentPreviewPage === page
+                  ? 'w-12 h-3 bg-primary rounded-full'
+                  : 'w-3 h-3 bg-gray-300 rounded-full hover:bg-gray-400'
+              "
+            />
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex items-center gap-6">
+            <button
+              @click="prevPreviewPage"
+              :disabled="currentPreviewPage === 0"
+              class="w-10 h-10 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            <div class="text-gray-600 text-sm font-medium">
+              Page {{ currentPreviewPage + 1 }} of {{ totalPreviewPages }}
+            </div>
+
+            <button
+              @click="nextPreviewPage"
+              :disabled="currentPreviewPage === totalPreviewPages - 1"
+              class="w-10 h-10 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -416,6 +474,10 @@ const showDeleteModal = ref(false)
 const testimonialToDelete = ref<Testimonial | null>(null)
 const isDeleting = ref(false)
 
+// Preview pagination state
+const currentPreviewPage = ref(0)
+const previewItemsPerPage = 4
+
 // Form data
 const formData = ref<Testimonial>({
   id: 0,
@@ -446,6 +508,36 @@ const filteredTestimonials = computed(() => {
 
 const totalPages = computed(() => {
   return Math.ceil(testimonials.value.length / itemsPerPage.value)
+})
+
+// Preview pagination computed
+const totalPreviewPages = computed(() => {
+  return Math.ceil(testimonials.value.length / previewItemsPerPage)
+})
+
+const currentPagePreviewTestimonials = computed(() => {
+  const start = currentPreviewPage.value * previewItemsPerPage
+  const end = start + previewItemsPerPage
+  return testimonials.value.slice(start, end)
+})
+
+const visiblePreviewPageDots = computed(() => {
+  const total = totalPreviewPages.value
+  if (total <= 4) {
+    return Array.from({ length: total }, (_, i) => i)
+  }
+
+  const current = currentPreviewPage.value
+  const maxDots = 4
+
+  let start = Math.max(0, current - Math.floor(maxDots / 2))
+  const end = Math.min(total, start + maxDots)
+
+  if (end === total) {
+    start = Math.max(0, end - maxDots)
+  }
+
+  return Array.from({ length: end - start }, (_, i) => start + i)
 })
 
 // Helper functions
@@ -538,19 +630,27 @@ const deleteTestimonial = async () => {
   }
 }
 
+// Preview pagination methods
+const prevPreviewPage = () => {
+  if (currentPreviewPage.value > 0) {
+    currentPreviewPage.value--
+  }
+}
+
+const nextPreviewPage = () => {
+  if (currentPreviewPage.value < totalPreviewPages.value - 1) {
+    currentPreviewPage.value++
+  }
+}
+
+const goToPreviewPage = (page: number) => {
+  if (page >= 0 && page < totalPreviewPages.value) {
+    currentPreviewPage.value = page
+  }
+}
+
 // Load data on component mount
 onMounted(() => {
   loadTestimonials()
 })
 </script>
-
-<style scoped>
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.scrollbar-hide::-webkit-scrollbar {
-  /* Chrome, Safari, Opera*/
-  display: none;
-}
-</style>
