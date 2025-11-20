@@ -3,38 +3,46 @@
   "dockerfileLines": [
     "FROM php:8.2-apache",
 
+    "# 1. Install System Dependencies (Tanpa npm agar tidak konflik)",
     "RUN apt-get update && apt-get install -y libpng-dev libonig-dev libxml2-dev zip unzip git curl libzip-dev libicu-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev && docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl && apt-get clean && rm -rf /var/lib/apt/lists/*",
 
+    "# 2. Install Node.js",
     "RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs && apt-get clean && rm -rf /var/lib/apt/lists/*",
 
+    "# 3. Setup Apache",
     "ENV APACHE_DOCUMENT_ROOT /var/www/html/public",
     "RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf",
     "RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf",
     "RUN a2enmod rewrite",
 
+    "# 4. Install Composer",
     "COPY --from=composer:latest /usr/bin/composer /usr/bin/composer",
 
     "WORKDIR /var/www/html",
     "COPY . .",
 
+    "# 5. Install Dependencies",
     "RUN composer install --no-interaction --optimize-autoloader --no-dev",
     "RUN npm install && npm run build --if-present",
 
-    "# --- PERBAIKAN DISINI (PENTING) ---",
-    "# Hapus config:cache karena App Configs CapRover belum terbaca saat build",
-    "# Ganti dengan config:clear agar cache lama terhapus",
-    "RUN php artisan optimize:clear",
-
-    "# Generate Swagger",
-    "RUN php artisan l5-swagger:generate --all",
-
-    "# Permission Fix",
+    "# 6. Setup Permission (WAJIB SEBELUM ARTISAN)",
     "RUN mkdir -p storage/framework/{sessions,views,cache} && mkdir -p storage/logs && mkdir -p storage/api-docs",
     "RUN chown -R www-data:www-data /var/www/html",
     "RUN chmod -R 777 storage bootstrap/cache",
 
-    "RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf",
+    "# 7. INI PERBAIKANNYA: Set ENV *sebelum* menjalankan artisan",
+    "# Kita paksa pakai driver FILE agar tidak mencari database SQLite",
+    "ENV DB_CONNECTION=mysql",
+    "ENV CACHE_DRIVER=file",
+    "ENV SESSION_DRIVER=file",
+    "ENV QUEUE_CONNECTION=sync",
 
+    "# 8. Jalankan Artisan Commands (Sekarang aman karena ENV sudah diset di atas)",
+    "RUN php artisan optimize:clear",
+    "RUN php artisan l5-swagger:generate --all",
+
+    "# 9. Final Configs",
+    "RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf",
     "ENV APP_ENV=production",
     "ENV APP_DEBUG=false",
     "ENV APP_URL=https://becompro.app.fizualstd.my.id",
