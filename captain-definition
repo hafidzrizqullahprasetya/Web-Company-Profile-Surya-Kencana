@@ -21,7 +21,8 @@
     
     "RUN npm install && npm run build --if-present",
     
-    "RUN php artisan config:cache && php artisan route:cache && php artisan view:cache",
+    "# --- PERBAIKAN DISINI: Ganti route:cache menjadi route:clear ---",
+    "RUN php artisan config:cache && php artisan route:clear && php artisan view:cache",
     
     "RUN php artisan l5-swagger:generate --all",
     
