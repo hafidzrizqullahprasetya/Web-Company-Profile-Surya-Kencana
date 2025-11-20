@@ -3,7 +3,7 @@
   "dockerfileLines": [
     "FROM php:8.2-apache",
 
-    "# 1. Install System Dependencies (Tanpa npm agar tidak konflik)",
+    "# 1. Install System Dependencies",
     "RUN apt-get update && apt-get install -y libpng-dev libonig-dev libxml2-dev zip unzip git curl libzip-dev libicu-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev && docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl && apt-get clean && rm -rf /var/lib/apt/lists/*",
 
     "# 2. Install Node.js",
@@ -25,20 +25,24 @@
     "RUN composer install --no-interaction --optimize-autoloader --no-dev",
     "RUN npm install && npm run build --if-present",
 
-    "# 6. Setup Permission (WAJIB SEBELUM ARTISAN)",
+    "# 6. Setup Permission",
     "RUN mkdir -p storage/framework/{sessions,views,cache} && mkdir -p storage/logs && mkdir -p storage/api-docs",
     "RUN chown -R www-data:www-data /var/www/html",
     "RUN chmod -R 777 storage bootstrap/cache",
 
-    "# 7. INI PERBAIKANNYA: Set ENV *sebelum* menjalankan artisan",
-    "# Kita paksa pakai driver FILE agar tidak mencari database SQLite",
+    "# 7. FIX FINAL: Pakai driver ARRAY agar tidak butuh koneksi Database saat build",
     "ENV DB_CONNECTION=mysql",
-    "ENV CACHE_DRIVER=file",
-    "ENV SESSION_DRIVER=file",
+    "ENV CACHE_DRIVER=array",
+    "ENV SESSION_DRIVER=array",
     "ENV QUEUE_CONNECTION=sync",
 
-    "# 8. Jalankan Artisan Commands (Sekarang aman karena ENV sudah diset di atas)",
-    "RUN php artisan optimize:clear",
+    "# 8. Jalankan Artisan (Hapus optimize:clear yang memicu error DB)",
+    "# Kita cukup clear config & route secara manual tanpa menyentuh DB",
+    "RUN php artisan config:clear",
+    "RUN php artisan route:clear",
+    "RUN php artisan view:clear",
+
+    "# Generate Swagger",
     "RUN php artisan l5-swagger:generate --all",
 
     "# 9. Final Configs",
