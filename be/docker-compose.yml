@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=127.0.0.1
+      - DB_DATABASE=mydb
+      - DB_USERNAME=root
+      - DB_PASSWORD=01012006
