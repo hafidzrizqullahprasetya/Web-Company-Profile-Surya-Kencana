@@ -419,7 +419,8 @@ const getImageUrl = (imagePath: string | undefined): string => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath
   }
-  return `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://127.0.0.1:8000'}/storage/${imagePath}`
+  const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+  return `${cdnUrl}/${imagePath}`
 }
 
 const handleImageError = (event: Event) => {

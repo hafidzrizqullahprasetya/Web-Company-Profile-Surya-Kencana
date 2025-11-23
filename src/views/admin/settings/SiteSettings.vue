@@ -1,9 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Pengaturan Situs</h1>
-      <p class="text-gray-600">Kelola nama perusahaan, logo, dan judul bagian</p>
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Pengaturan Situs</h1>
+      <p class="text-sm sm:text-base text-gray-600">Kelola nama perusahaan, logo, dan judul bagian</p>
     </div>
 
     <!-- Loading State -->

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Hero Section</h1>
-      <p class="text-gray-600 mt-2">Kelola tampilan utama halaman depan website Anda</p>
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Hero Section</h1>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola tampilan utama halaman depan website Anda</p>
     </div>
 
     <div v-if="isLoading" class="flex justify-center items-center py-16">
@@ -301,7 +301,8 @@ const getBackgroundUrl = (path: string): string => {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path
   }
-  return `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://127.0.0.1:8000'}/storage/${path}`
+  const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+  return `${cdnUrl}/${path}`
 }
 
 const getPreviewUrl = (file: File): string => {

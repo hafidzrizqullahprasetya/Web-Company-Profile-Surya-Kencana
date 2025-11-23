@@ -1,15 +1,15 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Produk</h1>
-      <p class="text-gray-600 mt-2">Kelola produk mesin industri Anda</p>
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Produk</h1>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola produk mesin industri Anda</p>
     </div>
 
     <!-- Action Bar -->
-    <div class="mb-6 flex justify-between items-center">
-      <div class="flex-1 max-w-md">
+    <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div class="flex-1 sm:max-w-md">
         <input
           v-model="searchQuery"
           type="text"
@@ -19,7 +19,7 @@
       </div>
       <button
         @click="openModal()"
-        class="ml-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
+        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -29,7 +29,8 @@
             d="M12 4v16m8-8H4"
           />
         </svg>
-        Tambah Produk
+        <span class="hidden sm:inline">Tambah Produk</span>
+        <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 
@@ -611,7 +612,8 @@ const getImageUrl = (imagePath: string | undefined): string => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath
   }
-  return `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://127.0.0.1:8000'}/storage/${imagePath}`
+  const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+  return `${cdnUrl}/${imagePath}`
 }
 
 const handleImageError = (event: Event) => {

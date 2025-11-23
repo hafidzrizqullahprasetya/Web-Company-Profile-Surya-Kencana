@@ -99,6 +99,89 @@
           </template>
         </div>
 
+        <!-- WhatsApp Form Section -->
+        <div class="mb-16">
+          <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-2xl overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+              <!-- Left Side - Form -->
+              <div class="p-8 sm:p-12 bg-white">
+                <div class="mb-6">
+                  <h3 class="text-3xl font-epilogue font-bold text-primary mb-3">
+                    Hubungi Kami via WhatsApp
+                  </h3>
+                  <p class="text-gray-600">
+                    Isi form di bawah untuk langsung chat dengan kami melalui WhatsApp
+                  </p>
+                </div>
+
+                <form @submit.prevent="sendWhatsAppMessage" class="space-y-6">
+                  <!-- Nama -->
+                  <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                      Nama Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <font-awesome-icon :icon="['fas', 'user']" class="text-primary" />
+                      </div>
+                      <input
+                        v-model="formData.name"
+                        type="text"
+                        id="name"
+                        required
+                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
+                        placeholder="Masukkan nama Anda"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Pesan -->
+                  <div>
+                    <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">
+                      Pesan <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                      <div class="absolute top-3 left-0 pl-4 pointer-events-none">
+                        <font-awesome-icon :icon="['fas', 'comment-dots']" class="text-primary" />
+                      </div>
+                      <textarea
+                        v-model="formData.message"
+                        id="message"
+                        required
+                        rows="4"
+                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 resize-none"
+                        placeholder="Tuliskan pesan Anda di sini..."
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button
+                    type="submit"
+                    class="w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 group"
+                  >
+                    <font-awesome-icon :icon="['fab', 'whatsapp']" class="text-2xl group-hover:scale-110 transition-transform" />
+                    <span class="text-lg">Chat via WhatsApp</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Right Side - Decoration -->
+              <div class="hidden lg:flex items-center justify-center p-12 bg-primary to-secondary relative overflow-hidden">
+
+                <!-- WhatsApp Icon -->
+                <div class="relative z-10 text-center">
+                  <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                    <font-awesome-icon :icon="['fab', 'whatsapp']" class="text-white text-6xl" />
+                  </div>
+                  <h4 class="text-white text-2xl font-bold mb-3">Respon Cepat</h4>
+                  <p class="text-white/90 text-lg">Tim kami siap membantu Anda</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Map Section -->
         <template v-if="isLoading || !contactInfo">
           <!-- Skeleton map -->
@@ -128,11 +211,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
 import { useLandingPageData } from '@/composables/useLandingPageData'
 import SectionTitle from './SectionTitle.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
+
+// Form data
+const formData = reactive({
+  name: '',
+  message: ''
+})
 
 // Use computed properties to extract specific data
 const contactInfo = computed(() => {
@@ -168,6 +257,36 @@ const whatsappUrl = computed(() => {
   }
   return '#'
 })
+
+// Send WhatsApp Message
+const sendWhatsAppMessage = () => {
+  if (!formData.name.trim() || !formData.message.trim()) {
+    return
+  }
+
+  if (contactInfo.value?.phone) {
+    // Format phone number
+    const phoneNumber = contactInfo.value.phone.replace(/[^\d+]/g, '')
+    let formattedNumber = phoneNumber
+    if (phoneNumber.startsWith('0')) {
+      formattedNumber = '62' + phoneNumber.substring(1)
+    } else if (phoneNumber.startsWith('8')) {
+      formattedNumber = '62' + phoneNumber
+    }
+
+    // Create WhatsApp message
+    const message = `Halo, nama saya *${formData.name}*\n\n${formData.message}`
+    const encodedMessage = encodeURIComponent(message)
+    const url = `https://wa.me/${formattedNumber}?text=${encodedMessage}`
+
+    // Open WhatsApp in new tab
+    window.open(url, '_blank')
+
+    // Reset form
+    formData.name = ''
+    formData.message = ''
+  }
+}
 
 onMounted(() => {
   // Data is automatically fetched by useLandingPageData composable

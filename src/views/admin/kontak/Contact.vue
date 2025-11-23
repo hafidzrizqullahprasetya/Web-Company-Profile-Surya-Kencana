@@ -1,9 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Informasi Kontak</h1>
-      <p class="text-gray-600 mt-2">Perbarui informasi kontak perusahaan Anda</p>
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Informasi Kontak</h1>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">Perbarui informasi kontak perusahaan Anda</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">

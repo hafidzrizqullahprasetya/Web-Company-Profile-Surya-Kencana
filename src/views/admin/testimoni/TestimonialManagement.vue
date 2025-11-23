@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Testimoni</h1>
-      <p class="text-gray-600 mt-2">Kelola testimoni dari pelanggan perusahaan Anda</p>
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Testimoni</h1>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola testimoni dari pelanggan perusahaan Anda</p>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
@@ -38,99 +38,36 @@
       </div>
 
       <!-- Daftar Testimoni -->
-      <div class="overflow-x-auto rounded-lg border border-gray-200">
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto rounded-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Nama Klien
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Instansi
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Umpan Balik
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Tanggal
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Aksi
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Klien</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instansi</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umpan Balik</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="testimonial in filteredTestimonials"
-              :key="testimonial.id"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ testimonial.id }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ testimonial.client_name }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ testimonial.institution }}
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                {{ testimonial.feedback }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(testimonial.date) }}
-              </td>
+            <tr v-for="testimonial in filteredTestimonials" :key="testimonial.id" class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ testimonial.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ testimonial.client_name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ testimonial.institution }}</td>
+              <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{{ testimonial.feedback }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(testimonial.date) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  @click="openEditModal(testimonial)"
-                  class="text-primary hover:text-primary/80 mr-3 transition"
-                >
-                  <svg
-                    class="w-4 h-4 inline mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
+                <button @click="openEditModal(testimonial)" class="text-primary hover:text-primary/80 mr-3 transition">
+                  <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit
                 </button>
-                <button
-                  @click="confirmDelete(testimonial)"
-                  class="text-red-600 hover:text-red-800 transition"
-                >
-                  <svg
-                    class="w-4 h-4 inline mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
+                <button @click="confirmDelete(testimonial)" class="text-red-600 hover:text-red-800 transition">
+                  <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                   Hapus
                 </button>
@@ -138,6 +75,37 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="lg:hidden space-y-4">
+        <div v-for="testimonial in filteredTestimonials" :key="testimonial.id" class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ testimonial.client_name }}</h3>
+              <p class="text-sm text-gray-500">{{ testimonial.institution }}</p>
+            </div>
+            <span class="text-xs text-gray-400">#{{ testimonial.id }}</span>
+          </div>
+          <p class="text-sm text-gray-700 mb-3 line-clamp-2">{{ testimonial.feedback }}</p>
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+            <span>{{ formatDate(testimonial.date) }}</span>
+          </div>
+          <div class="flex gap-2">
+            <button @click="openEditModal(testimonial)" class="flex-1 px-3 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit
+            </button>
+            <button @click="confirmDelete(testimonial)" class="flex-1 px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Hapus
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Pagination -->

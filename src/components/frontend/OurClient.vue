@@ -150,7 +150,8 @@ const getLogoUrl = (client: OurClient): string => {
     if (client.logo_path.startsWith('http://') || client.logo_path.startsWith('https://')) {
       return client.logo_path
     }
-    return `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://127.0.0.1:8000'}/storage/${client.logo_path}`
+    const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+    return `${cdnUrl}/${client.logo_path}`
   }
   return 'https://placehold.co/300x200/e5e7eb/6b7280?text=No+Logo'
 }

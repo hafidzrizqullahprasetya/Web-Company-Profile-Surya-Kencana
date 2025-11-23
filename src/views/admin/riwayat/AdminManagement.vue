@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Manajemen Admin</h1>
-      <p class="text-gray-600 mt-2">Kelola akun admin sistem</p>
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Admin</h1>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola akun admin sistem</p>
     </div>
 
     <!-- Action Bar -->
-    <div class="mb-6 flex justify-between items-center">
-      <div class="flex-1 max-w-md">
+    <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div class="flex-1 sm:max-w-md">
         <input
           v-model="searchQuery"
           type="text"
@@ -18,10 +18,11 @@
       </div>
       <button
         @click="openModal()"
-        class="ml-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
+        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap"
       >
         <font-awesome-icon :icon="['fas', 'plus']" class="w-5 h-5" />
-        Tambah Admin
+        <span class="hidden sm:inline">Tambah Admin</span>
+        <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 

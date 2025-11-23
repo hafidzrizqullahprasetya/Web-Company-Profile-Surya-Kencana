@@ -45,9 +45,7 @@ const whatsappUrl = computed(() => {
       // If starts with 8, add 62
       formattedNumber = '62' + phoneNumber
     }
-
-    const message = encodeURIComponent('Halo, saya ingin bertanya tentang produk/mesin yang tersedia.')
-    return `https://wa.me/${formattedNumber}?text=${message}`
+    return `https://wa.me/${formattedNumber}`
   }
   return ''
 })
