@@ -11,11 +11,13 @@ trait StorageImageTrait
      * Build image URL dari path dengan file existence check
      *
      * @param string|null $path
-     * @param bool $checkExists - Set false untuk skip check (performance)
+     * @param bool $checkExists
      * @return string|null
      */
-    public function buildImageUrl(?string $path, bool $checkExists = false): ?string
-    {
+    public function buildImageUrl(
+        ?string $path,
+        bool $checkExists = false,
+    ): ?string {
         if (empty($path)) {
             return null;
         }
@@ -36,24 +38,24 @@ trait StorageImageTrait
             }
         }
 
-        $syncEnabled = config('filesystems.sync_enabled', false);
-        $primaryDisk = config('filesystems.primary_disk', 'r2');
-        $disk = $syncEnabled ? $primaryDisk : config('filesystems.default');
+        $disk = config("filesystems.default");
 
         // Untuk disk public (local storage)
-        if ($disk === 'public') {
-            return asset('storage/' . $path);
+        if ($disk === "public") {
+            return asset("storage/" . $path);
         }
 
         // Untuk R2 atau S3
-        if (in_array($disk, ['r2', 's3'])) {
+        if (in_array($disk, ["r2", "s3"])) {
             // Gunakan URL dari config
             $baseUrl = config("filesystems.disks.{$disk}.url");
-            return $baseUrl ? rtrim($baseUrl, '/') . '/' . ltrim($path, '/') : $path;
+            return $baseUrl
+                ? rtrim($baseUrl, "/") . "/" . ltrim($path, "/")
+                : $path;
         }
 
         // Fallback
-        return asset('storage/' . $path);
+        return Storage::disk($disk)->url($path);
     }
 
     /**
@@ -64,12 +66,10 @@ trait StorageImageTrait
      */
     protected function checkFileExists(string $path): bool
     {
-        $cacheKey = 'file_exists:' . md5($path);
+        $cacheKey = "file_exists:" . md5($path);
 
         return Cache::remember($cacheKey, 300, function () use ($path) {
-            $syncEnabled = config('filesystems.sync_enabled', false);
-            $primaryDisk = config('filesystems.primary_disk', 'r2');
-            $disk = $syncEnabled ? $primaryDisk : config('filesystems.default');
+            $disk = config("filesystems.default");
 
             try {
                 return Storage::disk($disk)->exists($path);
@@ -98,12 +98,16 @@ trait StorageImageTrait
                     $this->{$field} = null;
                     $this->saveQuietly(); // Save tanpa trigger events
 
-                    \Log::info("Auto-cleaned missing image from {$table}.{$field}: {$path}");
+                    \Log::info(
+                        "Auto-cleaned missing image from {$table}.{$field}: {$path}",
+                    );
                     break;
                 }
             }
         } catch (\Exception $e) {
-            \Log::warning("Failed to cleanup missing image: " . $e->getMessage());
+            \Log::warning(
+                "Failed to cleanup missing image: " . $e->getMessage(),
+            );
         }
     }
 
@@ -116,6 +120,6 @@ trait StorageImageTrait
     protected function getImageFields(): array
     {
         // Default image field names
-        return ['image_path', 'logo_path', 'background', 'company_logo'];
+        return ["image_path", "logo_path", "background", "company_logo"];
     }
 }
