@@ -117,12 +117,11 @@
                         "
                       </div>
                       <div class="flex gap-1 mb-3">
-                        <font-awesome-icon
+                        <i
                           v-for="star in 5"
                           :key="star"
-                          :icon="['fas', 'star']"
-                          class="w-5 h-5 text-yellow-500 drop-shadow-sm"
-                        />
+                          class="fa-solid fa-star w-5 h-5 text-yellow-500 drop-shadow-sm"
+                        ></i>
                       </div>
                     </div>
 

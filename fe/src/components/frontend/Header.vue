@@ -181,7 +181,7 @@
                 size="sm"
               >
                 <span>Admin Login</span>
-                <font-awesome-icon :icon="['fas', 'user']" class="w-4 h-4" />
+                <i class="fa-solid fa-user w-4 h-4"></i>
               </BadgeButton>
             </div>
 
@@ -191,7 +191,7 @@
                 type="button"
                 :class="[
                   'mobile-menu-btn p-2 transition-all duration-300',
-                  isOnPrimarySection ? 'text-primary' : 'text-white'
+                  isOnPrimarySection ? 'text-primary' : 'text-white',
                 ]"
               >
                 <span class="sr-only">Toggle navigation</span>
@@ -200,21 +200,21 @@
                     :class="[
                       'line w-7 h-0.5 transition-all duration-300',
                       isOnPrimarySection ? 'bg-primary' : 'bg-white',
-                      { 'rotate-45 translate-y-2': isMobileMenuOpen }
+                      { 'rotate-45 translate-y-2': isMobileMenuOpen },
                     ]"
                   ></span>
                   <span
                     :class="[
                       'line w-7 h-0.5 transition-all duration-300',
                       isOnPrimarySection ? 'bg-primary' : 'bg-white',
-                      { 'opacity-0': isMobileMenuOpen }
+                      { 'opacity-0': isMobileMenuOpen },
                     ]"
                   ></span>
                   <span
                     :class="[
                       'line w-7 h-0.5 transition-all duration-300',
                       isOnPrimarySection ? 'bg-primary' : 'bg-white',
-                      { '-rotate-45 -translate-y-2': isMobileMenuOpen }
+                      { '-rotate-45 -translate-y-2': isMobileMenuOpen },
                     ]"
                   ></span>
                 </div>
@@ -255,7 +255,7 @@
               @click="toggleMobileMenu"
               class="mobile-close-btn text-white text-2xl p-2 transition-all duration-300 hover:text-cream hover:rotate-90"
             >
-              <font-awesome-icon :icon="['fas', 'times']" />
+              <i class="fa-solid fa-times"></i>
             </button>
           </div>
 
@@ -361,7 +361,7 @@
                 class="w-full"
               >
                 <span>Admin Login</span>
-                <font-awesome-icon :icon="['fas', 'user']" class="w-5 h-5" />
+                <i class="fa-solid fa-user w-5 h-5"></i>
               </BadgeButton>
             </div>
           </div>
@@ -408,7 +408,7 @@ const scrollToSection = (event: Event, sectionId: string) => {
 
   const element = document.getElementById(sectionId)
   if (element) {
-    const headerOffset = 120 
+    const headerOffset = 120
     const elementPosition = element.getBoundingClientRect().top
     const offsetPosition = elementPosition + window.pageYOffset - headerOffset
 

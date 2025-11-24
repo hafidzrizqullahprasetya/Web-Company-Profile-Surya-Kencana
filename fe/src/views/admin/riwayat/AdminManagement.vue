@@ -20,7 +20,7 @@
         @click="openModal()"
         class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap"
       >
-        <font-awesome-icon :icon="['fas', 'plus']" class="w-5 h-5" />
+        <i class="fa-solid fa-plus w-5 h-5"></i>
         <span class="hidden sm:inline">Tambah Admin</span>
         <span class="sm:hidden">Tambah</span>
       </button>
@@ -47,7 +47,7 @@
           <div class="flex items-start justify-between mb-4">
             <div class="flex items-center gap-3">
               <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <font-awesome-icon :icon="['fas', 'user']" class="w-6 h-6 text-primary" />
+                <i class="fa-solid fa-user w-6 h-6 text-primary"></i>
               </div>
               <div>
                 <h3 class="text-lg font-bold text-gray-900">
@@ -61,22 +61,22 @@
                 @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
               >
-                <font-awesome-icon v-if="showPassword" :icon="['fas', 'eye']" class="w-5 h-5" />
-                <font-awesome-icon v-else :icon="['fas', 'eye-slash']" class="w-5 h-5" />
+                <i v-if="showPassword" class="fa-solid fa-eye w-5 h-5"></i>
+                <i v-else class="fa-solid fa-eye-slash w-5 h-5"></i>
               </button>
               <button
                 @click="confirmDelete(admin)"
                 class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
                 title="Hapus"
               >
-                <font-awesome-icon :icon="['fas', 'trash']" class="w-5 h-5" />
+                <i class="fa-solid fa-trash w-5 h-5"></i>
               </button>
             </div>
           </div>
 
           <div v-if="admin.created_at" class="space-y-2 text-sm">
             <div class="flex items-center text-gray-600">
-              <font-awesome-icon :icon="['fas', 'clock']" class="w-4 h-4 mr-2" />
+              <i class="fa-solid fa-clock w-4 h-4 mr-2"></i>
               <span>Dibuat: {{ formatDate(admin.created_at) }}</span>
             </div>
           </div>
@@ -166,8 +166,8 @@
                 @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
               >
-                <font-awesome-icon v-if="showPassword" :icon="['fas', 'eye']" class="w-5 h-5" />
-                <font-awesome-icon v-else :icon="['fas', 'eye-slash']" class="w-5 h-5" />
+                <i v-if="showPassword" class="fa-solid fa-eye w-5 h-5"></i>
+                <i v-else class="fa-solid fa-eye-slash w-5 h-5"></i>
               </button>
             </div>
             <p class="text-xs text-gray-500 mt-1">Minimal 6 karakter</p>

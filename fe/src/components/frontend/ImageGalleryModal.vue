@@ -22,7 +22,7 @@
           class="text-gray-500 hover:text-gray-700 transition p-2 rounded-full hover:bg-gray-100"
           aria-label="Close modal"
         >
-          <font-awesome-icon :icon="['fas', 'times']" class="w-6 h-6" />
+          <i class="fa-solid fa-times w-6 h-6"></i>
         </button>
       </div>
 
@@ -61,14 +61,14 @@
                   class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
                   aria-label="Previous image"
                 >
-                  <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-6 h-6" />
+                  <i class="fa-solid fa-chevron-left w-6 h-6"></i>
                 </button>
                 <button
                   @click="nextImage"
                   class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
                   aria-label="Next image"
                 >
-                  <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-6 h-6" />
+                  <i class="fa-solid fa-chevron-right w-6 h-6"></i>
                 </button>
 
                 <!-- Image Counter -->

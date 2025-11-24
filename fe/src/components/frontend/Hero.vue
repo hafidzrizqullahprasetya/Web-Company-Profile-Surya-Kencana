@@ -96,10 +96,7 @@
               <span
                 class="text-white font-semibold text-sm py-2.5 px-6 bg-cream/20 backdrop-blur-md rounded-full inline-flex items-center gap-2 border border-cream/30 animate-slide-in-left"
               >
-                <font-awesome-icon
-                  :icon="['fas', 'map-marker-alt']"
-                  class="flex-shrink-0 text-white w-3.5 h-3.5"
-                />
+                <i class="fa-solid fa-map-marker-alt flex-shrink-0 text-white w-3.5 h-3.5"></i>
                 {{ heroData.location }}
               </span>
             </div>
@@ -115,7 +112,7 @@
             <div class="animate-fade-in animation-delay-400">
               <BadgeButton :href="whatsappUrl" target="_blank">
                 <span>Hubungi Kami</span>
-                <font-awesome-icon :icon="['fas', 'external-link-alt']" class="w-5 h-5" />
+                <i class="fa-solid fa-external-link-alt w-5 h-5"></i>
               </BadgeButton>
             </div>
           </div>
@@ -135,7 +132,7 @@
           <div
             class="flex items-center justify-center w-20 h-20 bg-cream/10 rounded-full mx-auto mb-4 text-white transition-all duration-300 border-2 border-cream/20 hover:bg-cream/20 hover:scale-110 hover:text-cream"
           >
-            <font-awesome-icon :icon="['fas', stat.icon]" class="w-8 h-8 text-3xl" />
+            <i :class="['fa-solid', 'fa-' + stat.icon, 'w-8 h-8 text-3xl']"></i>
           </div>
           <div
             class="text-4xl font-epilogue font-extrabold text-white mb-2 transition-all duration-300 hover:scale-110 hover:text-cream leading-tight"
@@ -215,7 +212,7 @@ const startBackgroundSlider = () => {
       currentBackgroundIndex.value =
         (currentBackgroundIndex.value + 1) % heroData.value.backgrounds.length
     }
-  }, 5000) 
+  }, 5000)
 }
 
 const stats = computed(() => {

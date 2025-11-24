@@ -20,7 +20,7 @@
             class="flex-shrink-0 w-10 h-10 bg-primary text-white rounded-full hover:bg-secondary transition-all duration-300 flex items-center justify-center hover:scale-110"
             aria-label="Scroll tabs left"
           >
-            <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-5 h-5" />
+            <i class="fa-solid fa-chevron-left w-5 h-5"></i>
           </button>
 
           <!-- Tabs Container with Scroll - Fixed Width untuk pas 3 tabs -->
@@ -56,12 +56,12 @@
             class="flex-shrink-0 w-10 h-10 bg-primary text-white rounded-full hover:bg-secondary transition-all duration-300 flex items-center justify-center hover:scale-110"
             aria-label="Scroll tabs right"
           >
-            <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-5 h-5" />
+            <i class="fa-solid fa-chevron-right w-5 h-5"></i>
           </button>
         </div>
 
         <!-- Page Dots - Show dots for all products -->
-         <div
+        <div
           v-if="!isLoading && products && products.length > 3"
           class="flex items-center gap-3 justify-center mt-6"
         >
@@ -133,7 +133,7 @@
                     class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary px-6 py-3 rounded-full text-base font-semibold flex items-center gap-2"
                   >
                     <span>Lihat Detail</span>
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-5 h-5" />
+                    <i class="fa-solid fa-arrow-right w-5 h-5"></i>
                   </div>
                 </div>
               </div>
@@ -167,7 +167,7 @@
                   <div
                     class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/70 mb-2"
                   >
-                    <font-awesome-icon :icon="['fas', 'tag']" class="w-4 h-4" />
+                    <i class="fa-solid fa-tag w-4 h-4"></i>
                     <span>HARGA</span>
                   </div>
                   <div class="text-3xl font-epilogue font-bold text-white">
@@ -184,7 +184,7 @@
                     class="w-full"
                   >
                     <span>Hubungi Kami</span>
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-5 h-5" />
+                    <i class="fa-solid fa-arrow-right w-5 h-5"></i>
                   </BadgeButton>
                 </div>
               </div>
@@ -221,7 +221,7 @@
               :class="currentPage === 0 ? '' : 'hover:-translate-x-1 hover:scale-110'"
               aria-label="Previous page"
             >
-              <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-6 h-6" />
+              <i class="fa-solid fa-chevron-left w-6 h-6"></i>
             </button>
 
             <div
@@ -239,7 +239,7 @@
               "
               aria-label="Next page"
             >
-              <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-6 h-6" />
+              <i class="fa-solid fa-chevron-right w-6 h-6"></i>
             </button>
           </div>
         </div>
@@ -419,7 +419,8 @@ const getImageUrl = (imagePath: string | undefined): string => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath
   }
-  const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+  const cdnUrl =
+    import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
   return `${cdnUrl}/${imagePath}`
 }
 

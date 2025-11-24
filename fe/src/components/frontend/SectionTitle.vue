@@ -6,7 +6,15 @@
       class="inline-flex items-center gap-3 mb-10 px-12 py-4 rounded-lg"
       :class="[labelVariant === 'inverted' ? 'bg-white text-primary' : 'bg-primary text-white']"
     >
-      <font-awesome-icon v-if="icon" :icon="icon" class="w-5 h-5" />
+      <i
+        v-if="icon"
+        :class="[
+          Array.isArray(icon)
+            ? (icon[0] === 'fab' ? 'fa-brands' : 'fa-solid') + ' fa-' + icon[1]
+            : 'fa-solid fa-' + icon,
+          'w-5 h-5',
+        ]"
+      ></i>
       <span class="text-xl font-bold uppercase">
         {{ label }}
       </span>

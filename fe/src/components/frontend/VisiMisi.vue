@@ -78,7 +78,7 @@
               <div
                 class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
               >
-                <font-awesome-icon :icon="['fas', 'eye']" class="w-8 h-8 text-white" />
+                <i class="fa-solid fa-eye w-8 h-8 text-white"></i>
               </div>
               <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
                 VISI KAMI
@@ -105,7 +105,7 @@
               <div
                 class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
               >
-                <font-awesome-icon :icon="['fas', 'star']" class="w-8 h-8 text-white" />
+                <i class="fa-solid fa-star w-8 h-8 text-white"></i>
               </div>
               <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
                 MISI KAMI
@@ -133,7 +133,7 @@
       <div class="text-center">
         <BadgeButton :href="whatsappUrl" target="_blank">
           <span>Hubungi Kami</span>
-          <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-5 h-5" />
+          <i class="fa-solid fa-arrow-right w-5 h-5"></i>
         </BadgeButton>
       </div>
     </div>

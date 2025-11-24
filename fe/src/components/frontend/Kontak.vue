@@ -36,8 +36,9 @@
               <div
                 class="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center"
               >
-                <font-awesome-icon :icon="['fas', 'map-marker-alt']" class="w-8 h-8" />
+                <i class="fa-solid fa-map-marker-alt w-8 h-8"></i>
               </div>
+              <h3 class="text-white text-xl font-bold mb-2">Location</h3>
               <div>
                 <h3
                   class="text-2xl font-epilogue font-bold uppercase tracking-wide text-white mb-3"
@@ -56,8 +57,9 @@
               <div
                 class="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center"
               >
-                <font-awesome-icon :icon="['fab', 'whatsapp']" class="w-8 h-8" />
+                <i class="fa-brands fa-whatsapp w-8 h-8"></i>
               </div>
+              <h3 class="text-white text-xl font-bold mb-2">WhatsApp</h3>
               <div>
                 <h3
                   class="text-2xl font-epilogue font-bold uppercase tracking-wide text-white mb-3"
@@ -80,8 +82,9 @@
               <div
                 class="w-16 h-16 bg-white/20 text-white rounded-full flex items-center justify-center"
               >
-                <font-awesome-icon :icon="['fas', 'envelope']" class="w-8 h-8" />
+                <i class="fa-solid fa-envelope w-8 h-8"></i>
               </div>
+              <h3 class="text-white text-xl font-bold mb-2">Email</h3>
               <div>
                 <h3
                   class="text-2xl font-epilogue font-bold uppercase tracking-wide text-white mb-3"
@@ -101,7 +104,9 @@
 
         <!-- WhatsApp Form Section -->
         <div class="mb-16">
-          <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-2xl overflow-hidden">
+          <div
+            class="bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-2xl overflow-hidden"
+          >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
               <!-- Left Side - Form -->
               <div class="p-8 sm:p-12 bg-white">
@@ -121,8 +126,10 @@
                       Nama Lengkap <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <font-awesome-icon :icon="['fas', 'user']" class="text-primary" />
+                      <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                      >
+                        <i class="fa-solid fa-user text-primary"></i>
                       </div>
                       <input
                         v-model="formData.name"
@@ -142,7 +149,7 @@
                     </label>
                     <div class="relative">
                       <div class="absolute top-3 left-0 pl-4 pointer-events-none">
-                        <font-awesome-icon :icon="['fas', 'comment-dots']" class="text-primary" />
+                        <i class="fa-solid fa-comment-dots text-primary"></i>
                       </div>
                       <textarea
                         v-model="formData.message"
@@ -160,19 +167,24 @@
                     type="submit"
                     class="w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 group"
                   >
-                    <font-awesome-icon :icon="['fab', 'whatsapp']" class="text-2xl group-hover:scale-110 transition-transform" />
+                    <i
+                      class="fa-brands fa-whatsapp text-2xl group-hover:scale-110 transition-transform"
+                    ></i>
                     <span class="text-lg">Chat via WhatsApp</span>
                   </button>
                 </form>
               </div>
 
               <!-- Right Side - Decoration -->
-              <div class="hidden lg:flex items-center justify-center p-12 bg-primary to-secondary relative overflow-hidden">
-
+              <div
+                class="hidden lg:flex items-center justify-center p-12 bg-primary to-secondary relative overflow-hidden"
+              >
                 <!-- WhatsApp Icon -->
                 <div class="relative z-10 text-center">
-                  <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
-                    <font-awesome-icon :icon="['fab', 'whatsapp']" class="text-white text-6xl" />
+                  <div
+                    class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm"
+                  >
+                    <i class="fa-brands fa-whatsapp text-white text-6xl"></i>
                   </div>
                   <h4 class="text-white text-2xl font-bold mb-3">Respon Cepat</h4>
                   <p class="text-white/90 text-lg">Tim kami siap membantu Anda</p>
@@ -220,7 +232,7 @@ const { data: landingPageData, isLoading } = useLandingPageData()
 // Form data
 const formData = reactive({
   name: '',
-  message: ''
+  message: '',
 })
 
 // Use computed properties to extract specific data

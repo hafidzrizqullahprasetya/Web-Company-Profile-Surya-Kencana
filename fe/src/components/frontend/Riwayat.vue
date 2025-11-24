@@ -102,7 +102,7 @@
                           class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"
                         >
                           <span>Lihat Detail</span>
-                          <font-awesome-icon :icon="['fas', 'arrow-right']" class="w-4 h-4" />
+                          <i class="fa-solid fa-arrow-right w-4 h-4"></i>
                         </div>
                       </div>
                     </div>

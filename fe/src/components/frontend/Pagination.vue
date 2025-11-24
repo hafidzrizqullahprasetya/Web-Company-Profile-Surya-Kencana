@@ -35,7 +35,7 @@
         ]"
         aria-label="Previous page"
       >
-        <font-awesome-icon :icon="['fas', 'chevron-left']" class="w-6 h-6" />
+        <i class="fa-solid fa-chevron-left w-6 h-6"></i>
       </button>
 
       <div
@@ -60,7 +60,7 @@
         ]"
         aria-label="Next page"
       >
-        <font-awesome-icon :icon="['fas', 'chevron-right']" class="w-6 h-6" />
+        <i class="fa-solid fa-chevron-right w-6 h-6"></i>
       </button>
     </div>
   </div>
