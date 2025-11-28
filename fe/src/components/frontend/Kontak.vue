@@ -205,15 +205,53 @@
           <div v-if="contactInfo.map_url" class="w-full">
             <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/10">
               <iframe
+                v-if="canEmbed"
                 :src="optimizedMapUrl"
                 width="100%"
                 height="500"
                 style="border: 0"
-                allow="accelerometer"
+                allow="accelerometer; fullscreen"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                sandbox="allow-scripts allow-same-origin allow-popups"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                @error="handleMapError"
+                title="Google Maps Location"
               ></iframe>
+              <div
+                v-else-if="mapLoadError"
+                class="w-full h-[500px] flex flex-col items-center justify-center bg-gray-100 text-gray-600"
+              >
+                <svg
+                  class="w-16 h-16 mb-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <p class="text-lg font-semibold mb-2">Peta Tidak Dapat Dimuat</p>
+                <p v-if="mapErrorMessage" class="text-sm text-gray-500 mb-3">
+                  {{ mapErrorMessage }}
+                </p>
+                <button
+                  v-if="contactInfo?.map_url"
+                  @click="openInGoogleMaps"
+                  class="text-primary hover:underline focus:outline-none"
+                >
+                  Buka di Google Maps →
+                </button>
+              </div>
             </div>
           </div>
         </template>
@@ -223,8 +261,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, reactive } from 'vue'
+import { computed, ref, reactive, onMounted } from 'vue'
 import { useLandingPageData } from '@/composables/useLandingPageData'
+import { useGoogleMaps } from '@/composables/utils'
 import SectionTitle from './SectionTitle.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
@@ -244,11 +283,24 @@ const siteSettings = computed(() => {
   return landingPageData.value?.siteSettings || null
 })
 
-const optimizedMapUrl = computed(() => {
-  if (!contactInfo.value?.map_url) return ''
-  // Strip unnecessary parameters for faster loading
-  return contactInfo.value.map_url.replace(/&g_ep=.*?(&|$)/, '')
+// Google Maps integration with composable
+const mapUrlRef = computed(() => contactInfo.value?.map_url || null)
+const {
+  embedUrl: optimizedMapUrl,
+  hasError: mapLoadError,
+  errorMessage: mapErrorMessage,
+  canEmbed,
+  openInGoogleMaps,
+} = useGoogleMaps(mapUrlRef, {
+  autoConvert: true,
+  onError: (error) => {
+    console.error('Google Maps error:', error)
+  },
 })
+
+const handleMapError = () => {
+  console.warn('Failed to load Google Maps iframe:', mapErrorMessage.value)
+}
 
 const whatsappUrl = computed(() => {
   if (contactInfo.value?.phone) {

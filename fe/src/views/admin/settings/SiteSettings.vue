@@ -1,14 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6 pt-24 sm:pt-28">
     <div class="mb-6 sm:mb-8">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Pengaturan Situs</h1>
-      <p class="text-sm sm:text-base text-gray-600">Kelola nama perusahaan, logo, dan judul bagian</p>
+      <p class="text-sm sm:text-base text-gray-600">
+        Kelola nama perusahaan, logo, dan judul bagian
+      </p>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center py-20">
-      <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    <div v-if="isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <SkeletonLoader type="form" :rows="12" />
     </div>
 
     <!-- Form -->
@@ -30,222 +32,227 @@
       <form @submit.prevent="handleSubmit" class="space-y-8">
         <!-- Page 1: Company Info, Hero, Vision & Mission (3 sections) -->
         <div v-show="currentPage === 0" class="space-y-8 min-h-[600px]">
-        <!-- Company Info Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Company Information</h2>
+          <!-- Company Info Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Company Information</h2>
 
-          <div class="space-y-4">
-            <!-- Company Name -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
-              <input
-                v-model="formData.company_name"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                required
-              />
-            </div>
+            <div class="space-y-4">
+              <!-- Company Name -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                <input
+                  v-model="formData.company_name"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                  required
+                />
+              </div>
 
-            <!-- Company Logo -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
-              <ImageUpload
-                v-model="logoFile"
-                label="Upload Logo"
-                accept="image/*"
-                :max-size="104857600"
-                :current-image-url="formData.company_logo_url"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Hero Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Hero Section</h2>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Hero Title</label>
-              <input
-                v-model="formData.hero_title"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
-              <input
-                v-model="formData.hero_subtitle"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
+              <!-- Company Logo -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+                <ImageUpload
+                  v-model="logoFile"
+                  label="Upload Logo"
+                  accept="image/*"
+                  :max-size="104857600"
+                  :current-image-url="formData.company_logo_url"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Visi Misi Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Vision & Mission Section</h2>
+          <!-- Hero Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Hero Section</h2>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.visi_misi_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.visi_misi_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Hero Title</label>
+                <input
+                  v-model="formData.hero_title"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
+                <input
+                  v-model="formData.hero_subtitle"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Visi Misi Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">
+              Vision & Mission Section
+            </h2>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.visi_misi_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.visi_misi_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Page 2: Products, Clients, Company History (3 sections) -->
         <div v-show="currentPage === 1" class="space-y-8 min-h-[600px]">
-        <!-- Products Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Products Section</h2>
+          <!-- Products Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Products Section</h2>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.produk_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.produk_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.produk_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.produk_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Clients Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Clients Section</h2>
+          <!-- Clients Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Clients Section</h2>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.clients_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.clients_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Company History Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Company History Section</h2>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.riwayat_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.riwayat_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.clients_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.clients_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Company History Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">
+              Company History Section
+            </h2>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.riwayat_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.riwayat_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Page 3: Testimonials & Contact (2 sections + spacer for consistency) -->
         <div v-show="currentPage === 2" class="space-y-8 min-h-[600px]">
-        <!-- Testimonials Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Testimonials Section</h2>
+          <!-- Testimonials Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Testimonials Section</h2>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.testimoni_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.testimoni_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.testimoni_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.testimoni_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Contact Section -->
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Contact Section</h2>
+          <!-- Contact Section -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Contact Section</h2>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-              <input
-                v-model="formData.kontak_label"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <textarea
-                v-model="formData.kontak_title"
-                rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Info Note for Page 3 -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <div class="flex items-start gap-2">
-            <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-            </svg>
-            <div>
-              <p class="font-semibold mb-1">Settings Saved Globally</p>
-              <p>All changes are saved across all pages. Click "Simpan Pengaturan" button below to save your changes.</p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                <input
+                  v-model="formData.kontak_label"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <textarea
+                  v-model="formData.kontak_title"
+                  rows="2"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                ></textarea>
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Info Note for Page 3 -->
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+            <div class="flex items-start gap-2">
+              <i class="fa-solid fa-circle-info w-5 h-5 mt-0.5 flex-shrink-0"></i>
+              <div>
+                <p class="font-semibold mb-1">Settings Saved Globally</p>
+                <p>
+                  All changes are saved across all pages. Click "Simpan Pengaturan" button below to
+                  save your changes.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Pagination -->
@@ -261,7 +268,10 @@
         </div>
 
         <!-- Error Message -->
-        <div v-if="errorMessage" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div
+          v-if="errorMessage"
+          class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+        >
           {{ errorMessage }}
         </div>
 
@@ -274,10 +284,7 @@
           >
             <span v-if="!isSubmitting">Simpan Pengaturan</span>
             <span v-else class="flex items-center gap-2">
-              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+              <i class="fa-solid fa-spinner animate-spin w-5 h-5"></i>
               Menyimpan...
             </span>
           </button>
@@ -291,6 +298,7 @@
 import { ref, onMounted } from 'vue'
 import api, { type SiteSetting } from '@/services/api'
 import ImageUpload from '@/components/common/ImageUpload.vue'
+import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
 import Pagination from '@/components/frontend/Pagination.vue'
 import { useToast } from '@/composables/useToast'
 
@@ -391,7 +399,8 @@ const handleSubmit = async () => {
       response = await api.updateSiteSettings(dataToSend)
     }
 
-    formData.value = { ...response }
+    // Reload data from server to ensure consistency
+    await loadSettings()
     logoFile.value = null
     toast.success('Pengaturan situs berhasil diperbarui!')
   } catch (error) {

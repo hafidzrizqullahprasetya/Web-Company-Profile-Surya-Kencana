@@ -10,7 +10,7 @@ use App\Traits\ClearsLandingPageCache;
 class OurClient extends Model
 {
     use StorageImageTrait, ClearsLandingPageCache;
-    
+
     protected $fillable = [
         'client_name',
         'institution',
@@ -22,7 +22,22 @@ class OurClient extends Model
     protected function logoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->buildImageUrl($this->logo_path),
+            get: fn () => $this->buildImageUrl($this->logo_path, config('performance.image_check.skip_existence_check', true)),
+        );
+    }
+
+    /**
+     * Scope to select only required fields for better performance
+     */
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            "id",
+            "client_name",
+            "institution",
+            "logo_path",
+            "created_at",
+            "updated_at"
         );
     }
 }

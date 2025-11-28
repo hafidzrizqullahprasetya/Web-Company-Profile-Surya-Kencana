@@ -1,8 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 flex items-center justify-center p-4">
+  <div
+    class="min-h-screen bg-gradient-to-br from-primary/10 via-white to-primary/5 flex items-center justify-center p-4"
+  >
     <div class="max-w-2xl w-full text-center">
       <!-- Error Code -->
-      <h1 class="text-9xl md:text-[12rem] font-bold text-primary mb-8 tracking-tighter animate-pulse">
+      <h1
+        class="text-9xl md:text-[12rem] font-bold text-primary mb-8 tracking-tighter animate-pulse"
+      >
         {{ errorCode }}
       </h1>
 
@@ -14,13 +18,20 @@
       <!-- Loading Indicator for Connection Error -->
       <div v-if="errorType === 'connection'" class="mt-8">
         <div class="flex items-center justify-center gap-3 mb-4">
-          <div class="w-3 h-3 bg-primary rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-          <div class="w-3 h-3 bg-primary rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-          <div class="w-3 h-3 bg-primary rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 0ms"
+          ></div>
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 150ms"
+          ></div>
+          <div
+            class="w-3 h-3 bg-primary rounded-full animate-bounce"
+            style="animation-delay: 300ms"
+          ></div>
         </div>
-        <p class="text-gray-600 text-sm">
-          Mencoba terhubung kembali...
-        </p>
+        <p class="text-gray-600 text-sm">Mencoba terhubung kembali...</p>
       </div>
     </div>
   </div>
@@ -58,9 +69,23 @@ const errorTitle = computed(() => {
 
 // Auto retry for connection errors
 let retryInterval: number | undefined
+let retryAttempts = 0
+const MAX_AUTO_RETRIES = 5
 
 const checkConnection = async () => {
   if (errorType.value === 'connection') {
+    retryAttempts++
+
+    // Stop auto-retry after MAX_AUTO_RETRIES attempts
+    if (retryAttempts > MAX_AUTO_RETRIES) {
+      if (retryInterval) {
+        clearInterval(retryInterval)
+        retryInterval = undefined
+      }
+      console.log('Auto-retry stopped after', MAX_AUTO_RETRIES, 'attempts')
+      return
+    }
+
     try {
       // Try to fetch site settings as a health check
       await api.getSiteSettings()
@@ -68,15 +93,15 @@ const checkConnection = async () => {
       window.location.href = '/'
     } catch (error) {
       // Still can't connect, keep retrying
-      console.log('Still unable to connect, retrying...')
+      console.log(`Retry attempt ${retryAttempts}/${MAX_AUTO_RETRIES} failed`)
     }
   }
 }
 
 onMounted(() => {
   if (errorType.value === 'connection') {
-    // Start checking connection every 3 seconds
-    retryInterval = window.setInterval(checkConnection, 3000)
+    // Start checking connection every 5 seconds (less aggressive)
+    retryInterval = window.setInterval(checkConnection, 5000)
   }
 })
 
@@ -89,7 +114,8 @@ onUnmounted(() => {
 
 <style scoped>
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }

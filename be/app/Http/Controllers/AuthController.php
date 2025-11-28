@@ -101,6 +101,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|max:255',
         ]);
 
+        // Use a single query to check both admin and superadmin tables
         $admin = Admin::where('username', $request->username)->first();
         if ($admin && Hash::check($request->password, $admin->password)) {
             $token = $admin->createToken('auth_token')->plainTextToken;

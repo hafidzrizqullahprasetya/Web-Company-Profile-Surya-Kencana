@@ -1,29 +1,31 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6 pt-24 sm:pt-28">
     <div class="mb-6 sm:mb-8">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Hero Section</h1>
-      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola tampilan utama halaman depan website Anda</p>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">
+        Kelola tampilan utama halaman depan website Anda
+      </p>
     </div>
 
-    <div v-if="isLoading" class="flex justify-center items-center py-16">
-      <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    <!-- Skeleton Loading -->
+    <div v-if="isLoading" class="space-y-6">
+      <SkeletonLoader type="card" />
+      <SkeletonLoader type="form" :rows="6" />
     </div>
 
     <div v-else class="space-y-6">
       <!-- Background Images Slider Section -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Gambar Background Slider</h2>
-        <p class="text-sm text-gray-600 mb-4">Upload beberapa gambar untuk slider hero section (Max 100MB per gambar)</p>
+        <p class="text-sm text-gray-600 mb-4">
+          Upload beberapa gambar untuk slider hero section (Max 100MB per gambar)
+        </p>
 
         <!-- Existing Backgrounds -->
         <div v-if="existingBackgrounds.length > 0" class="mb-6">
           <h3 class="text-sm font-medium text-gray-700 mb-3">Gambar Saat Ini:</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div
-              v-for="(bg, index) in existingBackgrounds"
-              :key="index"
-              class="relative group"
-            >
+            <div v-for="(bg, index) in existingBackgrounds" :key="index" class="relative group">
               <img
                 :src="getBackgroundUrl(bg)"
                 :alt="`Background ${index + 1}`"
@@ -35,9 +37,7 @@
                 class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 title="Hapus gambar"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <i class="fa-solid fa-xmark w-4 h-4"></i>
               </button>
             </div>
           </div>
@@ -45,9 +45,7 @@
 
         <!-- Upload New Backgrounds -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Tambah Gambar Baru
-          </label>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Tambah Gambar Baru </label>
           <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
             <input
               ref="fileInput"
@@ -62,9 +60,7 @@
               @click="$refs.fileInput.click()"
               class="w-full flex flex-col items-center justify-center text-gray-600 hover:text-primary transition"
             >
-              <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
+              <i class="fa-solid fa-cloud-arrow-up w-12 h-12 mb-2 text-3xl"></i>
               <span class="text-sm font-medium">Klik untuk upload gambar</span>
               <span class="text-xs text-gray-500 mt-1">Maks. 100MB per gambar</span>
             </button>
@@ -74,11 +70,7 @@
           <div v-if="newBackgroundFiles.length > 0" class="mt-4">
             <h4 class="text-sm font-medium text-gray-700 mb-2">Preview Gambar Baru:</h4>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div
-                v-for="(file, index) in newBackgroundFiles"
-                :key="index"
-                class="relative group"
-              >
+              <div v-for="(file, index) in newBackgroundFiles" :key="index" class="relative group">
                 <img
                   :src="getPreviewUrl(file)"
                   :alt="`Preview ${index + 1}`"
@@ -90,11 +82,11 @@
                   class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Hapus gambar"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <i class="fa-solid fa-xmark w-4 h-4"></i>
                 </button>
-                <span class="absolute bottom-2 left-2 text-xs bg-black/50 text-white px-2 py-1 rounded">
+                <span
+                  class="absolute bottom-2 left-2 text-xs bg-black/50 text-white px-2 py-1 rounded"
+                >
                   {{ formatFileSize(file.size) }}
                 </span>
               </div>
@@ -104,9 +96,14 @@
       </div>
 
       <!-- Hero Content Form -->
-      <form @submit.prevent="saveHero" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <form
+        @submit.prevent="saveHero"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
         <h2 class="text-xl font-bold text-gray-900 mb-6">Konten Hero Section</h2>
-        <p class="text-sm text-gray-600 mb-6">Semua field bersifat opsional. Isi hanya yang diperlukan.</p>
+        <p class="text-sm text-gray-600 mb-6">
+          Semua field bersifat opsional. Isi hanya yang diperlukan.
+        </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Kolom Kiri -->
@@ -201,7 +198,10 @@
         </div>
 
         <!-- Error Message -->
-        <div v-if="errorMessage" class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div
+          v-if="errorMessage"
+          class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+        >
           {{ errorMessage }}
         </div>
 
@@ -214,10 +214,7 @@
           >
             <span v-if="!isSaving">Simpan Perubahan</span>
             <span v-else class="flex items-center gap-2">
-              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+              <i class="fa-solid fa-spinner animate-spin w-4 h-4"></i>
               Menyimpan...
             </span>
           </button>
@@ -229,6 +226,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
 import api from '@/services/api'
 import type { Hero } from '@/services/api'
 import { useToast } from '@/composables/useToast'
@@ -276,7 +274,7 @@ const handleFileSelect = (event: Event) => {
   const files = Array.from(target.files || [])
 
   // Validate file sizes
-  const validFiles = files.filter(file => {
+  const validFiles = files.filter((file) => {
     if (file.size > MAX_FILE_SIZE) {
       toast.error(`File ${file.name} terlalu besar (maks. 100MB)`)
       return false
@@ -301,7 +299,8 @@ const getBackgroundUrl = (path: string): string => {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path
   }
-  const cdnUrl = import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
+  const cdnUrl =
+    import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
   return `${cdnUrl}/${path}`
 }
 
@@ -314,7 +313,7 @@ const formatFileSize = (bytes: number): string => {
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 const saveHero = async () => {
@@ -329,9 +328,12 @@ const saveHero = async () => {
     if (hero.value.title) formData.append('title', hero.value.title)
     if (hero.value.machines !== undefined) formData.append('machines', String(hero.value.machines))
     if (hero.value.clients !== undefined) formData.append('clients', String(hero.value.clients))
-    if (hero.value.customers !== undefined) formData.append('customers', String(hero.value.customers))
-    if (hero.value.experience_years !== undefined) formData.append('experience_years', String(hero.value.experience_years))
-    if (hero.value.trust_years !== undefined) formData.append('trust_years', String(hero.value.trust_years))
+    if (hero.value.customers !== undefined)
+      formData.append('customers', String(hero.value.customers))
+    if (hero.value.experience_years !== undefined)
+      formData.append('experience_years', String(hero.value.experience_years))
+    if (hero.value.trust_years !== undefined)
+      formData.append('trust_years', String(hero.value.trust_years))
 
     // Add new background images
     if (newBackgroundFiles.value.length > 0) {

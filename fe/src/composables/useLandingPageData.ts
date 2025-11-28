@@ -1,9 +1,9 @@
 import { ref, onMounted } from 'vue'
-import api, { type LandingPageData } from '@/services/api'
+import { landingPageApi, type LandingPageData } from '@/services'
 
 // --- KONFIGURASI SMART CACHE ---
-const CACHE_KEY = 'landing_page_data_prod' 
-const ENABLE_CACHE = true 
+const CACHE_KEY = 'landing_page_data_prod'
+const ENABLE_CACHE = true
 
 // State Global (Singleton)
 const landingPageData = ref<LandingPageData | null>(null)
@@ -51,7 +51,7 @@ const saveToCache = (data: LandingPageData) => {
 }
 
 export function useLandingPageData() {
-  const fetchLandingPageData = async (forceRefresh = false) => {
+  const fetchLandingPageData = async (forceRefresh = false): Promise<void> => {
     // Hindari double fetch
     if (fetchPromise) return fetchPromise
 
@@ -62,15 +62,17 @@ export function useLandingPageData() {
     const hasCache = !forceRefresh && loadFromCache()
 
     // 2. Fetch ke Backend (Revalidasi)
-    fetchPromise = api
+    fetchPromise = landingPageApi
       .getLandingPageData()
       .then((newData) => {
         const currentData = landingPageData.value
         const isDifferent =
           !currentData ||
-          JSON.stringify(newData.siteSettings) !== JSON.stringify(currentData.siteSettings) ||
-          newData.products.length !== currentData.products.length ||
-          newData.heroes.length !== currentData.heroes.length
+          (newData.cacheVersion && currentData.cacheVersion
+            ? newData.cacheVersion !== currentData.cacheVersion
+            : JSON.stringify(newData.siteSettings) !== JSON.stringify(currentData.siteSettings) ||
+              JSON.stringify(newData.hero) !== JSON.stringify(currentData.hero) ||
+              newData.products.length !== currentData.products.length)
 
         if (isDifferent || forceRefresh) {
           landingPageData.value = newData
@@ -84,8 +86,11 @@ export function useLandingPageData() {
       })
       .catch((err) => {
         console.error('Gagal fetch data server:', err)
+
+        // Use cache if available
         if (!hasCache) {
           error.value = err.message || 'Gagal memuat data.'
+          console.error('❌ Gagal fetch dan tidak ada cache.')
         } else {
           console.warn('⚠️ Menggunakan data cache offline.')
         }
@@ -99,7 +104,7 @@ export function useLandingPageData() {
   }
 
   // Paksa ambil ulang (misal tombol refresh manual)
-  const refresh = async () => {
+  const refresh = async (): Promise<void> => {
     await fetchLandingPageData(true)
   }
 

@@ -35,8 +35,17 @@ class TestimonialController extends Controller
      */
     public function index()
     {
-        $testimonial = Testimonial::all();
-        return response()->json($testimonial);
+        // Cache testimonials for better performance
+        $cacheKey = config("performance.cached_endpoints.testimonial.key");
+        $cacheTtl = config("performance.cached_endpoints.testimonial.ttl");
+
+        $testimonials = cache()->remember($cacheKey, $cacheTtl, function () {
+            return Testimonial::performanceSelect()
+                ->orderBy("date", "desc")
+                ->get();
+        });
+
+        return response()->json($testimonials);
     }
 
     /**
@@ -125,21 +134,27 @@ class TestimonialController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_name' => 'required|string',
-            'institution' => 'required|string',
-            'feedback' => 'required|string',
-            'date' => 'required|date',
+            "client_name" => "required|string",
+            "institution" => "required|string",
+            "feedback" => "required|string",
+            "date" => "required|date",
         ]);
 
         $testimonial = Testimonial::create($request->all());
 
-        // Clear landing page cache
-        cache()->forget('landing_page_data');
+        // Clear caches
+        cache()->forget(
+            config("performance.cached_endpoints.landing_page.key"),
+        );
+        cache()->forget(config("performance.cached_endpoints.testimonial.key"));
 
-        return response()->json([
-            "message" => "Testimonial created successfully",
-            "data" => $testimonial
-        ], 201);
+        return response()->json(
+            [
+                "message" => "Testimonial created successfully",
+                "data" => $testimonial,
+            ],
+            201,
+        );
     }
 
     /**
@@ -210,25 +225,38 @@ class TestimonialController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'client_name' => 'required|string',
-            'institution' => 'required|string',
-            'feedback' => 'required|string',
-            'date' => 'required|date',
+            "client_name" => "required|string",
+            "institution" => "required|string",
+            "feedback" => "required|string",
+            "date" => "required|date",
         ]);
 
         $testimonial = Testimonial::find($id);
         if ($testimonial) {
             $testimonial->update($request->all());
 
-            // Clear landing page cache
-            cache()->forget('landing_page_data');
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.testimonial.key",
+                    "testimonial_list",
+                ),
+            );
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.landing_page.key",
+                    "landing_page",
+                ),
+            );
 
             return response()->json([
                 "message" => "Testimonial updated successfully",
-                "data" => $testimonial
+                "data" => $testimonial,
             ]);
         } else {
-            return response()->json(['message' => 'Testimonial not found'], 404);
+            return response()->json(
+                ["message" => "Testimonial not found"],
+                404,
+            );
         }
     }
 
@@ -276,12 +304,27 @@ class TestimonialController extends Controller
         if ($testimonial) {
             $testimonial->delete();
 
-            // Clear landing page cache
-            cache()->forget('landing_page_data');
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.testimonial.key",
+                    "testimonial_list",
+                ),
+            );
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.landing_page.key",
+                    "landing_page",
+                ),
+            );
 
-            return response()->json(['message' => 'Testimonial deleted successfully']);
+            return response()->json([
+                "message" => "Testimonial deleted successfully",
+            ]);
         } else {
-            return response()->json(['message' => 'Testimonial not found'], 404);
+            return response()->json(
+                ["message" => "Testimonial not found"],
+                404,
+            );
         }
     }
 }

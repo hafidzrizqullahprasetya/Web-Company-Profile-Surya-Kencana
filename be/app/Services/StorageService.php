@@ -2,162 +2,186 @@
 
 namespace App\Services;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Http\File;
+use Intervention\Image\Laravel\Facades\Image;
 
 class StorageService
 {
-    /**
-     * Upload file ke storage (R2)
-     * Auto-convert ke WebP untuk performa optimal
-     *
-     * @param UploadedFile $file
-     * @param string $folder
-     * @param bool $convertToWebp - Auto-convert ke WebP (default: true)
-     * @return string Path file yang disimpan
-     */
-    public function upload(
-        UploadedFile $file,
-        string $folder = "",
-        bool $convertToWebp = true,
-    ): string {
-        // Generate nama file yang unik
-        $originalExtension = $file->getClientOriginalExtension();
-        $uuid = Str::uuid();
+    protected $defaultDisk = 'r2';
 
-        // Jika convert to WebP enabled dan file adalah image
-        if ($convertToWebp && $this->isConvertibleImage($originalExtension)) {
-            $filename = $uuid . ".webp";
-            $fileContents = $this->convertToWebP($file);
-        } else {
-            $filename = $uuid . "." . $originalExtension;
-            $fileContents = file_get_contents($file->getRealPath());
-        }
-
-        // Tentukan path lengkap
-        $path = $folder ? "{$folder}/{$filename}" : $filename;
-
-        // Upload ke storage (R2 via default disk)
-        Storage::disk(config("filesystems.default"))->put($path, $fileContents);
-
-        return $path;
-    }
-
-    /**
-     * Check if file extension is convertible to WebP
-     *
-     * @param string $extension
-     * @return bool
-     */
-    protected function isConvertibleImage(string $extension): bool
+    public function __construct()
     {
-        $convertible = ["jpg", "jpeg", "png", "gif"];
-        return in_array(strtolower($extension), $convertible);
+        // Ensure we're using R2 as default, or fallback to s3 if R2 is not configured
+        $this->defaultDisk = $this->getDefaultDisk();
+
+        // Force R2 usage to ensure all files are stored in R2
+        $this->forceR2();
     }
 
     /**
-     * Convert image to WebP format
-     *
-     * @param UploadedFile $file
-     * @param int $quality - WebP quality (0-100, default: 85)
-     * @return string Binary content of WebP image
+     * Get the appropriate disk based on configuration
      */
-    protected function convertToWebP(
-        UploadedFile $file,
-        int $quality = 85,
-    ): string {
-        $sourcePath = $file->getRealPath();
-        $extension = strtolower($file->getClientOriginalExtension());
-
-        // Create image resource based on file type
-        switch ($extension) {
-            case "jpeg":
-            case "jpg":
-                $image = @imagecreatefromjpeg($sourcePath);
-                break;
-            case "png":
-                $image = @imagecreatefrompng($sourcePath);
-                // Preserve transparency
-                imagealphablending($image, false);
-                imagesavealpha($image, true);
-                break;
-            case "gif":
-                $image = @imagecreatefromgif($sourcePath);
-                break;
-            default:
-                throw new \Exception("Unsupported image format: {$extension}");
+    protected function getDefaultDisk(): string
+    {
+        if (config('filesystems.default') === 'r2' && $this->isR2Configured()) {
+            return 'r2';
+        } elseif (config('filesystems.default') === 's3' && $this->isS3Configured()) {
+            return 's3';
+        } else {
+            // Fallback but prefer R2 if possible
+            return $this->isR2Configured() ? 'r2' : (config('filesystems.default') ?: 'r2');
         }
+    }
 
-        if (!$image) {
-            throw new \Exception(
-                "Failed to create image resource from: {$sourcePath}",
+    /**
+     * Check if R2 is properly configured
+     */
+    protected function isR2Configured(): bool
+    {
+        return !empty(config('filesystems.disks.r2.key')) && 
+               !empty(config('filesystems.disks.r2.secret')) && 
+               !empty(config('filesystems.disks.r2.bucket')) && 
+               !empty(config('filesystems.disks.r2.endpoint'));
+    }
+
+    /**
+     * Check if S3 is properly configured
+     */
+    protected function isS3Configured(): bool
+    {
+        return !empty(config('filesystems.disks.s3.key')) && 
+               !empty(config('filesystems.disks.s3.secret')) && 
+               !empty(config('filesystems.disks.s3.bucket'));
+    }
+
+    /**
+     * Upload file to storage
+     */
+    public function upload(UploadedFile $file, string $directory = ''): string
+    {
+        // Ensure we're using the configured disk
+        $disk = $this->defaultDisk;
+
+        // Generate unique filename
+        $filename = $this->generateUniqueFilename($file);
+
+        // Convert image to WebP format
+        if ($this->isImage($file)) {
+            $image = Image::read($file->getRealPath());
+
+            // Convert to WebP with 85% quality
+            $webpImage = $image->toWebp(85);
+
+            // Change filename extension to .webp
+            $filename = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '.webp', $filename);
+
+            // Create temporary file for WebP
+            $tempPath = sys_get_temp_dir() . '/' . $filename;
+            $webpImage->save($tempPath);
+
+            // Upload the WebP file
+            $storedPath = Storage::disk($disk)->putFileAs(
+                $directory,
+                new File($tempPath),
+                $filename,
+                'public'
+            );
+
+            // Clean up temporary file
+            @unlink($tempPath);
+        } else {
+            // For non-image files, upload as is
+            $storedPath = Storage::disk($disk)->putFileAs(
+                $directory,
+                $file,
+                $filename,
+                'public'
             );
         }
 
-        // Convert to WebP using output buffering
-        ob_start();
-        imagewebp($image, null, $quality);
-        $webpContent = ob_get_clean();
-
-        // Free memory
-        imagedestroy($image);
-
-        return $webpContent;
+        return $storedPath;
     }
 
     /**
-     * Delete file dari storage
-     *
-     * @param string $path
-     * @return bool
+     * Delete file from storage
      */
     public function delete(string $path): bool
     {
-        if (empty($path)) {
-            return false;
+        // Ensure we're using the configured disk
+        $disk = $this->defaultDisk;
+
+        if (Storage::disk($disk)->exists($path)) {
+            return Storage::disk($disk)->delete($path);
         }
 
-        // Jika path adalah URL penuh, skip delete
-        if (filter_var($path, FILTER_VALIDATE_URL)) {
-            return false;
-        }
-
-        return Storage::disk(config("filesystems.default"))->delete($path);
+        return true; // File doesn't exist, so deletion is effectively successful
     }
 
     /**
-     * Get URL file
-     *
-     * @param string $path
-     * @return string|null
+     * Get file URL
      */
     public function getUrl(string $path): ?string
     {
-        if (empty($path)) {
-            return null;
+        // Ensure we're using the configured disk
+        $disk = $this->defaultDisk;
+
+        if (Storage::disk($disk)->exists($path)) {
+            return Storage::disk($disk)->url($path);
         }
 
-        // Jika sudah URL penuh, return as is
-        if (filter_var($path, FILTER_VALIDATE_URL)) {
-            return $path;
-        }
-
-        return Storage::disk(config("filesystems.default"))->url($path);
+        return null;
     }
 
     /**
-     * Check if file exists
-     *
-     * @param string $path
-     * @return bool
+     * Generate unique filename to prevent conflicts
      */
-    public function exists(string $path): bool
+    protected function generateUniqueFilename(UploadedFile $file): string
     {
-        if (empty($path) || filter_var($path, FILTER_VALIDATE_URL)) {
-            return false;
+        $extension = $file->getClientOriginalExtension();
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $timestamp = now()->format('YmdHis');
+        $randomString = strtolower(Str::random(8));
+
+        // Create unique name combining original name, timestamp, and random string
+        $uniqueName = $originalName . '_' . $timestamp . '_' . $randomString;
+
+        // Ensure proper extension
+        if ($extension) {
+            $uniqueName .= '.' . $extension;
         }
 
-        return Storage::disk(config("filesystems.default"))->exists($path);
+        return $uniqueName;
+    }
+
+    /**
+     * Force R2 usage for all operations
+     */
+    public function forceR2(): self
+    {
+        if ($this->isR2Configured()) {
+            $this->defaultDisk = 'r2';
+        }
+        
+        return $this;
+    }
+
+    /**
+     * Get the current disk being used
+     */
+    public function getDisk(): string
+    {
+        return $this->defaultDisk;
+    }
+
+    /**
+     * Check if file is an image
+     */
+    protected function isImage(UploadedFile $file): bool
+    {
+        $mimeType = $file->getMimeType();
+        return str_starts_with($mimeType, 'image/');
     }
 }

@@ -1,12 +1,9 @@
 import api from './api'
 
 export const authService = {
-  // Check if user is authenticated by verifying token exists
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token')
   },
-
-  // Get current user info (would typically decode the token or make an API call)
   getCurrentUser() {
     const token = localStorage.getItem('token')
     const userStr = localStorage.getItem('user')

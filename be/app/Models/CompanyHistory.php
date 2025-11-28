@@ -9,7 +9,7 @@ use App\Traits\ClearsLandingPageCache;
 class CompanyHistory extends Model
 {
     use StorageImageTrait, ClearsLandingPageCache;
-    
+
     protected $fillable = [
         'tahun',
         'judul',
@@ -36,5 +36,22 @@ class CompanyHistory extends Model
             return array_map(fn($path) => $this->buildImageUrl($path), $this->images);
         }
         return [];
+    }
+
+    /**
+     * Scope to select only required fields for better performance
+     */
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            'id',
+            'tahun',
+            'judul',
+            'deskripsi',
+            'image_path',
+            'images',
+            'created_at',
+            'updated_at'
+        );
     }
 }

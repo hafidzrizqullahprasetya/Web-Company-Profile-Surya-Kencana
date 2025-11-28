@@ -6,6 +6,7 @@
       <button
         v-for="page in totalPages"
         :key="page"
+        type="button"
         @click="handleGoto(page - 1)"
         class="transition-all duration-500 ease-in-out transform"
         :class="
@@ -24,6 +25,7 @@
     <!-- Navigation Buttons -->
     <div class="flex items-center gap-6">
       <button
+        type="button"
         @click="handlePrev"
         :disabled="currentPage === 0"
         :class="[
@@ -49,6 +51,7 @@
       </div>
 
       <button
+        type="button"
         @click="handleNext"
         :disabled="currentPage === totalPages - 1"
         :class="[

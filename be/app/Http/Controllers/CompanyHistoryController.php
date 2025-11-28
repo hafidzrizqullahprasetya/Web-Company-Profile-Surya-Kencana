@@ -16,7 +16,16 @@ class CompanyHistoryController extends Controller
     }
     public function index()
     {
-        $histories = CompanyHistory::orderBy('tahun', 'asc')->get();
+        // Cache company histories for better performance
+        $cacheKey = config("performance.cached_endpoints.company_history.key");
+        $cacheTtl = config("performance.cached_endpoints.company_history.ttl");
+
+        $histories = cache()->remember($cacheKey, $cacheTtl, function () {
+            return CompanyHistory::performanceSelect()
+                ->orderBy('tahun', 'asc')
+                ->get();
+        });
+
         return response()->json($histories);
     }
 
@@ -60,6 +69,10 @@ class CompanyHistoryController extends Controller
             'image_path' => $imagePath,
             'images' => $imagesPaths,
         ]);
+
+        // Clear caches
+        cache()->forget(config("performance.cached_endpoints.company_history.key"));
+        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
 
         return response()->json([
             'message' => 'Company history created successfully',
@@ -128,6 +141,10 @@ class CompanyHistoryController extends Controller
         $history->fill($updateData);
         $history->save();
 
+        // Clear caches
+        cache()->forget(config("performance.cached_endpoints.company_history.key"));
+        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
+
         return response()->json([
             'message' => 'Company history updated successfully',
             'data' => $history
@@ -154,6 +171,10 @@ class CompanyHistoryController extends Controller
         }
 
         $history->delete();
+
+        // Clear caches
+        cache()->forget(config("performance.cached_endpoints.company_history.key"));
+        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
 
         return response()->json([
             'message' => 'Company history deleted successfully'

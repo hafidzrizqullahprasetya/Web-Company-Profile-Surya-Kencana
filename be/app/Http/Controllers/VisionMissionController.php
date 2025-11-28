@@ -33,8 +33,35 @@ class VisionMissionController extends Controller
      */
     public function index()
     {
-        $visionMissions = VisionMission::all();
-        return response()->json($visionMissions);
+        try {
+            $cacheKey = config(
+                "performance.cached_endpoints.vision_mission.key",
+                "vision_mission",
+            );
+            $cacheTtl = config(
+                "performance.cached_endpoints.vision_mission.ttl",
+                86400,
+            );
+
+            $visionMissions = cache()->remember(
+                $cacheKey,
+                $cacheTtl,
+                function () {
+                    return VisionMission::performanceSelect()->get();
+                },
+            );
+
+            return response()->json($visionMissions);
+        } catch (\Exception $e) {
+            \Log::error("Error fetching vision mission: " . $e->getMessage());
+            return response()->json(
+                [
+                    "vision" => null,
+                    "mission" => null,
+                ],
+                200,
+            );
+        }
     }
 
     /**
@@ -117,23 +144,31 @@ class VisionMissionController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'vision' => 'sometimes|required|string',
-            'mission' => 'sometimes|required|string',
+            "vision" => "sometimes|required|string",
+            "mission" => "sometimes|required|string",
         ]);
 
         $visionMission = VisionMission::first();
         if ($visionMission) {
             $visionMission->update($request->all());
 
-            // Clear landing page cache
-            cache()->forget('landing_page_data');
+            // Clear caches
+            cache()->forget(
+                config("performance.cached_endpoints.vision_mission.key"),
+            );
+            cache()->forget(
+                config("performance.cached_endpoints.landing_page.key"),
+            );
 
             return response()->json([
                 "message" => "Vision and Mission updated successfully",
-                "data" => $visionMission
+                "data" => $visionMission,
             ]);
         } else {
-            return response()->json(['message' => 'Vision and Mission not found'], 404);
+            return response()->json(
+                ["message" => "Vision and Mission not found"],
+                404,
+            );
         }
     }
 }

@@ -18,10 +18,12 @@
                 <!-- Loading skeleton -->
                 <div
                   v-if="!siteSettings?.company_logo_url"
-                  class="h-8 md:h-12 w-24 md:w-32 bg-gray-300 animate-pulse rounded"
-                ></div>
+                  class="inline-block bg-white p-2 rounded-lg"
+                >
+                  <div class="h-8 md:h-12 w-20 md:w-28 bg-gray-300 animate-pulse rounded"></div>
+                </div>
                 <!-- Logo -->
-                <picture v-else>
+                <picture v-else class="inline-block bg-white p-2 rounded-lg">
                   <source
                     :srcset="siteSettings.company_logo_url.replace(/\.(jpg|jpeg|png)$/, '.webp')"
                     type="image/webp"
@@ -30,7 +32,7 @@
                   <img
                     v-lazy="siteSettings.company_logo_url"
                     :alt="siteSettings.company_name + ' Logo'"
-                    class="h-8 md:h-12 transition-all duration-300"
+                    class="h-8 md:h-12 transition-all duration-300 block"
                   />
                 </picture>
               </router-link>
@@ -239,7 +241,7 @@
           <div
             class="mobile-menu-header flex justify-between items-center mb-8 pb-4 border-b border-white/10"
           >
-            <picture v-if="siteSettings?.company_logo_url">
+            <picture v-if="siteSettings?.company_logo_url" class="inline-block bg-white p-2 rounded-lg">
               <source
                 :srcset="siteSettings.company_logo_url.replace(/\.(jpg|jpeg|png)$/, '.webp')"
                 type="image/webp"
@@ -248,7 +250,7 @@
               <img
                 :src="siteSettings.company_logo_url"
                 :alt="siteSettings.company_name + ' Logo'"
-                class="h-8 sm:h-10"
+                class="h-8 sm:h-10 block"
               />
             </picture>
             <button

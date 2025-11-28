@@ -14,7 +14,7 @@
                                     class="max-w-[150px] h-12 bg-white/20 animate-pulse rounded"
                                 ></div>
                                 <!-- Logo -->
-                                <picture v-else>
+                                <picture v-else class="inline-block bg-white p-3 rounded-lg shadow-sm">
                                     <source
                                         :srcset="
                                             siteSettings.company_logo_url.replace(
@@ -31,7 +31,7 @@
                                     <img
                                         v-lazy="siteSettings.company_logo_url"
                                         :alt="siteSettings.company_name + ' Logo'"
-                                        class="max-w-[150px]"
+                                        class="max-w-[100px] h-auto"
                                     />
                                 </picture>
                             </router-link>

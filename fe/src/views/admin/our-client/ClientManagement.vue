@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6 pt-24 sm:pt-28">
     <!-- Header -->
     <div class="mb-6 sm:mb-8">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Client</h1>
@@ -21,21 +21,22 @@
         @click="openModal()"
         class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
+        <i class="fa-solid fa-plus w-5 h-5"></i>
         <span class="hidden sm:inline">Tambah Client</span>
         <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-20">
-      <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    <div v-if="isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <SkeletonLoader type="table" :rows="10" :columns="3" />
     </div>
 
     <!-- Clients Grid -->
-    <div v-else-if="filteredClients.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      v-else-if="filteredClients.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
       <div
         v-for="client in filteredClients"
         :key="client.id"
@@ -57,35 +58,33 @@
               class="p-2 bg-white/90 text-primary rounded-lg hover:bg-white transition shadow-sm"
               title="Edit"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <i class="fa-solid fa-pen w-4 h-4"></i>
             </button>
             <button
               @click="confirmDelete(client)"
               class="p-2 bg-white/90 text-red-500 rounded-lg hover:bg-white transition shadow-sm"
               title="Hapus"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <i class="fa-solid fa-trash w-4 h-4"></i>
             </button>
           </div>
         </div>
 
         <!-- Client Info -->
         <div class="p-5">
-          <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ client.client_name }}</h3>
-          <p class="text-sm text-gray-600 line-clamp-2">{{ client.institution || 'Tidak ada institusi' }}</p>
+          <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+            {{ client.client_name }}
+          </h3>
+          <p class="text-sm text-gray-600 line-clamp-2">
+            {{ client.institution || 'Tidak ada institusi' }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Empty State -->
     <div v-else class="text-center py-20">
-      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
+      <i class="fa-solid fa-users text-gray-400 mx-auto mb-4 w-16 h-16 text-4xl"></i>
       <p class="text-gray-600 text-lg">Belum ada client</p>
       <button
         @click="openModal()"
@@ -107,9 +106,7 @@
             {{ editMode ? 'Edit Client' : 'Tambah Client Baru' }}
           </h2>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i class="fa-solid fa-xmark w-6 h-6"></i>
           </button>
         </div>
 
@@ -130,9 +127,7 @@
 
           <!-- Institusi -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Institusi
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> Institusi </label>
             <input
               v-model="formData.institution"
               type="text"
@@ -156,7 +151,10 @@
           </div>
 
           <!-- Error Message -->
-          <div v-if="errorMessage" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+          <div
+            v-if="errorMessage"
+            class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+          >
             {{ errorMessage }}
           </div>
 
@@ -174,12 +172,11 @@
               :disabled="isSubmitting"
               class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Client' }}</span>
+              <span v-if="!isSubmitting">{{
+                editMode ? 'Simpan Perubahan' : 'Tambah Client'
+              }}</span>
               <span v-else class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <i class="fa-solid fa-spinner animate-spin h-4 w-4"></i>
                 Menyimpan...
               </span>
             </button>
@@ -196,15 +193,16 @@
     >
       <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
         <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+          <div
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+          >
+            <i class="fa-solid fa-circle-exclamation h-6 w-6 text-red-600"></i>
           </div>
           <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Client?</h3>
           <p class="text-sm text-gray-500 mb-6">
-            Apakah Anda yakin ingin menghapus client <strong>{{ clientToDelete?.client_name }}</strong>?
-            Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus client
+            <strong>{{ clientToDelete?.client_name }}</strong
+            >? Tindakan ini tidak dapat dibatalkan.
           </p>
           <div class="flex gap-3">
             <button
@@ -231,6 +229,7 @@
 import { ref, computed, onMounted } from 'vue'
 import api, { type OurClient } from '@/services/api'
 import ImageUpload from '@/components/common/ImageUpload.vue'
+import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
 import { useToast } from '@/composables/useToast'
 
 const toast = useToast()
@@ -258,9 +257,10 @@ const editingId = ref<number | null>(null)
 const filteredClients = computed(() => {
   if (!searchQuery.value) return clients.value
   const query = searchQuery.value.toLowerCase()
-  return clients.value.filter(c =>
-    c.client_name.toLowerCase().includes(query) ||
-    (c.institution && c.institution.toLowerCase().includes(query))
+  return clients.value.filter(
+    (c) =>
+      c.client_name.toLowerCase().includes(query) ||
+      (c.institution && c.institution.toLowerCase().includes(query)),
   )
 })
 

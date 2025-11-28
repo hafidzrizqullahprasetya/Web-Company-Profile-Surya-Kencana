@@ -41,7 +41,16 @@ class OurClientController extends Controller
      */
     public function index()
     {
-        $clients = OurClient::all();
+        // Caching untuk endpoint ini untuk meningkatkan kinerja
+        $cacheKey = config("performance.cached_endpoints.our_client.key");
+        $cacheTtl = config("performance.cached_endpoints.our_client.ttl");
+
+        $clients = cache()->remember($cacheKey, $cacheTtl, function () {
+            return OurClient::performanceSelect()
+                ->orderBy("client_name", "asc")
+                ->get();
+        });
+
         return response()->json($clients);
     }
 
@@ -87,7 +96,7 @@ class OurClientController extends Controller
         if ($client) {
             return response()->json($client);
         } else {
-            return response()->json(['message' => 'Client not found'], 404);
+            return response()->json(["message" => "Client not found"], 404);
         }
     }
 
@@ -172,24 +181,44 @@ class OurClientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_name' => 'required|string',
-            'institution' => 'required|string',
-            'logo_path' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400' // 100MB in KB
+            "client_name" => "required|string",
+            "institution" => "required|string",
+            "logo_path" =>
+                "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);
 
         // Upload logo using StorageService
-        $logoPath = $this->storageService->upload($request->file('logo_path'), 'ourClients');
+        $logoPath = $this->storageService->upload(
+            $request->file("logo_path"),
+            "ourClients",
+        );
 
         $client = OurClient::create([
-            'client_name' => $request->client_name,
-            'institution' => $request->institution,
-            'logo_path' => $logoPath,
+            "client_name" => $request->client_name,
+            "institution" => $request->institution,
+            "logo_path" => $logoPath,
         ]);
 
-        return response()->json([
-            'message' => 'Client created successfully',
-            'data' => $client
-        ], 201);
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.our_client.key",
+                "clients_list",
+            ),
+        );
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.landing_page.key",
+                "landing_page",
+            ),
+        );
+
+        return response()->json(
+            [
+                "message" => "Client created successfully",
+                "data" => $client,
+            ],
+            201,
+        );
     }
 
     /**
@@ -285,30 +314,47 @@ class OurClientController extends Controller
     {
         $client = OurClient::find($id);
         if (!$client) {
-            return response()->json(['message' => 'Client not found'], 404);
+            return response()->json(["message" => "Client not found"], 404);
         }
 
         $request->validate([
-            'client_name' => 'required|string',
-            'institution' => 'required|string',
-            'logo_path' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400' // 100MB in KB
+            "client_name" => "required|string",
+            "institution" => "required|string",
+            "logo_path" =>
+                "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);
 
-        if ($request->hasFile('logo_path')) {
+        if ($request->hasFile("logo_path")) {
             if ($client->logo_path) {
                 // Delete old logo from storage
                 $this->storageService->delete($client->logo_path);
             }
-            $client->logo_path = $this->storageService->upload($request->file('logo_path'), 'ourClients');
+            $client->logo_path = $this->storageService->upload(
+                $request->file("logo_path"),
+                "ourClients",
+            );
         }
 
-        $updateData = $request->only(['client_name', 'institution']);
+        $updateData = $request->only(["client_name", "institution"]);
         $client->fill($updateData);
         $client->save();
 
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.our_client.key",
+                "clients_list",
+            ),
+        );
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.landing_page.key",
+                "landing_page",
+            ),
+        );
+
         return response()->json([
-            'message' => 'Client updated successfully',
-            'data' => $client->fresh()
+            "message" => "Client updated successfully",
+            "data" => $client->fresh(),
         ]);
     }
 
@@ -360,9 +406,25 @@ class OurClientController extends Controller
             }
 
             $client->delete();
-            return response()->json(['message' => 'Client deleted successfully']);
+
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.our_client.key",
+                    "clients_list",
+                ),
+            );
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.landing_page.key",
+                    "landing_page",
+                ),
+            );
+
+            return response()->json([
+                "message" => "Client deleted successfully",
+            ]);
         } else {
-            return response()->json(['message' => 'Client not found'], 404);
+            return response()->json(["message" => "Client not found"], 404);
         }
     }
 }

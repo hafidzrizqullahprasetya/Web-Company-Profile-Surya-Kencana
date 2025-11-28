@@ -9,7 +9,7 @@ use App\Traits\ClearsLandingPageCache;
 class Hero extends Model
 {
     use StorageImageTrait, ClearsLandingPageCache;
-    
+
     protected $fillable = [
         'background',
         'backgrounds',
@@ -39,5 +39,26 @@ class Hero extends Model
             return array_map(fn($path) => $this->buildImageUrl($path), $this->backgrounds);
         }
         return [];
+    }
+
+    /**
+     * Scope to select only required fields for better performance
+     */
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            'id',
+            'background',
+            'backgrounds',
+            'location',
+            'title',
+            'machines',
+            'clients',
+            'customers',
+            'experience_years',
+            'trust_years',
+            'created_at',
+            'updated_at'
+        );
     }
 }

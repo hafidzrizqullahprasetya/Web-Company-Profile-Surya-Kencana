@@ -21,14 +21,7 @@
           class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition shadow-lg"
           title="Remove image"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <i class="fa-solid fa-xmark w-4 h-4"></i>
         </button>
       </div>
     </div>
@@ -44,19 +37,7 @@
       @dragleave.prevent="dragOver = false"
     >
       <div class="flex flex-col items-center">
-        <svg
-          class="w-12 h-12 text-gray-400 mb-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-          />
-        </svg>
+        <i class="fa-solid fa-cloud-arrow-up w-12 h-12 text-gray-400 mb-3 text-2xl"></i>
         <p class="text-sm text-gray-600 mb-1">
           <span class="font-medium text-primary">Click to upload</span> or drag and drop
         </p>

@@ -40,8 +40,28 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admins = Admin::all();
-        return response()->json($admins);
+        try {
+            $config = config("performance.cached_endpoints.admin");
+            $cacheKey = $config["key"] ?? "admins_all";
+            $cacheTtl = $config["ttl"] ?? 1800;
+
+            $admins = cache()->remember($cacheKey, $cacheTtl, function () {
+                return Admin::select(
+                    "id",
+                    "username",
+                    "created_at",
+                    "updated_at",
+                )
+                    ->orderBy("username", "asc")
+                    ->get();
+            });
+
+            return response()->json($admins);
+        } catch (\Exception $e) {
+            return Admin::select("id", "username", "created_at", "updated_at")
+                ->orderBy("username", "asc")
+                ->get();
+        }
     }
 
     /**
@@ -119,15 +139,23 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'required|string|min:6|max:255',
+            "username" => "required|string|max:255",
+            "password" => "required|string|min:6|max:255",
         ]);
 
         $Admin = Admin::create($request->all());
-        return response()->json([
-            "message" => "Admin created successfully",
-            "data" => $Admin
-        ], 201);
+
+        cache()->forget(
+            config("performance.cached_endpoints.admin.key", "admin_list"),
+        );
+
+        return response()->json(
+            [
+                "message" => "Admin created successfully",
+                "data" => $Admin,
+            ],
+            201,
+        );
     }
 
     /**
@@ -205,19 +233,24 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'required|string|min:6|max:255',
+            "username" => "required|string|max:255",
+            "password" => "required|string|min:6|max:255",
         ]);
 
         $Admin = Admin::find($id);
         if ($Admin) {
             $Admin->update($request->all());
+
+            cache()->forget(
+                config("performance.cached_endpoints.admin.key", "admin_list"),
+            );
+
             return response()->json([
                 "message" => "Admin updated successfully",
-                "data" => $Admin
+                "data" => $Admin,
             ]);
         } else {
-            return response()->json(['message' => 'Admin not found'], 404);
+            return response()->json(["message" => "Admin not found"], 404);
         }
     }
 
@@ -264,9 +297,16 @@ class AdminController extends Controller
         $Admin = Admin::find($id);
         if ($Admin) {
             $Admin->delete();
-            return response()->json(['message' => 'Admin deleted successfully']);
+
+            cache()->forget(
+                config("performance.cached_endpoints.admin.key", "admin_list"),
+            );
+
+            return response()->json([
+                "message" => "Admin deleted successfully",
+            ]);
         } else {
-            return response()->json(['message' => 'Admin not found'], 404);
+            return response()->json(["message" => "Admin not found"], 404);
         }
     }
 }

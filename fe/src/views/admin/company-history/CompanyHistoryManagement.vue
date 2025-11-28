@@ -1,9 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="min-h-screen bg-gray-50 p-4 sm:p-6 pt-24 sm:pt-28">
     <!-- Header -->
     <div class="mb-6 sm:mb-8">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Riwayat Perusahaan</h1>
-      <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola timeline dan pencapaian perusahaan Anda</p>
+      <p class="text-sm sm:text-base text-gray-600 mt-2">
+        Kelola timeline dan pencapaian perusahaan Anda
+      </p>
     </div>
 
     <!-- Action Bar -->
@@ -20,17 +22,15 @@
         @click="openModal()"
         class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
+        <i class="fa-solid fa-plus w-5 h-5"></i>
         <span class="hidden sm:inline">Tambah Riwayat</span>
         <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-20">
-      <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    <div v-if="isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <SkeletonLoader type="table" :rows="8" :columns="4" />
     </div>
 
     <!-- Timeline View -->
@@ -40,18 +40,18 @@
 
       <!-- Timeline Items -->
       <div class="space-y-8">
-        <div
-          v-for="history in filteredHistories"
-          :key="history.id"
-          class="relative pl-20 group"
-        >
+        <div v-for="history in filteredHistories" :key="history.id" class="relative pl-20 group">
           <!-- Year Badge -->
-          <div class="absolute left-0 flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full font-bold text-sm shadow-lg">
+          <div
+            class="absolute left-0 flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full font-bold text-sm shadow-lg"
+          >
             {{ history.tahun }}
           </div>
 
           <!-- Content Card -->
-          <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <div
+            class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
+          >
             <!-- Image if exists -->
             <div v-if="history.image_url" class="relative h-48 bg-gray-200 overflow-hidden">
               <img
@@ -72,18 +72,14 @@
                     class="p-2 text-primary hover:bg-primary/10 rounded-lg transition"
                     title="Edit"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                    <i class="fa-solid fa-pen w-5 h-5"></i>
                   </button>
                   <button
                     @click="confirmDelete(history)"
                     class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
                     title="Hapus"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <i class="fa-solid fa-trash w-5 h-5"></i>
                   </button>
                 </div>
               </div>
@@ -96,9 +92,7 @@
 
     <!-- Empty State -->
     <div v-else class="text-center py-20">
-      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+      <i class="fa-solid fa-clock text-gray-400 mx-auto mb-4 text-4xl w-16 h-16"></i>
       <p class="text-gray-600 text-lg">Belum ada riwayat perusahaan</p>
       <button
         @click="openModal()"
@@ -120,9 +114,7 @@
             {{ editMode ? 'Edit Riwayat' : 'Tambah Riwayat Baru' }}
           </h2>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i class="fa-solid fa-xmark w-6 h-6"></i>
           </button>
         </div>
 
@@ -195,11 +187,7 @@
             <div v-if="existingImages.length > 0" class="mb-3">
               <p class="text-sm text-gray-600 mb-2">Gambar yang sudah ada:</p>
               <div class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="(img, index) in existingImages"
-                  :key="index"
-                  class="relative group"
-                >
+                <div v-for="(img, index) in existingImages" :key="index" class="relative group">
                   <img
                     :src="img"
                     class="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
@@ -209,9 +197,7 @@
                     @click="removeExistingImage(index)"
                     class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <i class="fa-solid fa-xmark w-4 h-4"></i>
                   </button>
                 </div>
               </div>
@@ -232,8 +218,18 @@
                 @click="$refs.multipleImagesInput.click()"
                 class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition text-gray-600 hover:text-primary"
               >
-                <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <svg
+                  class="w-6 h-6 mx-auto mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 Upload Gambar
               </button>
@@ -241,11 +237,7 @@
 
               <!-- Preview New Images -->
               <div v-if="newImageFiles.length > 0" class="mt-3 grid grid-cols-3 gap-2">
-                <div
-                  v-for="(file, index) in newImageFiles"
-                  :key="index"
-                  class="relative group"
-                >
+                <div v-for="(file, index) in newImageFiles" :key="index" class="relative group">
                   <img
                     :src="getPreviewUrl(file)"
                     class="w-full h-24 object-cover rounded-lg border-2 border-primary"
@@ -255,9 +247,7 @@
                     @click="removeNewImage(index)"
                     class="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <i class="fa-solid fa-xmark w-4 h-4"></i>
                   </button>
                 </div>
               </div>
@@ -265,7 +255,10 @@
           </div>
 
           <!-- Error Message -->
-          <div v-if="errorMessage" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+          <div
+            v-if="errorMessage"
+            class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+          >
             {{ errorMessage }}
           </div>
 
@@ -283,12 +276,11 @@
               :disabled="isSubmitting"
               class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              <span v-if="!isSubmitting">{{ editMode ? 'Simpan Perubahan' : 'Tambah Riwayat' }}</span>
+              <span v-if="!isSubmitting">{{
+                editMode ? 'Simpan Perubahan' : 'Tambah Riwayat'
+              }}</span>
               <span v-else class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <i class="fa-solid fa-spinner animate-spin w-4 h-4"></i>
                 Menyimpan...
               </span>
             </button>
@@ -305,15 +297,15 @@
     >
       <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
         <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+          <div
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+          >
+            <i class="fa-solid fa-triangle-exclamation h-6 w-6 text-red-600"></i>
           </div>
           <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Riwayat?</h3>
           <p class="text-sm text-gray-500 mb-6">
-            Apakah Anda yakin ingin menghapus riwayat <strong>{{ historyToDelete?.judul }}</strong>?
-            Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus riwayat <strong>{{ historyToDelete?.judul }}</strong
+            >? Tindakan ini tidak dapat dibatalkan.
           </p>
           <div class="flex gap-3">
             <button
@@ -340,6 +332,7 @@
 import { ref, computed, onMounted } from 'vue'
 import api, { type CompanyHistory } from '@/services/api'
 import ImageUpload from '@/components/common/ImageUpload.vue'
+import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
 import { useToast } from '@/composables/useToast'
 
 const toast = useToast()
@@ -373,10 +366,11 @@ const editingId = ref<number | null>(null)
 const filteredHistories = computed(() => {
   if (!searchQuery.value) return histories.value
   const query = searchQuery.value.toLowerCase()
-  return histories.value.filter(h =>
-    h.judul.toLowerCase().includes(query) ||
-    h.deskripsi.toLowerCase().includes(query) ||
-    h.tahun.toString().includes(query)
+  return histories.value.filter(
+    (h) =>
+      h.judul.toLowerCase().includes(query) ||
+      h.deskripsi.toLowerCase().includes(query) ||
+      h.tahun.toString().includes(query),
   )
 })
 
@@ -438,7 +432,7 @@ const handleMultipleImagesSelect = (event: Event) => {
     const files = Array.from(target.files)
     const MAX_SIZE = 104857600 // 100MB
 
-    const validFiles = files.filter(file => {
+    const validFiles = files.filter((file) => {
       if (file.size > MAX_SIZE) {
         toast.error(`File ${file.name} terlalu besar (maks. 100MB)`)
         return false
@@ -486,14 +480,14 @@ const handleSubmit = async () => {
 
     // Append multiple images
     if (newImageFiles.value.length > 0) {
-      newImageFiles.value.forEach(file => {
+      newImageFiles.value.forEach((file) => {
         formDataToSend.append('images[]', file)
       })
     }
 
     // Append images to delete
     if (imagesToDelete.value.length > 0) {
-      imagesToDelete.value.forEach(path => {
+      imagesToDelete.value.forEach((path) => {
         formDataToSend.append('deleted_images[]', path)
       })
     }

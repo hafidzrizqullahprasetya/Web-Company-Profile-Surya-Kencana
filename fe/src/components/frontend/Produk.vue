@@ -260,13 +260,17 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useLandingPageData } from '@/composables/useLandingPageData'
-import type { Product } from '@/services/api'
+import { useLandingPageData, useImageUrl, useFormatting, useWhatsApp, useImageHandling } from '@/composables'
+import type { Product } from '@/types/models'
 import SectionTitle from './SectionTitle.vue'
 import BadgeButton from './BadgeButton.vue'
 import ImageGalleryModal from './ImageGalleryModal.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
+const { getImageUrl, getImageUrlForFormat } = useImageUrl()
+const { formatPrice, formatTitle } = useFormatting()
+const { createWhatsAppUrl } = useWhatsApp()
+const { handleImageError } = useImageHandling()
 
 const products = computed(() => landingPageData.value?.products || [])
 const settings = computed(() => landingPageData.value?.siteSettings || null)
@@ -392,63 +396,9 @@ const closeModal = () => {
 
 // WhatsApp URL with product name
 const getWhatsappUrl = (productName: string) => {
-  if (contactInfo.value?.phone) {
-    const phoneNumber = contactInfo.value.phone.replace(/[^\d+]/g, '')
-    let formattedNumber = phoneNumber
-    if (phoneNumber.startsWith('0')) {
-      formattedNumber = '62' + phoneNumber.substring(1)
-    } else if (phoneNumber.startsWith('8')) {
-      formattedNumber = '62' + phoneNumber
-    }
-
-    const message = encodeURIComponent(`Halo, saya ingin bertanya tentang produk: ${productName}`)
-    return `https://wa.me/${formattedNumber}?text=${message}`
-  }
-  return '#'
+  return createWhatsAppUrl(contactInfo.value, `Halo, saya ingin bertanya tentang produk: ${productName}`)
 }
 
-const formatTitle = (title?: string) => {
-  if (!title) return ''
-  return title.replace(/\n/g, '<br />')
-}
-
-const getImageUrl = (imagePath: string | undefined): string => {
-  if (!imagePath) {
-    return 'https://placehold.co/800x600/e5e7eb/6b7280?text=No+Image'
-  }
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath
-  }
-  const cdnUrl =
-    import.meta.env.VITE_CDN_URL || 'https://pub-2fb44babc7a4420e8fa728891ac101ef.r2.dev'
-  return `${cdnUrl}/${imagePath}`
-}
-
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = 'https://placehold.co/800x600/e5e7eb/6b7280?text=No+Image'
-}
-
-const formatPrice = (price: number | undefined): string => {
-  if (!price) return 'Rp 0'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price)
-}
-
-const getImageUrlForFormat = (url: string, format: string = 'webp'): string => {
-  if (
-    url.includes('placehold.co') ||
-    url.includes('ui-avatars.com') ||
-    !url.match(/\.(jpg|jpeg|png)$/i)
-  ) {
-    return url
-  }
-  return url.replace(/\.(jpg|jpeg|png)$/i, `.${format}`)
-}
 </script>
 
 <style scoped>

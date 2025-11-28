@@ -78,7 +78,7 @@
               <div
                 class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
               >
-                <i class="fa-solid fa-eye w-8 h-8 text-white"></i>
+                <i class="fa-solid fa-eye text-3xl text-white"></i>
               </div>
               <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
                 VISI KAMI
@@ -105,7 +105,7 @@
               <div
                 class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6 transition-all duration-300 hover:scale-110"
               >
-                <i class="fa-solid fa-star w-8 h-8 text-white"></i>
+                <i class="fa-solid fa-star text-3xl text-white"></i>
               </div>
               <h3 class="text-3xl font-epilogue font-bold uppercase tracking-wider mb-3 text-white">
                 MISI KAMI

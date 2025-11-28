@@ -35,8 +35,33 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $contact = Contact::all();
-        return response()->json($contact);
+        try {
+            $cacheKey = config(
+                "performance.cached_endpoints.contact.key",
+                "contact_info",
+            );
+            $cacheTtl = config(
+                "performance.cached_endpoints.contact.ttl",
+                86400,
+            );
+
+            $contacts = cache()->remember($cacheKey, $cacheTtl, function () {
+                return Contact::performanceSelect()->get();
+            });
+
+            return response()->json($contacts);
+        } catch (\Exception $e) {
+            \Log::error("Error fetching contact: " . $e->getMessage());
+            return response()->json(
+                [
+                    "address" => null,
+                    "phone" => null,
+                    "email" => null,
+                    "map_url" => null,
+                ],
+                200,
+            );
+        }
     }
 
     /**
@@ -132,25 +157,27 @@ class ContactController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'address' => 'sometimes|required|string',
-            'phone' => 'sometimes|required|string',
-            'email' => 'sometimes|required|email',
-            'map_url' => 'sometimes|required|url',
+            "address" => "nullable|string",
+            "phone" => "nullable|string|max:20",
+            "email" => "nullable|email|max:255",
+            "map_url" => "nullable|url|max:255",
         ]);
 
         $contact = Contact::first();
         if ($contact) {
             $contact->update($request->all());
 
-            // Clear landing page cache
-            cache()->forget('landing_page_data');
+            cache()->forget(config("performance.cached_endpoints.contact.key"));
+            cache()->forget(
+                config("performance.cached_endpoints.landing_page.key"),
+            );
 
             return response()->json([
                 "message" => "Contact updated successfully",
-                "data" => $contact
+                "data" => $contact,
             ]);
         } else {
-            return response()->json(['message' => 'Contact not found'], 404);
+            return response()->json(["message" => "Contact not found"], 404);
         }
     }
 }

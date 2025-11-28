@@ -15,4 +15,20 @@ class Contact extends Model
         'email',
         'map_url',
     ];
+
+    /**
+     * Scope to select only required fields for better performance
+     */
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            'id',
+            'address',
+            'phone',
+            'email',
+            'map_url',
+            'created_at',
+            'updated_at'
+        );
+    }
 }

@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/components/admin/layouts/AdminLayout.vue'), 
+      component: () => import('@/components/admin/layouts/AdminLayout.vue'),
       meta: { requiresAuth: true },
       children: [
         {
@@ -105,7 +105,6 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       redirect: (to) => {
-        // Redirect to appropriate error page based on path
         const isAdmin = to.path.startsWith('/admin')
         return isAdmin ? '/admin/error?type=404' : '/error?type=404'
       },
@@ -139,7 +138,6 @@ router.beforeEach((to, from, next) => {
   } else if (requiresAuth && token) {
     const userRole = localStorage.getItem('userRole')
     if (requiresSuperAdmin && userRole !== 'superadmin') {
-      // If route requires superadmin and user is not superadmin, redirect to admin dashboard
       next({ name: 'admin-dashboard' })
     } else {
       next()

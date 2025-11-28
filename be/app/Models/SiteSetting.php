@@ -9,7 +9,7 @@ use App\Traits\ClearsLandingPageCache;
 class SiteSetting extends Model
 {
     use StorageImageTrait, ClearsLandingPageCache;
-    
+
     protected $fillable = [
         'company_name',
         'company_logo',
@@ -34,5 +34,33 @@ class SiteSetting extends Model
     public function getCompanyLogoUrlAttribute()
     {
         return $this->buildImageUrl($this->company_logo);
+    }
+
+    /**
+     * Scope to select only required fields for better performance
+     */
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            'id',
+            'company_name',
+            'company_logo',
+            'hero_title',
+            'hero_subtitle',
+            'visi_misi_label',
+            'visi_misi_title',
+            'produk_label',
+            'produk_title',
+            'clients_label',
+            'clients_title',
+            'riwayat_label',
+            'riwayat_title',
+            'testimoni_label',
+            'testimoni_title',
+            'kontak_label',
+            'kontak_title',
+            'created_at',
+            'updated_at'
+        );
     }
 }

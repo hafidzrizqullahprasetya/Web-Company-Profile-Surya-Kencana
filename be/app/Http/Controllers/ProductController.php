@@ -57,8 +57,40 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('client')->get();
-        return response()->json($products);
+        try {
+            $cacheKey = config(
+                "performance.cached_endpoints.product.key",
+                "products_list",
+            );
+            $cacheTtl = config(
+                "performance.cached_endpoints.product.ttl",
+                3600,
+            );
+
+            $products = cache()->remember($cacheKey, $cacheTtl, function () {
+                return Product::with([
+                    "client" => function ($query) {
+                        $query->select(
+                            "id",
+                            "client_name",
+                            "institution",
+                            "logo_path",
+                        );
+                    },
+                ])->get();
+            });
+
+            return response()->json($products);
+        } catch (\Exception $e) {
+            \Log::error("Error fetching products: " . $e->getMessage());
+            return response()->json(
+                [
+                    "message" => "Error fetching products",
+                    "error" => $e->getMessage(),
+                ],
+                500,
+            );
+        }
     }
 
     /**
@@ -105,7 +137,7 @@ class ProductController extends Controller
         if ($product) {
             return response()->json($product);
         } else {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(["message" => "Product not found"], 404);
         }
     }
 
@@ -205,41 +237,58 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => 'nullable|integer|exists:our_clients,id',
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-            'description' => 'required|string',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400', // 100MB in KB
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
+            "client_id" => "nullable|integer|exists:our_clients,id",
+            "name" => "required|string",
+            "price" => "required|numeric",
+            "description" => "required|string",
+            "image_path" =>
+                "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
+            "images" => "nullable|array",
+            "images.*" => "image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400",
         ]);
 
         // Upload main image using StorageService
-        $imagePath = $this->storageService->upload($request->file('image_path'), 'products');
+        $imagePath = $this->storageService->upload(
+            $request->file("image_path"),
+            "products",
+        );
 
         $imagesPaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $imagesPaths[] = $this->storageService->upload($file, 'products');
+        if ($request->hasFile("images")) {
+            foreach ($request->file("images") as $file) {
+                $imagesPaths[] = $this->storageService->upload(
+                    $file,
+                    "products",
+                );
             }
         }
 
         $product = Product::create([
-            'client_id' => $request->client_id,
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'image_path' => $imagePath,
-            'images' => $imagesPaths,
+            "client_id" => $request->client_id,
+            "name" => $request->name,
+            "price" => $request->price,
+            "description" => $request->description,
+            "image_path" => $imagePath,
+            "images" => $imagesPaths,
         ]);
 
-        // Clear landing page cache
-        cache()->forget('landing_page_data');
+        cache()->forget(
+            config("performance.cached_endpoints.product.key", "products_list"),
+        );
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.landing_page.key",
+                "landing_page",
+            ),
+        );
 
-        return response()->json([
-            'message' => 'Product created successfully',
-            'data' => $product
-        ], 201);
+        return response()->json(
+            [
+                "message" => "Product created successfully",
+                "data" => $product,
+            ],
+            201,
+        );
     }
 
     /**
@@ -349,36 +398,40 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(["message" => "Product not found"], 404);
         }
 
         $request->validate([
-            'client_id' => 'nullable|integer|exists:our_clients,id',
-            'name' => 'sometimes|string',
-            'price' => 'sometimes|numeric',
-            'description' => 'sometimes|string',
-            'image_path' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400', // 100MB in KB
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
-            'deleted_images' => 'nullable|array', // Array of public IDs to delete
+            "client_id" => "nullable|integer|exists:our_clients,id",
+            "name" => "sometimes|string",
+            "price" => "sometimes|numeric",
+            "description" => "sometimes|string",
+            "image_path" =>
+                "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
+            "images" => "nullable|array",
+            "images.*" => "image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400",
+            "deleted_images" => "nullable|array", // Array of public IDs to delete
         ]);
 
         // Handle main image upload
-        if ($request->hasFile('image_path')) {
+        if ($request->hasFile("image_path")) {
             if ($product->image_path) {
                 // Delete old image from storage
                 $this->storageService->delete($product->image_path);
             }
-            $product->image_path = $this->storageService->upload($request->file('image_path'), 'products');
+            $product->image_path = $this->storageService->upload(
+                $request->file("image_path"),
+                "products",
+            );
         }
 
         // Handle multiple images upload
-        if ($request->hasFile('images')) {
+        if ($request->hasFile("images")) {
             $existingImages = $product->images ?? [];
             $newImages = [];
 
-            foreach ($request->file('images') as $file) {
-                $newImages[] = $this->storageService->upload($file, 'products');
+            foreach ($request->file("images") as $file) {
+                $newImages[] = $this->storageService->upload($file, "products");
             }
 
             // Merge with existing images
@@ -386,12 +439,17 @@ class ProductController extends Controller
         }
 
         // Handle deleting specific images
-        if ($request->has('deleted_images') && is_array($request->deleted_images)) {
+        if (
+            $request->has("deleted_images") &&
+            is_array($request->deleted_images)
+        ) {
             $existingImages = $product->images ?? [];
 
             foreach ($request->deleted_images as $pathToDelete) {
                 // Remove from array
-                $existingImages = array_filter($existingImages, function($path) use ($pathToDelete) {
+                $existingImages = array_filter($existingImages, function (
+                    $path,
+                ) use ($pathToDelete) {
                     return $path !== $pathToDelete;
                 });
 
@@ -402,16 +460,28 @@ class ProductController extends Controller
             $product->images = array_values($existingImages); // Re-index array
         }
 
-        $updateData = $request->only(['client_id', 'name', 'price', 'description']);
+        $updateData = $request->only([
+            "client_id",
+            "name",
+            "price",
+            "description",
+        ]);
         $product->fill($updateData);
         $product->save();
 
-        // Clear landing page cache
-        cache()->forget('landing_page_data');
+        cache()->forget(
+            config("performance.cached_endpoints.product.key", "products_list"),
+        );
+        cache()->forget(
+            config(
+                "performance.cached_endpoints.landing_page.key",
+                "landing_page",
+            ),
+        );
 
         return response()->json([
-            'message' => 'Product updated successfully',
-            'data' => $product->fresh()
+            "message" => "Product updated successfully",
+            "data" => $product->fresh(),
         ]);
     }
 
@@ -471,12 +541,24 @@ class ProductController extends Controller
 
             $product->delete();
 
-            // Clear landing page cache
-            cache()->forget('landing_page_data');
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.product.key",
+                    "products_list",
+                ),
+            );
+            cache()->forget(
+                config(
+                    "performance.cached_endpoints.landing_page.key",
+                    "landing_page",
+                ),
+            );
 
-            return response()->json(['message' => 'Product deleted successfully']);
+            return response()->json([
+                "message" => "Product deleted successfully",
+            ]);
         } else {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(["message" => "Product not found"], 404);
         }
     }
 }

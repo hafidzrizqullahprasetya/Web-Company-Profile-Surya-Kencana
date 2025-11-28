@@ -118,6 +118,26 @@
           </div>
         </div>
       </div>
+
+      <!-- Vertical Pagination Dots -->
+      <div
+        v-if="heroData.backgrounds.length > 1"
+        class="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3"
+      >
+        <button
+          v-for="(bg, index) in heroData.backgrounds"
+          :key="'dot-' + index"
+          type="button"
+          @click="goToBackground(index)"
+          class="transition-all duration-500 ease-in-out transform"
+          :class="
+            currentBackgroundIndex === index
+              ? 'h-12 w-3 bg-white rounded-full shadow-lg scale-110'
+              : 'w-3 h-3 bg-white/40 rounded-full hover:bg-white/60 hover:scale-125'
+          "
+          :aria-label="`Go to background ${index + 1}`"
+        />
+      </div>
     </div>
 
     <div class="relative z-20 bg-primary backdrop-blur-md border-t border-cream/20">
@@ -150,10 +170,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useLandingPageData } from '@/composables/useLandingPageData'
+import { useLandingPageData, useImageUrl, useWhatsApp } from '@/composables'
 import BadgeButton from './BadgeButton.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
+const { getImageUrlForFormat } = useImageUrl()
+const { createWhatsAppUrl } = useWhatsApp()
 
 const currentBackgroundIndex = ref(0)
 let sliderInterval: ReturnType<typeof setInterval> | null = null
@@ -185,22 +207,13 @@ const contactInfo = computed(() => {
 })
 
 const whatsappUrl = computed(() => {
-  if (contactInfo.value?.phone) {
-    const phoneNumber = contactInfo.value.phone.replace(/[^\d+]/g, '')
-    let formattedNumber = phoneNumber
-    if (phoneNumber.startsWith('0')) {
-      formattedNumber = '62' + phoneNumber.substring(1)
-    } else if (phoneNumber.startsWith('8')) {
-      formattedNumber = '62' + phoneNumber
-    }
-
-    const message = encodeURIComponent(
-      'Halo, saya ingin bertanya tentang produk/mesin yang tersedia.',
-    )
-    return `https://wa.me/${formattedNumber}?text=${message}`
-  }
-  return '#'
+  return createWhatsAppUrl(contactInfo.value)
 })
+
+const goToBackground = (index: number) => {
+  currentBackgroundIndex.value = index
+  startBackgroundSlider()
+}
 
 const startBackgroundSlider = () => {
   if (sliderInterval) {
@@ -251,17 +264,6 @@ onMounted(() => {
     startBackgroundSlider()
   }
 })
-
-const getImageUrlForFormat = (url: string, format: string = 'webp'): string => {
-  if (
-    url.includes('placehold.co') ||
-    url.includes('ui-avatars.com') ||
-    !url.match(/\.(jpg|jpeg|png)$/i)
-  ) {
-    return url
-  }
-  return url.replace(/\.(jpg|jpeg|png)$/i, `.${format}`)
-}
 
 onUnmounted(() => {
   if (sliderInterval) {
