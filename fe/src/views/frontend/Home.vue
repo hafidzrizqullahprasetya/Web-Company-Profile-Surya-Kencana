@@ -1,17 +1,22 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="home-page">
-    <Header />
-    <Hero />
-    <VisiMisi />
-    <Produk />
-    <Riwayat />
-    <OurClient />
-    <Testimoni />
-    <Kontak />
-    <Footer />
-    <WhatsAppFloatingButton />
-  </div>
+    <div class="home-page flex flex-col min-h-screen">
+
+        <Header />
+
+        <main class="flex-grow">
+            <Hero />
+            <VisiMisi />
+            <Produk />
+            <Riwayat />
+            <OurClient />
+            <Testimoni />
+            <Kontak />
+        </main>
+
+        <Footer />
+
+        <WhatsAppFloatingButton />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -25,11 +30,10 @@ import Testimoni from '@/components/frontend/Testimoni.vue'
 import Kontak from '@/components/frontend/Kontak.vue'
 import Footer from '@/components/frontend/Footer.vue'
 import WhatsAppFloatingButton from '@/components/frontend/WhatsAppFloatingButton.vue'
-
 </script>
 
 <style scoped>
 .home-page {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 </style>

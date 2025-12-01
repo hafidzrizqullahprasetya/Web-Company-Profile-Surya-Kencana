@@ -7,11 +7,11 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "infisical run --env=dev --path=/fe -- vite",
+    "dev": "infisical run -- vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "build-only": "vite build",
+    "preview": "infisical run -- vite preview",
+    "test:unit": "infisical run -- vitest",
+    "build-only": "infisical run -- vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
