@@ -5,7 +5,7 @@ use Illuminate\Support\Str;
 return [
     /*
     |--------------------------------------------------------------------------
-    | Default Database Connection Name
+    | Default Database Connection Namee
     |--------------------------------------------------------------------------
     |
     | Here you may specify which of the database connections below you wish
@@ -46,13 +46,9 @@ return [
             "engine" => null,
             "options" => extension_loaded("pdo_mysql")
                 ? array_filter([
-                    PDO::MYSQL_ATTR_SSL_CA => env("MYSQL_ATTR_SSL_CA"),
-                    PDO::ATTR_PERSISTENT => true, // Enable persistent connections for remote DB
-                    PDO::ATTR_TIMEOUT => 10, // Connection timeout
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-                    PDO::MYSQL_ATTR_INIT_COMMAND =>
-                        "SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'",
+                    \PDO::ATTR_PERSISTENT => true,
+                    \PDO::ATTR_TIMEOUT => 10,
+                    \PDO::ATTR_EMULATE_PREPARES => false,
                 ])
                 : [],
         ],
