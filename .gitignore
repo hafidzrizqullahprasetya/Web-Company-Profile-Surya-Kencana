@@ -1,7 +1,7 @@
 # Exclude folders that should not be pushed to repository
 /user-manual
 /automation
-.generate_screenshots.mjs
+generate_screenshots.mjs
 # OS generated files
 .DS_Store
 .DS_Store?

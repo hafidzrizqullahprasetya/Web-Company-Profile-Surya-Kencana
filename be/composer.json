@@ -54,16 +54,19 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
+        "artisan": [
+            "infisical run -- php artisan"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "infisical run --env=dev --path=/be -- npx concurrently -c \"#93c5fd,#fb7185\" \"php artisan serve\" \"php artisan pail --timeout=0\" --names=server,logs --kill-others"
+            "infisical run -- npx concurrently -c \"#93c5fd,#fb7185\" \"php artisan serve\" \"php artisan pail --timeout=0\" --names=server,logs --kill-others"
         ],
         "migrate": [
-            "infisical run --env=dev --path=/be -- php artisan migrate"
+            "infisical run -- php artisan migrate"
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "infisical run --env=dev --path=/be -- php artisan test"
+            "infisical run -- php artisan test"
         ]
     },
     "extra": {
