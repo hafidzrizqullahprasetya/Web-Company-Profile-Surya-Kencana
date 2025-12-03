@@ -166,7 +166,7 @@ import GoogleMapEmbed from './GoogleMapEmbed.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
 
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyDkaKfuO9fUzqNfGgMQKnJHChnsid-4VY8'
+const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const formData = reactive({
     name: '',
