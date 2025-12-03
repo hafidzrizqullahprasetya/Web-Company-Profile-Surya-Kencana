@@ -3,22 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ClearsLandingPageCache;
 
 class Testimonial extends Model
 {
-    use ClearsLandingPageCache;
-
     protected $fillable = [
         'client_name',
         'institution',
         'feedback',
         'date',
+        'order',
     ];
 
-    /**
-     * Scope to select only required fields for better performance
-     */
     public function scopePerformanceSelect($query)
     {
         return $query->select(

@@ -1,5 +1,5 @@
-import { apiClient } from './api-client'
 import type { CompanyHistory } from '../types/models'
+import { apiClient } from './api-client'
 
 export const companyHistoryApi = {
   async getCompanyHistories(): Promise<CompanyHistory[]> {
@@ -55,6 +55,15 @@ export const companyHistoryApi = {
       await apiClient.delete('/company-history/' + id)
     } catch (error) {
       console.error('Error deleting company history:', error)
+      throw error
+    }
+  },
+
+  async reorderCompanyHistories(histories: Array<{ id: number; order: number }>): Promise<void> {
+    try {
+      await apiClient.post('/company-history/reorder', { histories })
+    } catch (error) {
+      console.error('Error reordering company histories:', error)
       throw error
     }
   }

@@ -16,15 +16,9 @@ class CompanyHistoryController extends Controller
     }
     public function index()
     {
-        // Cache company histories for better performance
-        $cacheKey = config("performance.cached_endpoints.company_history.key");
-        $cacheTtl = config("performance.cached_endpoints.company_history.ttl");
-
-        $histories = cache()->remember($cacheKey, $cacheTtl, function () {
-            return CompanyHistory::performanceSelect()
-                ->orderBy('tahun', 'asc')
-                ->get();
-        });
+        $histories = CompanyHistory::performanceSelect()
+            ->orderBy('order', 'asc')
+            ->get();
 
         return response()->json($histories);
     }
@@ -45,7 +39,8 @@ class CompanyHistoryController extends Controller
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 10),
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400', // 100MB in KB
+            'order' => 'nullable|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
         ]);
@@ -62,17 +57,17 @@ class CompanyHistoryController extends Controller
             }
         }
 
+        $maxOrder = CompanyHistory::max('order') ?? 0;
+        $order = $request->order ?? ($maxOrder + 1);
+
         $history = CompanyHistory::create([
             'tahun' => $request->tahun,
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'image_path' => $imagePath,
             'images' => $imagesPaths,
+            'order' => $order,
         ]);
-
-        // Clear caches
-        cache()->forget(config("performance.cached_endpoints.company_history.key"));
-        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
 
         return response()->json([
             'message' => 'Company history created successfully',
@@ -91,15 +86,14 @@ class CompanyHistoryController extends Controller
             'tahun' => 'sometimes|integer|min:1900|max:' . (date('Y') + 10),
             'judul' => 'sometimes|string|max:255',
             'deskripsi' => 'sometimes|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400', // 100MB in KB
+            'order' => 'nullable|integer|min:1',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
-            'deleted_images' => 'nullable|array', // Array of paths to delete
+            'deleted_images' => 'nullable|array',
         ]);
 
-        // Handle main image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($history->image_path) {
                 $this->storageService->delete($history->image_path);
             }
@@ -107,7 +101,6 @@ class CompanyHistoryController extends Controller
             $history->image_path = $this->storageService->upload($request->file('image'), 'company-histories');
         }
 
-        // Handle multiple images upload
         if ($request->hasFile('images')) {
             $existingImages = $history->images ?? [];
             $newImages = [];
@@ -116,34 +109,26 @@ class CompanyHistoryController extends Controller
                 $newImages[] = $this->storageService->upload($file, 'company-histories');
             }
 
-            // Merge with existing images
             $history->images = array_merge($existingImages, $newImages);
         }
 
-        // Handle deleting specific images
         if ($request->has('deleted_images') && is_array($request->deleted_images)) {
             $existingImages = $history->images ?? [];
 
             foreach ($request->deleted_images as $pathToDelete) {
-                // Remove from array
                 $existingImages = array_filter($existingImages, function($path) use ($pathToDelete) {
                     return $path !== $pathToDelete;
                 });
 
-                // Delete file from storage
                 $this->storageService->delete($pathToDelete);
             }
 
-            $history->images = array_values($existingImages); // Re-index array
+            $history->images = array_values($existingImages);
         }
 
-        $updateData = $request->only(['tahun', 'judul', 'deskripsi']);
+        $updateData = $request->only(['tahun', 'judul', 'deskripsi', 'order']);
         $history->fill($updateData);
         $history->save();
-
-        // Clear caches
-        cache()->forget(config("performance.cached_endpoints.company_history.key"));
-        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
 
         return response()->json([
             'message' => 'Company history updated successfully',
@@ -158,12 +143,10 @@ class CompanyHistoryController extends Controller
             return response()->json(['message' => 'Company history not found'], 404);
         }
 
-        // Delete image if exists
         if ($history->image_path) {
             $this->storageService->delete($history->image_path);
         }
 
-        // Delete additional images if exist
         if ($history->images && is_array($history->images)) {
             foreach ($history->images as $path) {
                 $this->storageService->delete($path);
@@ -172,12 +155,33 @@ class CompanyHistoryController extends Controller
 
         $history->delete();
 
-        // Clear caches
-        cache()->forget(config("performance.cached_endpoints.company_history.key"));
-        cache()->forget(config("performance.cached_endpoints.landing_page.key"));
-
         return response()->json([
             'message' => 'Company history deleted successfully'
         ]);
+    }
+
+    public function reorder(Request $request)
+    {
+        try {
+            $histories = $request->input('histories');
+
+            foreach ($histories as $history) {
+                CompanyHistory::where('id', $history['id'])
+                    ->update(['order' => $history['order']]);
+            }
+
+            return response()->json([
+                "message" => "Company history order updated successfully",
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error reordering company histories: " . $e->getMessage());
+            return response()->json(
+                [
+                    "message" => "Error reordering company histories",
+                    "error" => $e->getMessage(),
+                ],
+                500,
+            );
+        }
     }
 }

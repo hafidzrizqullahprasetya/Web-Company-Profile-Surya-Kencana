@@ -1,597 +1,507 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 sm:p-6 pt-24 sm:pt-28">
-    <div class="mb-6 sm:mb-8">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Testimoni</h1>
-      <p class="text-sm sm:text-base text-gray-600 mt-2">
-        Kelola testimoni dari pelanggan perusahaan Anda
-      </p>
+    <div class="pt-5 sm:pt-24 md:pt-5 px-4 sm:px-6 lg:px-2">
+        <!-- Header -->
+        <div class="mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen Testimoni</h1>
+            <p class="text-sm sm:text-base text-gray-600 mt-2">Kelola testimoni dari pelanggan Anda - Drag & drop untuk
+                mengubah urutan</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div class="flex-1 sm:max-w-md relative">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input v-model="searchQuery" type="text" placeholder="Cari testimoni..."
+                    class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" />
+            </div>
+            <button @click="openModal()"
+                class="px-4 sm:px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-plus text-sm"></i>
+                <span class="hidden sm:inline">Tambah Testimoni</span>
+                <span class="sm:hidden">Tambah</span>
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <SkeletonLoader type="table" :rows="10" :columns="4" />
+        </div>
+
+        <!-- Testimonials Grid with Drag and Drop -->
+        <div v-else-if="filteredTestimonials.length > 0"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div v-for="(testimonial, index) in paginatedTestimonials" :key="testimonial.id" draggable="true"
+                @dragstart="handleDragStart(index, $event)" @dragover="handleDragOver($event)"
+                @dragenter="handleDragEnter(index)" @dragleave="handleDragLeave" @drop="handleDrop(index, $event)"
+                @dragend="handleDragEnd" :class="[
+                    'bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-move flex flex-col',
+                    draggedIndex === index ? 'opacity-50 scale-95' : '',
+                    dragOverIndex === index && draggedIndex !== index ? 'ring-2 ring-primary scale-105' : ''
+                ]">
+                <!-- Drag Handle -->
+                <div
+                    class="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div
+                        class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                        <span>Drag</span>
+                    </div>
+                </div>
+
+                <!-- Order Badge -->
+                <div class="absolute bottom-2 right-2 z-20">
+                    <span class="px-2.5 py-1 bg-primary text-white text-xs font-bold rounded-lg shadow-md">
+                        #{{ (currentPage - 1) * itemsPerPage + index + 1 }}
+                    </span>
+                </div>
+
+                <!-- Card Content -->
+                <div class="p-5 pb-6 flex flex-col h-full">
+                    <!-- Avatar & Client Info -->
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                            {{ testimonial.client_name.charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-gray-900 font-bold text-base leading-tight mb-0.5">
+                                {{ testimonial.client_name }}
+                            </h3>
+                            <p class="text-gray-600 text-xs leading-tight">
+                                {{ testimonial.institution }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="border-t border-gray-100 mb-4"></div>
+
+                    <!-- Feedback with Quote -->
+                    <div class="flex-1 mb-4">
+                        <div class="relative">
+                            <i class="fa-solid fa-quote-left text-primary/50 text-2xl absolute -top-2 -left-1"></i>
+                            <p class="text-gray-700 text-sm leading-relaxed pl-6 pr-3 line-clamp-4 italic">
+                                {{ testimonial.feedback }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Date Footer with Action Buttons -->
+                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-gray-50">
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <i class="fa-solid fa-calendar-days text-primary"></i>
+                            <span class="font-medium">{{ formatDate(testimonial.date) }}</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2">
+                            <button @click="openModal(testimonial)"
+                                class="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition shadow-md"
+                                title="Edit">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button @click="confirmDelete(testimonial)"
+                                class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md"
+                                title="Hapus">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="!isLoading && filteredTestimonials.length > 0"
+            class="flex justify-center items-center gap-2 mt-8 mb-8">
+            <button @click="currentPage = currentPage - 1" :disabled="currentPage === 1"
+                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button v-for="page in totalPages" :key="page" @click="currentPage = page" :class="[
+                'px-4 py-2 rounded-lg transition',
+                currentPage === page
+                    ? 'bg-primary text-white'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+            ]">
+                {{ page }}
+            </button>
+
+            <button @click="currentPage = currentPage + 1" :disabled="currentPage === totalPages"
+                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="!isLoading && filteredTestimonials.length === 0" class="text-center py-12 sm:py-20">
+            <i class="fa-solid fa-comments text-gray-400 mx-auto mb-4 text-4xl sm:text-5xl"></i>
+            <p class="text-gray-600 text-base sm:text-lg">Belum ada testimoni</p>
+            <button @click="openModal()"
+                class="mt-4 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+                Tambah Testimoni Pertama
+            </button>
+        </div>
+
+        <!-- Modal Form -->
+        <div v-if="showModal"
+            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+            @click.self="closeModal">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full my-8">
+                <div
+                    class="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center rounded-t-xl">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        {{ editMode ? 'Edit Testimoni' : 'Tambah Testimoni Baru' }}
+                    </h2>
+                    <button @click="closeModal" class="text-gray-500 hover:text-gray-700 p-2">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="handleSubmit"
+                    class="p-4 sm:p-6 space-y-5 max-h-[calc(90vh-100px)] overflow-y-auto">
+                    <!-- Nama Client -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Client <span class="text-red-500">*</span>
+                        </label>
+                        <input v-model="formData.client_name" type="text" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                            placeholder="Nama lengkap client" />
+                    </div>
+
+                    <!-- Institusi -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Institusi <span class="text-red-500">*</span>
+                        </label>
+                        <input v-model="formData.institution" type="text" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                            placeholder="Nama institusi atau perusahaan" />
+                    </div>
+
+                    <!-- Feedback -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Testimoni <span class="text-red-500">*</span>
+                        </label>
+                        <textarea v-model="formData.feedback" required rows="5"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                            placeholder="Tulis testimoni dari client..."></textarea>
+                    </div>
+
+                    <!-- Tanggal -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Tanggal <span class="text-red-500">*</span>
+                        </label>
+                        <input v-model="formData.date" type="date" required
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" />
+                    </div>
+
+                    <!-- Error Message -->
+                    <div v-if="errorMessage"
+                        class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                        {{ errorMessage }}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" @click="closeModal"
+                            class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="isSubmitting"
+                            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                            <span v-if="!isSubmitting">{{
+                                editMode ? 'Simpan Perubahan' : 'Tambah Testimoni'
+                            }}</span>
+                            <span v-else class="flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-spinner animate-spin"></i>
+                                Menyimpan...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
     </div>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div class="w-full sm:w-auto">
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Cari testimoni..."
-            class="w-full sm:w-80 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
-          />
-        </div>
-        <button
-          @click="openAddModal"
-          class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          <i class="fa-solid fa-plus w-5 h-5 mr-2"></i>
-          Tambah Testimoni
-        </button>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="isLoading">
-        <SkeletonLoader type="table" :rows="10" :columns="6" />
-      </div>
-
-      <!-- Daftar Testimoni -->
-      <!-- Desktop Table View -->
-      <div v-else class="hidden lg:block overflow-x-auto rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Nama Klien
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Instansi
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Umpan Balik
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Tanggal
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="testimonial in filteredTestimonials"
-              :key="testimonial.id"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ testimonial.id }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ testimonial.client_name }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ testimonial.institution }}
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                {{ testimonial.feedback }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(testimonial.date) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  @click="openEditModal(testimonial)"
-                  class="text-primary hover:text-primary/80 mr-3 transition"
-                >
-                  <i class="fa-solid fa-pen w-4 h-4 inline mr-1"></i>
-                  Edit
-                </button>
-                <button
-                  @click="confirmDelete(testimonial)"
-                  class="text-red-600 hover:text-red-800 transition"
-                >
-                  <i class="fa-solid fa-trash w-4 h-4 inline mr-1"></i>
-                  Hapus
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Mobile Card View -->
-      <div class="lg:hidden space-y-4">
-        <div
-          v-for="testimonial in filteredTestimonials"
-          :key="testimonial.id"
-          class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-        >
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <h3 class="font-semibold text-gray-900">{{ testimonial.client_name }}</h3>
-              <p class="text-sm text-gray-500">{{ testimonial.institution }}</p>
-            </div>
-            <span class="text-xs text-gray-400">#{{ testimonial.id }}</span>
-          </div>
-          <p class="text-sm text-gray-700 mb-3 line-clamp-2">{{ testimonial.feedback }}</p>
-          <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
-            <span>{{ formatDate(testimonial.date) }}</span>
-          </div>
-          <div class="flex gap-2">
-            <button
-              @click="openEditModal(testimonial)"
-              class="flex-1 px-3 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-1"
-            >
-              <i class="fa-solid fa-pen w-4 h-4"></i>
-              Edit
-            </button>
-            <button
-              @click="confirmDelete(testimonial)"
-              class="flex-1 px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-1"
-            >
-              <i class="fa-solid fa-trash w-4 h-4"></i>
-              Hapus
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="text-sm text-gray-700">
-          Menampilkan
-          {{ Math.min((currentPage - 1) * itemsPerPage + 1, testimonials.length) }} hingga
-          {{ Math.min(currentPage * itemsPerPage, testimonials.length) }} dari
-          {{ testimonials.length }} data
-        </div>
-        <div class="flex space-x-2">
-          <button
-            @click="currentPage = Math.max(1, currentPage - 1)"
-            :disabled="currentPage === 1"
-            class="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            Sebelumnya
-          </button>
-          <button
-            @click="currentPage = Math.min(totalPages, currentPage + 1)"
-            :disabled="currentPage === totalPages"
-            class="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            Berikutnya
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Preview Slider Section -->
-    <div class="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-6">Pratinjau Testimoni</h2>
-
-      <!-- Testimonial Preview Grid with Pagination -->
-      <div>
-        <!-- Testimonial Grid (max 4 per page) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div
-            v-for="testimonial in currentPagePreviewTestimonials"
-            :key="testimonial.id"
-            class="bg-gray-50 rounded-lg p-6 border border-gray-200"
-          >
-            <div class="flex items-center mb-4">
-              <div
-                class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-3"
-              >
-                {{ testimonial.client_name.charAt(0).toUpperCase() }}
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900 text-sm">{{ testimonial.client_name }}</h4>
-                <p class="text-xs text-gray-600">{{ testimonial.institution }}</p>
-              </div>
-            </div>
-            <p class="text-gray-700 italic mb-4 text-sm line-clamp-3">
-              "{{ testimonial.feedback }}"
-            </p>
-            <div class="flex items-center text-gray-500 text-xs">
-              <i class="fa-regular fa-calendar-days w-4 h-4 mr-1"></i>
-              <span>{{ formatDate(testimonial.date) }}</span>
-            </div>
-          </div>
-
-          <!-- Empty state if no testimonials -->
-          <div
-            v-if="testimonials.length === 0"
-            class="col-span-full bg-gray-50 rounded-lg p-6 border border-gray-200 flex items-center justify-center"
-          >
-            <div class="text-center text-gray-500">
-              <i class="fa-regular fa-comment w-12 h-12 mx-auto mb-3 text-2xl"></i>
-              <p>Belum ada testimoni</p>
-              <p class="text-sm">Tambahkan testimoni pertama</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pagination Controls for Preview -->
-        <div v-if="testimonials.length > 0" class="flex flex-col items-center gap-4">
-          <!-- Page Dots -->
-          <div class="flex items-center gap-3">
-            <button
-              v-for="page in visiblePreviewPageDots"
-              :key="page"
-              @click="goToPreviewPage(page)"
-              class="transition-all duration-300"
-              :class="
-                currentPreviewPage === page
-                  ? 'w-12 h-3 bg-primary rounded-full'
-                  : 'w-3 h-3 bg-gray-300 rounded-full hover:bg-gray-400'
-              "
-            />
-          </div>
-
-          <!-- Navigation Buttons -->
-          <div class="flex items-center gap-6">
-            <button
-              @click="prevPreviewPage"
-              :disabled="currentPreviewPage === 0"
-              class="w-10 h-10 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              <i class="fa-solid fa-chevron-left w-5 h-5"></i>
-            </button>
-
-            <div class="text-gray-600 text-sm font-medium">
-              Page {{ currentPreviewPage + 1 }} of {{ totalPreviewPages }}
-            </div>
-
-            <button
-              @click="nextPreviewPage"
-              :disabled="currentPreviewPage === totalPreviewPages - 1"
-              class="w-10 h-10 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              <i class="fa-solid fa-chevron-right w-5 h-5"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Testimoni -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    >
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold text-gray-900">
-              {{ isEditing ? 'Edit Testimoni' : 'Tambah Testimoni' }}
-            </h3>
-            <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-              <i class="fa-solid fa-xmark h-6 w-6"></i>
-            </button>
-          </div>
-
-          <form @submit.prevent="submitTestimonial" class="space-y-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nama Klien</label>
-              <input
-                v-model="formData.client_name"
-                type="text"
-                required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
-                placeholder="Nama klien"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Instansi</label>
-              <input
-                v-model="formData.institution"
-                type="text"
-                required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
-                placeholder="Instansi"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Umpan Balik</label>
-              <textarea
-                v-model="formData.feedback"
-                required
-                rows="4"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
-                placeholder="Isi testimoni"
-              ></textarea>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-              <input
-                v-model="formData.date"
-                type="date"
-                required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
-              />
-            </div>
-
-            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="isSubmitting"
-                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition"
-              >
-                <span v-if="!isSubmitting">{{
-                  isEditing ? 'Perbarui Testimoni' : 'Tambah Testimoni'
-                }}</span>
-                <span v-else class="flex items-center">
-                  <i class="fa-solid fa-spinner animate-spin -ml-1 mr-2 text-white w-4 h-4"></i>
-                  Menyimpan...
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div
-      v-if="showDeleteModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-      @click.self="showDeleteModal = false"
-    >
-      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-        <div class="text-center">
-          <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
-          >
-            <i class="fa-solid fa-circle-exclamation h-6 w-6 text-red-600"></i>
-          </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Hapus Testimoni?</h3>
-          <p class="text-sm text-gray-500 mb-6">
-            Apakah Anda yakin ingin menghapus testimoni dari
-            <strong>{{ testimonialToDelete?.client_name }}</strong
-            >? Tindakan ini tidak dapat dibatalkan.
-          </p>
-          <div class="flex gap-3">
-            <button
-              @click="showDeleteModal = false"
-              class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-            >
-              Batal
-            </button>
-            <button
-              @click="deleteTestimonial"
-              :disabled="isDeleting"
-              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition"
-            >
-              {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import api, { type Testimonial } from '@/services/api'
-import { useToast } from '@/composables/useToast'
+import { ref, computed, onMounted, watch } from 'vue'
+import { testimonialsApi } from '@/services'
+import type { Testimonial } from '@/types/models'
 import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
+import { showToast, showDeleteConfirm, showLoading, closeLoading } from '@/utils/sweetalert'
 
-const toast = useToast()
-
-// State
-const isLoading = ref(true)
 const testimonials = ref<Testimonial[]>([])
-const showModal = ref(false)
-const isEditing = ref(false)
-const isSubmitting = ref(false)
+const isLoading = ref(true)
 const searchQuery = ref('')
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const showDeleteModal = ref(false)
-const testimonialToDelete = ref<Testimonial | null>(null)
-const isDeleting = ref(false)
+const showModal = ref(false)
+const editMode = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 
-// Preview pagination state
-const currentPreviewPage = ref(0)
-const previewItemsPerPage = 4
-
-// Form data
-const formData = ref<Testimonial>({
-  id: 0,
-  client_name: '',
-  institution: '',
-  feedback: '',
-  date: '',
-})
-
-// Computed
-const filteredTestimonials = computed(() => {
-  let result = testimonials.value
-
-  // Apply search filter
-  if (searchQuery.value) {
-    result = result.filter(
-      (testimonial) =>
-        testimonial.client_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        testimonial.feedback.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-  }
-
-  // Apply pagination
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return result.slice(start, end)
-})
-
-const totalPages = computed(() => {
-  return Math.ceil(testimonials.value.length / itemsPerPage.value)
-})
-
-// Preview pagination computed
-const totalPreviewPages = computed(() => {
-  return Math.ceil(testimonials.value.length / previewItemsPerPage)
-})
-
-const currentPagePreviewTestimonials = computed(() => {
-  const start = currentPreviewPage.value * previewItemsPerPage
-  const end = start + previewItemsPerPage
-  return testimonials.value.slice(start, end)
-})
-
-const visiblePreviewPageDots = computed(() => {
-  const total = totalPreviewPages.value
-  if (total <= 4) {
-    return Array.from({ length: total }, (_, i) => i)
-  }
-
-  const current = currentPreviewPage.value
-  const maxDots = 4
-
-  let start = Math.max(0, current - Math.floor(maxDots / 2))
-  const end = Math.min(total, start + maxDots)
-
-  if (end === total) {
-    start = Math.max(0, end - maxDots)
-  }
-
-  return Array.from({ length: end - start }, (_, i) => start + i)
-})
-
-// Helper functions
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-// Methods
-const loadTestimonials = async () => {
-  isLoading.value = true
-  try {
-    const data = await api.getTestimonials()
-    testimonials.value = data
-  } catch (error: unknown) {
-    console.error('Error fetching testimonials:', error)
-    toast.error('Gagal memuat data testimoni')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const openAddModal = () => {
-  isEditing.value = false
-  formData.value = {
+const formData = ref({
     id: 0,
     client_name: '',
     institution: '',
     feedback: '',
     date: '',
-  }
-  showModal.value = true
+})
+
+const editingId = ref<number | null>(null)
+
+// Drag and drop state
+const draggedIndex = ref<number | null>(null)
+const dragOverIndex = ref<number | null>(null)
+
+// Pagination state
+const currentPage = ref(1)
+const itemsPerPage = ref(8)
+
+const filteredTestimonials = computed(() => {
+    if (!searchQuery.value) return testimonials.value
+    const query = searchQuery.value.toLowerCase()
+    return testimonials.value.filter(
+        (t) =>
+            t.client_name.toLowerCase().includes(query) ||
+            (t.institution || '').toLowerCase().includes(query) ||
+            t.feedback.toLowerCase().includes(query),
+    )
+})
+
+const totalPages = computed(() => {
+    return Math.ceil(filteredTestimonials.value.length / itemsPerPage.value)
+})
+
+const paginatedTestimonials = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value
+    const end = start + itemsPerPage.value
+    return filteredTestimonials.value.slice(start, end)
+})
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    })
 }
 
-const openEditModal = (testimonial: Testimonial) => {
-  isEditing.value = true
-  formData.value = { ...testimonial }
-  showModal.value = true
+const fetchTestimonials = async () => {
+    try {
+        isLoading.value = true
+        const data = await testimonialsApi.getTestimonials()
+        testimonials.value = data.sort((a, b) => (a.order || 0) - (b.order || 0))
+    } catch (error) {
+        console.error('Error fetching testimonials:', error)
+        showToast.error('Gagal memuat data testimoni')
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// Drag and Drop Handlers
+const handleDragStart = (index: number, event: DragEvent) => {
+    draggedIndex.value = index
+    if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.setData('text/html', event.target as any)
+    }
+}
+
+const handleDragOver = (event: DragEvent) => {
+    event.preventDefault()
+    if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move'
+    }
+}
+
+const handleDragEnter = (index: number) => {
+    dragOverIndex.value = index
+}
+
+const handleDragLeave = () => {
+    // Optional: can be used for additional styling
+}
+
+const handleDrop = async (dropIndex: number, event: DragEvent) => {
+    event.preventDefault()
+
+    if (draggedIndex.value === null || draggedIndex.value === dropIndex) {
+        draggedIndex.value = null
+        dragOverIndex.value = null
+        return
+    }
+
+    try {
+        // Calculate actual indices considering pagination
+        const pageOffset = (currentPage.value - 1) * itemsPerPage.value
+        const actualDraggedIndex = pageOffset + draggedIndex.value
+        const actualDropIndex = pageOffset + dropIndex
+
+        // Create a copy of the filtered testimonials array
+        const reorderedTestimonials = [...filteredTestimonials.value]
+
+        // Remove the dragged item
+        const [draggedItem] = reorderedTestimonials.splice(actualDraggedIndex, 1)
+
+        // Insert it at the new position
+        if (draggedItem) reorderedTestimonials.splice(actualDropIndex, 0, draggedItem)
+
+        // Update orders
+        const updatedTestimonials = reorderedTestimonials.map((testimonial, index) => ({
+            id: testimonial.id,
+            order: index
+        }))
+
+        // Optimistically update UI
+        testimonials.value = reorderedTestimonials
+
+        // Send to backend
+        await testimonialsApi.reorderTestimonials(updatedTestimonials)
+
+        showToast.success('Urutan testimoni berhasil diubah')
+
+        // Refresh to get latest data
+        await fetchTestimonials()
+    } catch (error) {
+        console.error('Error reordering testimonials:', error)
+        showToast.error('Gagal mengubah urutan testimoni')
+        // Revert on error
+        await fetchTestimonials()
+    } finally {
+        draggedIndex.value = null
+        dragOverIndex.value = null
+    }
+}
+
+const handleDragEnd = () => {
+    draggedIndex.value = null
+    dragOverIndex.value = null
+}
+
+const openModal = (testimonial?: Testimonial) => {
+    if (testimonial) {
+        editMode.value = true
+        editingId.value = testimonial.id
+        formData.value = {
+            id: testimonial.id,
+            client_name: testimonial.client_name,
+            institution: testimonial.institution || '',
+            feedback: testimonial.feedback,
+            date: testimonial.date,
+        }
+    } else {
+        editMode.value = false
+        editingId.value = null
+        formData.value = {
+            id: 0,
+            client_name: '',
+            institution: '',
+            feedback: '',
+            date: new Date().toISOString().split('T')[0] || '',
+        }
+    }
+    errorMessage.value = ''
+    showModal.value = true
 }
 
 const closeModal = () => {
-  showModal.value = false
+    showModal.value = false
 }
 
-const submitTestimonial = async () => {
-  isSubmitting.value = true
-  try {
-    if (isEditing.value) {
-      await api.updateTestimonial(formData.value.id, formData.value)
-      toast.success('Testimoni berhasil diperbarui!')
-    } else {
-      await api.createTestimonial(formData.value)
-      toast.success('Testimoni berhasil ditambahkan!')
+const handleSubmit = async () => {
+    try {
+        isSubmitting.value = true
+        errorMessage.value = ''
+
+        showLoading('Menyimpan...')
+
+        const dataToSend = {
+            client_name: formData.value.client_name,
+            institution: formData.value.institution,
+            feedback: formData.value.feedback,
+            date: formData.value.date,
+        }
+
+        if (editMode.value && editingId.value) {
+            await testimonialsApi.updateTestimonial(editingId.value, dataToSend)
+            showToast.success('Testimoni berhasil diperbarui!')
+        } else {
+            // Set order as the last position
+            const dataWithOrder = {
+                ...dataToSend,
+                order: testimonials.value.length
+            }
+            await testimonialsApi.createTestimonial(dataWithOrder as any)
+            showToast.success('Testimoni berhasil ditambahkan!')
+        }
+
+        await fetchTestimonials()
+        closeModal()
+    } catch (error) {
+        console.error('Error saving testimonial:', error)
+        const axiosError = error as { response?: { data?: { message?: string } } }
+        const message = axiosError.response?.data?.message || 'Gagal menyimpan testimoni'
+        errorMessage.value = message
+        showToast.error(message)
+    } finally {
+        isSubmitting.value = false
     }
-    await loadTestimonials()
-    closeModal()
-  } catch (error: unknown) {
-    console.error('Error saving testimonial:', error)
-    const axiosError = error as { response?: { data?: { message?: string } } }
-    const message = axiosError.response?.data?.message || 'Gagal menyimpan testimoni'
-    toast.error(message)
-  } finally {
-    isSubmitting.value = false
-  }
 }
 
-const confirmDelete = (testimonial: Testimonial) => {
-  testimonialToDelete.value = testimonial
-  showDeleteModal.value = true
+const confirmDelete = async (testimonial: Testimonial) => {
+    const result = await showDeleteConfirm('Yakin ingin menghapus testimoni ini?')
+    if (result) {
+        try {
+            showLoading('Menghapus...')
+            await testimonialsApi.deleteTestimonial(testimonial.id)
+            closeLoading()
+            showToast.success('Testimoni berhasil dihapus!')
+            await fetchTestimonials()
+        } catch (error) {
+            console.error('Error deleting testimonial:', error)
+            closeLoading()
+            showToast.error('Gagal menghapus testimoni')
+        }
+    }
 }
 
-const deleteTestimonial = async () => {
-  if (!testimonialToDelete.value) return
-
-  try {
-    isDeleting.value = true
-    await api.deleteTestimonial(testimonialToDelete.value.id)
-    toast.success('Testimoni berhasil dihapus!')
-    await loadTestimonials()
-    showDeleteModal.value = false
-    testimonialToDelete.value = null
-  } catch (error: unknown) {
-    console.error('Error deleting testimonial:', error)
-    const axiosError = error as { response?: { data?: { message?: string } } }
-    const message = axiosError.response?.data?.message || 'Gagal menghapus testimoni'
-    toast.error(message)
-  } finally {
-    isDeleting.value = false
-  }
+const deleteTestimonial = async (item: any) => {
+    try {
+        showLoading('Menghapus...')
+        await testimonialsApi.deleteTestimonial(item.id)
+        closeLoading()
+        showToast.success('Data berhasil dihapus!')
+        await fetchTestimonials()
+    } catch (error) {
+        console.error('Error deleting:', error)
+        closeLoading()
+        showToast.error('Gagal menghapus data')
+    }
 }
 
-// Preview pagination methods
-const prevPreviewPage = () => {
-  if (currentPreviewPage.value > 0) {
-    currentPreviewPage.value--
-  }
-}
+// Watch searchQuery to reset pagination
+watch(searchQuery, () => {
+    currentPage.value = 1
+})
 
-const nextPreviewPage = () => {
-  if (currentPreviewPage.value < totalPreviewPages.value - 1) {
-    currentPreviewPage.value++
-  }
-}
-
-const goToPreviewPage = (page: number) => {
-  if (page >= 0 && page < totalPreviewPages.value) {
-    currentPreviewPage.value = page
-  }
-}
-
-// Load data on component mount
 onMounted(() => {
-  loadTestimonials()
+    fetchTestimonials()
 })
 </script>
+
+<style scoped>
+[draggable="true"] {
+    touch-action: none;
+    user-select: none;
+}
+</style>

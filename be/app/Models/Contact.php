@@ -3,22 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ClearsLandingPageCache;
 
 class Contact extends Model
 {
-    use ClearsLandingPageCache;
-
     protected $fillable = [
         'address',
         'phone',
         'email',
         'map_url',
+        'map_location_name',
     ];
 
-    /**
-     * Scope to select only required fields for better performance
-     */
     public function scopePerformanceSelect($query)
     {
         return $query->select(
@@ -27,6 +22,7 @@ class Contact extends Model
             'phone',
             'email',
             'map_url',
+            'map_location_name',
             'created_at',
             'updated_at'
         );

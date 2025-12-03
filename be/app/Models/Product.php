@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Traits\StorageImageTrait;
-use App\Traits\ClearsLandingPageCache;
 
 class Product extends Model
 {
-    use StorageImageTrait, ClearsLandingPageCache;
+    use StorageImageTrait;
 
     protected $fillable = [
         "client_id",
@@ -17,7 +16,9 @@ class Product extends Model
         "description",
         "image_path",
         "price",
+        "hide_price",
         "images",
+        "order",
     ];
     protected $appends = ["image_url", "image_urls"];
     protected $casts = [
@@ -56,14 +57,10 @@ class Product extends Model
         return [];
     }
 
-    /**
-     * Override toArray to handle image URLs more efficiently
-     */
     public function toArray()
     {
         $data = parent::toArray();
 
-        // Only process image URLs if we're not in a relationship context that might cause recursion
         if (!isset($data["client"])) {
             $data["image_url"] =
                 isset($this->image_path) && !is_null($this->image_path)
@@ -77,5 +74,22 @@ class Product extends Model
         }
 
         return $data;
+    }
+
+    public function scopePerformanceSelect($query)
+    {
+        return $query->select(
+            'id',
+            'client_id',
+            'name',
+            'description',
+            'image_path',
+            'price',
+            'hide_price',
+            'images',
+            'order',
+            'created_at',
+            'updated_at'
+        );
     }
 }

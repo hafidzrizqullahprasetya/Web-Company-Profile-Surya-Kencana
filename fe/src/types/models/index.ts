@@ -11,4 +11,5 @@ export type {
   LandingPageData,
   LoginRequest,
   LoginResponse,
-} from '@/services'
+  AdminPreferences
+} from './definitions'

@@ -69,14 +69,20 @@ class StorageService
         $filename = $this->generateUniqueFilename($file);
 
         // Convert image to WebP format
-        if ($this->isImage($file)) {
+        if ($this->isImage($file) && config('filesystems.webp_enabled', true)) {
             $image = Image::read($file->getRealPath());
 
-            // Convert to WebP with 85% quality
-            $webpImage = $image->toWebp(85);
+            // Convert to WebP with configurable quality (cast to int to ensure it's an integer)
+            $webpQuality = (int) config('filesystems.webp_quality', 85);
+            $webpImage = $image->toWebp($webpQuality);
 
             // Change filename extension to .webp
-            $filename = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '.webp', $filename);
+            $filename = preg_replace('/\.(jpg|jpeg|png|gif|bmp|webp)$/i', '.webp', $filename);
+
+            // Ensure the filename ends with .webp in case the original extension wasn't matched
+            if (!Str::endsWith($filename, '.webp')) {
+                $filename = pathinfo($filename, PATHINFO_FILENAME) . '.webp';
+            }
 
             // Create temporary file for WebP
             $tempPath = sys_get_temp_dir() . '/' . $filename;
@@ -93,7 +99,7 @@ class StorageService
             // Clean up temporary file
             @unlink($tempPath);
         } else {
-            // For non-image files, upload as is
+            // For non-image files or when WebP conversion is disabled, upload as is
             $storedPath = Storage::disk($disk)->putFileAs(
                 $directory,
                 $file,
@@ -161,10 +167,9 @@ class StorageService
      */
     public function forceR2(): self
     {
-        if ($this->isR2Configured()) {
-            $this->defaultDisk = 'r2';
-        }
-        
+        // Always force R2 usage regardless of other configurations
+        $this->defaultDisk = 'r2';
+
         return $this;
     }
 
@@ -182,6 +187,16 @@ class StorageService
     protected function isImage(UploadedFile $file): bool
     {
         $mimeType = $file->getMimeType();
-        return str_starts_with($mimeType, 'image/');
+
+        // Check using MIME type first
+        if (str_starts_with($mimeType, 'image/')) {
+            return true;
+        }
+
+        // Fallback: check file extension if MIME type detection fails
+        $extension = strtolower($file->getClientOriginalExtension());
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+
+        return in_array($extension, $imageExtensions);
     }
 }

@@ -70,12 +70,19 @@
                         'opacity-100': currentBackgroundIndex === index,
                         'opacity-0': currentBackgroundIndex !== index,
                     }">
-                    <picture class="absolute inset-0 w-full h-full">
-                        <source :srcset="getImageUrlForFormat(bg, 'webp')" type="image/webp" />
-                        <source :srcset="bg" type="image/jpeg" />
-                        <img v-lazy="bg" class="w-full h-full object-cover"
-                            :alt="heroData.title || 'Hero Background'" />
-                    </picture>
+                    <template v-if="bg">
+                        <picture class="absolute inset-0 w-full h-full">
+                            <source :srcset="getImageUrlForFormat(bg, 'webp')" type="image/webp" />
+                            <source :srcset="bg" type="image/jpeg" />
+                            <img v-lazy="bg" class="w-full h-full object-cover"
+                                :alt="heroData.title || 'Hero Background'" />
+                        </picture>
+                    </template>
+                    <template v-else>
+                        <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
+                            <ImagePlaceholder variant="image" size="xl" text="Hero Background" altText="Gambar background hero tidak ditemukan" />
+                        </div>
+                    </template>
                 </div>
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-secondary/35 to-secondary/50 z-10"></div>
@@ -164,9 +171,9 @@
                     </div>
 
                     <!-- Bottom 2 Stats (Centered) -->
-                    <div class="grid grid-cols-2 gap-0 sm:gap-2 justify-center -mx-2">
+                    <div class="grid grid-cols-2 gap-1 sm:gap-2 justify-center max-w-sm mx-auto">
                         <div v-for="(stat, idx) in stats.slice(3, 5)" :key="idx + 3"
-                            class="text-center relative transition-transform duration-300 hover:-translate-y-1.25 px-2">
+                            class="text-center relative transition-transform duration-300 hover:-translate-y-1.25 px-1">
                             <div
                                 class="flex items-center justify-center w-10 sm:w-16 h-10 sm:h-16 bg-cream/10 rounded-full mx-auto mb-1 sm:mb-2 text-white transition-all duration-300 border-2 border-cream/20 hover:bg-cream/20 hover:scale-110 hover:text-cream">
                                 <i :class="['fa-solid', 'fa-' + stat.icon, 'text-xs sm:text-xl']"></i>
@@ -190,6 +197,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useLandingPageData, useImageUrl, useWhatsApp } from '@/composables'
 import BadgeButton from './BadgeButton.vue'
+import ImagePlaceholder from '@/components/common/ImagePlaceholder.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
 const { getImageUrlForFormat } = useImageUrl()

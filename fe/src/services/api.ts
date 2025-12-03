@@ -1,50 +1,32 @@
 // Re-export all services for backward compatibility
 import {
+  adminApi,
   apiClient,
   authApi,
   authService,
-  visionMissionApi,
-  productsApi,
   clientsApi,
-  testimonialsApi,
+  companyHistoryApi,
   contactApi,
   heroApi,
-  companyHistoryApi,
-  siteSettingsApi,
   landingPageApi,
-  adminApi,
+  productsApi,
+  siteSettingsApi,
+  testimonialsApi,
+  visionMissionApi,
 } from './index'
 
 export {
-  apiClient,
+  adminApi, apiClient,
   authApi,
-  authService,
-  visionMissionApi,
-  productsApi,
-  clientsApi,
-  testimonialsApi,
-  contactApi,
-  heroApi,
-  companyHistoryApi,
-  siteSettingsApi,
-  landingPageApi,
-  adminApi,
+  authService, clientsApi, companyHistoryApi, contactApi,
+  heroApi, landingPageApi, productsApi, siteSettingsApi, testimonialsApi, visionMissionApi
 }
 
 // Re-export types for backward compatibility
 export type {
-  LoginRequest,
-  LoginResponse,
-  VisionMission,
-  Product,
-  OurClient,
-  Testimonial,
-  Contact,
-  Hero,
-  CompanyHistory,
-  SiteSetting,
-  LandingPageData,
-  Admin,
+  Admin, CompanyHistory, Contact,
+  Hero, LandingPageData, LoginRequest,
+  LoginResponse, OurClient, Product, SiteSetting, Testimonial, VisionMission
 } from './index'
 
 // Legacy API object for backward compatibility
@@ -107,6 +89,18 @@ const api = {
   createAdmin: (data: any) => adminApi.createAdmin(data),
   updateAdmin: (id: number, data: any) => adminApi.updateAdmin(id, data),
   deleteAdmin: (id: number) => adminApi.deleteAdmin(id),
+  getCurrentAdmin: () => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        return Promise.resolve({ id: user.id || 0, role: user.role || 'admin', ...user })
+      } catch {
+        return Promise.resolve({ id: 0, role: 'admin' })
+      }
+    }
+    return Promise.resolve({ id: 0, role: 'admin' })
+  },
 }
 
 export default api

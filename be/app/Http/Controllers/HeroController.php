@@ -18,17 +18,7 @@ class HeroController extends Controller
     public function index()
     {
         try {
-            $cacheKey = config(
-                "performance.cached_endpoints.hero.key",
-                "hero_data",
-            );
-            $cacheTtl = config("performance.cached_endpoints.hero.ttl", 86400);
-
-            $heroes = cache()->remember($cacheKey, $cacheTtl, function () {
-                return Hero::performanceSelect()->get();
-            });
-
-            return response()->json($heroes);
+            return response()->json(Hero::performanceSelect()->get());
         } catch (\Exception $e) {
             \Log::error("Error fetching hero: " . $e->getMessage());
             return response()->json(
@@ -59,14 +49,12 @@ class HeroController extends Controller
 
     public function update(Request $request)
     {
-        // Get the first hero record (singleton pattern)
         $hero = Hero::first();
 
         if (!$hero) {
             $hero = new Hero();
         }
 
-        // All fields are optional
         $request->validate([
             "location" => "nullable|string|max:255",
             "title" => "nullable|string",
@@ -76,11 +64,10 @@ class HeroController extends Controller
             "experience_years" => "nullable|integer|min:0",
             "trust_years" => "nullable|integer|min:0",
             "backgrounds" => "nullable|array",
-            "backgrounds.*" => "image|mimes:jpeg,png,jpg,gif,webp|max:102400", // max 100MB per image
-            "deleted_backgrounds" => "nullable|array", // Array of paths to delete
+            "backgrounds.*" => "image|mimes:jpeg,png,jpg,gif,webp|max:102400",
+            "deleted_backgrounds" => "nullable|array",
         ]);
 
-        // Handle multiple background images upload
         if ($request->hasFile("backgrounds")) {
             $existingBackgrounds = $hero->backgrounds ?? [];
             $newBackgrounds = [];
@@ -92,14 +79,12 @@ class HeroController extends Controller
                 );
             }
 
-            // Merge with existing backgrounds
             $hero->backgrounds = array_merge(
                 $existingBackgrounds,
                 $newBackgrounds,
             );
         }
 
-        // Handle deleting specific backgrounds
         if (
             $request->has("deleted_backgrounds") &&
             is_array($request->deleted_backgrounds)
@@ -107,7 +92,6 @@ class HeroController extends Controller
             $existingBackgrounds = $hero->backgrounds ?? [];
 
             foreach ($request->deleted_backgrounds as $pathToDelete) {
-                // Remove from array
                 $existingBackgrounds = array_filter(
                     $existingBackgrounds,
                     function ($path) use ($pathToDelete) {
@@ -115,14 +99,12 @@ class HeroController extends Controller
                     },
                 );
 
-                // Delete file from storage
                 $this->storageService->delete($pathToDelete);
             }
 
-            $hero->backgrounds = array_values($existingBackgrounds); // Re-index array
+            $hero->backgrounds = array_values($existingBackgrounds);
         }
 
-        // Update other fields only if provided
         $updateData = $request->only([
             "location",
             "title",
@@ -133,24 +115,12 @@ class HeroController extends Controller
             "trust_years",
         ]);
 
-        // Remove null values to avoid overwriting existing data with null
         $updateData = array_filter($updateData, function ($value) {
             return $value !== null;
         });
 
         $hero->fill($updateData);
         $hero->save();
-
-        // Clear caches
-        cache()->forget(
-            config("performance.cached_endpoints.hero.key", "hero_data"),
-        );
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.landing_page.key",
-                "landing_page",
-            ),
-        );
 
         return response()->json([
             "message" => "Hero updated successfully",

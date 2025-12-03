@@ -1,6 +1,7 @@
-import { ref, computed, onMounted, readonly } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { authApi, authService } from '@/services'
+import { authApi } from '@/services'
+import { showConfirm, showToast } from '@/utils/sweetalert'
+import { computed, onMounted, readonly, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 // Reactive state
 const token = ref<string | null>(null)
@@ -68,13 +69,8 @@ export function useAuth() {
 
       const response = await authApi.login(credentials)
 
-      // Determine role based on credentials (temporary solution)
-      let role = 'admin'
-      if (credentials.username === 'superadmin' && credentials.password === 'superadmin123') {
-        role = 'superadmin'
-      } else if (credentials.username === 'admin' && credentials.password === 'admin123') {
-        role = 'admin'
-      }
+      // Get role from backend response
+      const role = response.admin?.role || 'admin'
 
       // Save auth state
       saveAuthState({
@@ -87,10 +83,14 @@ export function useAuth() {
       const redirectPath = (route.query.redirect as string) || '/admin/dashboard'
       router.push(redirectPath)
 
+      showToast.success('Login berhasil! Selamat datang.')
+
       return response
     } catch (err: any) {
       console.error('Login error:', err)
-      error.value = err.response?.data?.message || 'Login failed. Please check your credentials.'
+      const errorMessage = err.response?.data?.message || 'Username atau password salah!'
+      error.value = errorMessage
+      showToast.error(errorMessage)
       throw err
     } finally {
       isLoading.value = false
@@ -99,8 +99,21 @@ export function useAuth() {
 
   // Logout function
   const logout = async () => {
+    const confirmed = await showConfirm({
+      title: 'Logout?',
+      text: 'Apakah Anda yakin ingin keluar dari panel admin?',
+      confirmButtonText: 'Ya, Logout',
+      cancelButtonText: 'Batal',
+      icon: 'question'
+    })
+
+    if (!confirmed) {
+      return
+    }
+
     try {
       await authApi.logout()
+      showToast.success('Logout berhasil!')
     } catch (err) {
       console.error('Logout error:', err)
     } finally {

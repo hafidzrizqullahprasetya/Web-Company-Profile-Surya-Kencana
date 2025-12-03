@@ -17,4 +17,9 @@ class Admin extends Authenticatable
     {
         $this->attributes['password'] = Hash::make($value);
     }
+
+    public function preferences()
+    {
+        return $this->hasOne(AdminPreference::class);
+    }
 }

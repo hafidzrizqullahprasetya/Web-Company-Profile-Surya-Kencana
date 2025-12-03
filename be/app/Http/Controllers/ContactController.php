@@ -36,20 +36,7 @@ class ContactController extends Controller
     public function index()
     {
         try {
-            $cacheKey = config(
-                "performance.cached_endpoints.contact.key",
-                "contact_info",
-            );
-            $cacheTtl = config(
-                "performance.cached_endpoints.contact.ttl",
-                86400,
-            );
-
-            $contacts = cache()->remember($cacheKey, $cacheTtl, function () {
-                return Contact::performanceSelect()->get();
-            });
-
-            return response()->json($contacts);
+            return response()->json(Contact::performanceSelect()->get());
         } catch (\Exception $e) {
             \Log::error("Error fetching contact: " . $e->getMessage());
             return response()->json(
@@ -161,16 +148,12 @@ class ContactController extends Controller
             "phone" => "nullable|string|max:20",
             "email" => "nullable|email|max:255",
             "map_url" => "nullable|url|max:255",
+            "map_location_name" => "nullable|string|max:255",
         ]);
 
         $contact = Contact::first();
         if ($contact) {
             $contact->update($request->all());
-
-            cache()->forget(config("performance.cached_endpoints.contact.key"));
-            cache()->forget(
-                config("performance.cached_endpoints.landing_page.key"),
-            );
 
             return response()->json([
                 "message" => "Contact updated successfully",

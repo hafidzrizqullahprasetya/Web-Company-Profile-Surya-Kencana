@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VisionMissionController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminPreferenceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OurClientController;
@@ -186,19 +187,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin/{id}', [AdminController::class, 'update']);
     Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
 
+    // Admin Preferences Routes
+    Route::get('/admin/{adminId}/preferences', [AdminPreferenceController::class, 'getPreferences']);
+    Route::put('/admin/{adminId}/preferences', [AdminPreferenceController::class, 'updatePreferences']);
+    Route::patch('/admin/{adminId}/preferences/sidebar-state', [AdminPreferenceController::class, 'updateSidebarState']);
+    Route::patch('/admin/{adminId}/preferences/menu-order', [AdminPreferenceController::class, 'updateMenuOrder']);
+
     // Product Routes
+    Route::post('/product/reorder', [ProductController::class, 'reorder']);
     Route::post('/product', [ProductController::class, 'store']);
     Route::post('/product/{id}', [ProductController::class, 'update']);
     Route::put('/product/{id}', [ProductController::class, 'update']);
     Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 
     // Client Routes
+    Route::post('/our-client/reorder', [OurClientController::class, 'reorder']);
     Route::post('/our-client', [OurClientController::class, 'store']);
     Route::post('/our-client/{id}', [OurClientController::class, 'update']);
     Route::put('/our-client/{id}', [OurClientController::class, 'update']);
     Route::delete('/our-client/{id}', [OurClientController::class, 'destroy']);
 
     // Testimonial Routes
+    Route::post('/testimonial/reorder', [TestimonialController::class, 'reorder']);
     Route::post('/testimonial', [TestimonialController::class, 'store']);
     Route::put('/testimonial/{id}', [TestimonialController::class, 'update']);
     Route::delete('/testimonial/{id}', [TestimonialController::class, 'destroy']);
@@ -208,7 +218,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/hero', [HeroController::class, 'update']);
 
     // Company History Routes
+    Route::post('/company-history/reorder', [CompanyHistoryController::class, 'reorder']);
     Route::post('/company-history', [CompanyHistoryController::class, 'store']);
+    Route::post('/company-history/{id}', [CompanyHistoryController::class, 'update']);
     Route::put('/company-history/{id}', [CompanyHistoryController::class, 'update']);
     Route::delete('/company-history/{id}', [CompanyHistoryController::class, 'destroy']);
 

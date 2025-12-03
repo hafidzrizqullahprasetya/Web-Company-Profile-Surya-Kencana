@@ -1,30 +1,24 @@
+export { adminApi } from './admin'
+export { adminPreferencesApi } from './admin-preferences'
 export { apiClient } from './api-client'
-export { authApi } from './auth-api'
 export { authService } from './auth'
-export { visionMissionApi } from './vision-mission'
-export { productsApi } from './products'
+export { authApi } from './auth-api'
 export { clientsApi } from './clients'
-export { testimonialsApi } from './testimonials'
+export { companyHistoryApi } from './company-history'
 export { contactApi } from './contact'
 export { heroApi } from './hero'
-export { companyHistoryApi } from './company-history'
-export { siteSettingsApi } from './site-settings'
 export { landingPageApi } from './landing-page'
-export { adminApi } from './admin'
 export { legacyApi } from './legacy-api'
+export { productsApi } from './products'
+export { siteSettingsApi } from './site-settings'
+export { testimonialsApi } from './testimonials'
+export { visionMissionApi } from './vision-mission'
 
 // Export types
 export type {
-  LoginRequest,
-  LoginResponse,
-  VisionMission,
-  Product,
-  OurClient,
-  Testimonial,
-  Contact,
-  Hero,
-  CompanyHistory,
-  SiteSetting,
-  LandingPageData,
   Admin,
-} from './types'
+  AdminPreferences, CompanyHistory, Contact,
+  Hero, LandingPageData, LoginRequest,
+  LoginResponse, OurClient, Product, SiteSetting, Testimonial, VisionMission
+} from '../types/models'
+

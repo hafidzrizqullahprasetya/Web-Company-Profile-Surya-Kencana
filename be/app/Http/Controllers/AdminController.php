@@ -41,22 +41,16 @@ class AdminController extends Controller
     public function index()
     {
         try {
-            $config = config("performance.cached_endpoints.admin");
-            $cacheKey = $config["key"] ?? "admins_all";
-            $cacheTtl = $config["ttl"] ?? 1800;
-
-            $admins = cache()->remember($cacheKey, $cacheTtl, function () {
-                return Admin::select(
+            return response()->json(
+                Admin::select(
                     "id",
                     "username",
                     "created_at",
                     "updated_at",
                 )
                     ->orderBy("username", "asc")
-                    ->get();
-            });
-
-            return response()->json($admins);
+                    ->get()
+            );
         } catch (\Exception $e) {
             return Admin::select("id", "username", "created_at", "updated_at")
                 ->orderBy("username", "asc")
@@ -144,10 +138,6 @@ class AdminController extends Controller
         ]);
 
         $Admin = Admin::create($request->all());
-
-        cache()->forget(
-            config("performance.cached_endpoints.admin.key", "admin_list"),
-        );
 
         return response()->json(
             [
@@ -241,10 +231,6 @@ class AdminController extends Controller
         if ($Admin) {
             $Admin->update($request->all());
 
-            cache()->forget(
-                config("performance.cached_endpoints.admin.key", "admin_list"),
-            );
-
             return response()->json([
                 "message" => "Admin updated successfully",
                 "data" => $Admin,
@@ -297,10 +283,6 @@ class AdminController extends Controller
         $Admin = Admin::find($id);
         if ($Admin) {
             $Admin->delete();
-
-            cache()->forget(
-                config("performance.cached_endpoints.admin.key", "admin_list"),
-            );
 
             return response()->json([
                 "message" => "Admin deleted successfully",

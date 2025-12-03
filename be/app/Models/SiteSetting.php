@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\StorageImageTrait;
-use App\Traits\ClearsLandingPageCache;
 
 class SiteSetting extends Model
 {
-    use StorageImageTrait, ClearsLandingPageCache;
+    use StorageImageTrait;
 
     protected $fillable = [
         'company_name',
@@ -36,9 +35,6 @@ class SiteSetting extends Model
         return $this->buildImageUrl($this->company_logo);
     }
 
-    /**
-     * Scope to select only required fields for better performance
-     */
     public function scopePerformanceSelect($query)
     {
         return $query->select(

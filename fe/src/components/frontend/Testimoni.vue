@@ -3,9 +3,9 @@
     <section class="relative py-10 md:py-14 lg:py-15 bg-primary overflow-hidden scroll-mt-[175px] md:scroll-mt-[175px]"
         id="testimoni">
         <div class="container mx-auto px-4">
-            <SectionTitle :label="siteSettings?.testimoni_label" :title="siteSettings?.testimoni_title"
-                :icon="['fas', 'comment-dots']" label-variant="inverted" title-variant="white"
-                margin-bottom="mb-8 md:mb-10 lg:mb-12" />
+            <SectionTitle :label="siteSettings?.testimoni_label ?? undefined"
+                :title="siteSettings?.testimoni_title ?? undefined" :icon="['fas', 'comment-dots']"
+                label-variant="inverted" title-variant="white" margin-bottom="mb-8 md:mb-10 lg:mb-12" />
 
             <template v-if="isLoading || testimonials.length === 0">
                 <!-- Skeleton cards -->
@@ -81,53 +81,57 @@
                 </div>
             </template>
             <template v-else>
-                <div class="flex flex-col items-center gap-12">
+                <div class="flex flex-col items-center">
                     <!-- Testimonial Cards with Sliding Animation -->
                     <div class="relative w-full max-w-7xl overflow-hidden">
                         <!-- Sliding Track -->
-                        <div class="flex transition-transform duration-700 ease-in-out"
-                            :style="{ transform: `translateX(-${currentPage * 100}%)` }">
+                        <div class="flex cursor-grab active:cursor-grabbing select-none"
+                            :class="{ 'transition-transform duration-700 ease-in-out': !isDragging }"
+                            :style="{ transform: `translateX(calc(-${currentPage * 100}% + ${dragOffset}px))` }"
+                            @mousedown="handleDragStart" @touchstart="handleTouchStart" @mousemove="handleDragMove"
+                            @touchmove="handleTouchMove" @mouseup="handleDragEnd" @touchend="handleTouchEnd"
+                            @mouseleave="handleDragEnd">
                             <!-- Each Page is a Slide -->
                             <div v-for="(page, pageIndex) in paginatedTestimonials" :key="`page-${pageIndex}`"
-                                class="w-full flex-shrink-0">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+                                class="w-full flex-shrink-0 px-3 md:px-4 lg:px-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                                     <div v-for="testimonial in page" :key="testimonial.id"
-                                        class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl group">
+                                        class="bg-white rounded-lg md:rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl group">
                                         <!-- Card Header with Quote Icon -->
-                                        <div class="bg-gradient-to-br from-cream to-cream-light p-5 relative">
+                                        <div class="bg-gradient-to-br from-cream to-cream-light p-4 md:p-5 relative">
                                             <div
-                                                class="absolute top-3 right-3 text-5xl text-primary font-serif leading-none">
+                                                class="absolute top-2 right-2 md:top-3 md:right-3 text-3xl md:text-5xl text-primary font-serif leading-none">
                                                 "
                                             </div>
-                                            <div class="flex gap-1 mb-3">
+                                            <div class="flex gap-0.5 md:gap-1 mb-2 md:mb-3">
                                                 <i v-for="star in 5" :key="star"
-                                                    class="fa-solid fa-star w-5 h-5 text-yellow-500 drop-shadow-sm"></i>
+                                                    class="fa-solid fa-star w-3 h-3 md:w-5 md:h-5 text-yellow-500 drop-shadow-sm"></i>
                                             </div>
                                         </div>
 
                                         <!-- Card Body -->
-                                        <div class="p-5 pb-6">
+                                        <div class="p-4 md:p-5 pb-5 md:pb-6">
                                             <p
-                                                class="text-secondary/90 text-base leading-relaxed mb-4 line-clamp-4 min-h-[72px]">
+                                                class="text-secondary/90 text-xs md:text-base leading-relaxed mb-3 md:mb-4 line-clamp-4 min-h-[60px] md:min-h-[72px]">
                                                 "{{ testimonial.feedback }}"
                                             </p>
 
                                             <div
-                                                class="flex items-center gap-3 pt-3 border-t border-gray-100 bg-gradient-to-br from-cream to-cream-light p-3 rounded-lg -mx-2">
+                                                class="flex items-center gap-2 md:gap-3 pt-2 md:pt-3 border-t border-gray-100 bg-gradient-to-br from-cream to-cream-light p-2 md:p-3 rounded-lg -mx-2">
                                                 <div class="flex-shrink-0">
                                                     <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.client_name)}&background=5C4033&color=FFFFFF&size=64&bold=true`"
                                                         :alt="testimonial.client_name"
-                                                        class="w-14 h-14 rounded-full object-cover border-2 border-primary shadow-md transition-transform duration-300 group-hover:scale-110"
+                                                        class="w-10 h-10 md:w-14 md:h-14 rounded-full object-cover border-2 border-primary shadow-md transition-transform duration-300 group-hover:scale-110"
                                                         @error="onImageError" />
                                                 </div>
                                                 <div class="flex flex-col gap-0.5">
-                                                    <h4 class="text-primary font-bold text-lg">
+                                                    <h4 class="text-primary font-bold text-sm md:text-lg">
                                                         {{ testimonial.client_name }}
                                                     </h4>
-                                                    <p class="text-secondary font-semibold text-sm">
+                                                    <p class="text-secondary font-semibold text-xs md:text-sm">
                                                         {{ testimonial.institution }}
                                                     </p>
-                                                    <p class="text-primary/60 text-sm">
+                                                    <p class="text-primary/60 text-xs md:text-sm">
                                                         {{ formatDate(testimonial.date) }}
                                                     </p>
                                                 </div>
@@ -141,7 +145,7 @@
 
                     <!-- Navigation Controls -->
                     <Pagination :current-page="currentPage" :total-pages="totalPages" @prev="prevPage" @next="nextPage"
-                        @goto="goToPage" />
+                        @goto="goToPage" class="mt-8 md:mt-10 lg:mt-12" />
                 </div>
             </template>
         </div>
@@ -149,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useLandingPageData } from '@/composables/useLandingPageData'
 import SectionTitle from './SectionTitle.vue'
 import Pagination from './Pagination.vue'
@@ -160,19 +164,30 @@ const testimonials = computed(() => landingPageData.value?.testimonials || [])
 const siteSettings = computed(() => landingPageData.value?.siteSettings || null)
 
 const currentPage = ref(0)
-const cardsPerPage = 3
+const isMobile = ref(false)
+
+// Touch/Drag state
+const isDragging = ref(false)
+const startX = ref(0)
+const currentX = ref(0)
+const dragOffset = ref(0)
+const dragThreshold = 50
+
+// Responsive cards per page
+const cardsPerPage = computed(() => (isMobile.value ? 1 : 3))
 
 // Calculate total pages
 const totalPages = computed(() => {
-    return Math.ceil(testimonials.value.length / cardsPerPage)
+    return Math.ceil(testimonials.value.length / cardsPerPage.value)
 })
 
 // Paginate testimonials into pages (for sliding animation)
 const paginatedTestimonials = computed(() => {
     const pages = []
+    const perPage = cardsPerPage.value
     for (let i = 0; i < totalPages.value; i++) {
-        const start = i * cardsPerPage
-        const end = start + cardsPerPage
+        const start = i * perPage
+        const end = start + perPage
         pages.push(testimonials.value.slice(start, end))
     }
     return pages
@@ -195,6 +210,93 @@ const goToPage = (page: number) => {
         currentPage.value = page
     }
 }
+
+// Touch/Drag handlers
+const handleTouchStart = (e: TouchEvent) => {
+    if (totalPages.value <= 1) return
+    isDragging.value = true
+    if (e.touches && e.touches[0]) {
+        startX.value = e.touches[0].clientX
+        currentX.value = e.touches[0].clientX
+    }
+    dragOffset.value = 0
+}
+
+const handleDragStart = (e: MouseEvent) => {
+    if (totalPages.value <= 1) return
+    isDragging.value = true
+    startX.value = e.clientX
+    currentX.value = e.clientX
+    dragOffset.value = 0
+    e.preventDefault()
+}
+
+const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging.value) return
+    if (e.touches && e.touches[0]) {
+        currentX.value = e.touches[0].clientX
+    }
+    dragOffset.value = currentX.value - startX.value
+}
+
+const handleDragMove = (e: MouseEvent) => {
+    if (!isDragging.value) return
+    currentX.value = e.clientX
+    dragOffset.value = currentX.value - startX.value
+}
+
+const handleTouchEnd = () => {
+    if (!isDragging.value) return
+    handleSwipe()
+}
+
+const handleDragEnd = () => {
+    if (!isDragging.value) return
+    handleSwipe()
+}
+
+const handleSwipe = () => {
+    const diff = dragOffset.value
+
+    // Check if drag distance exceeds threshold
+    if (Math.abs(diff) > dragThreshold) {
+        if (diff < 0) {
+            // Dragged left - next page
+            nextPage()
+        } else {
+            // Dragged right - prev page
+            prevPage()
+        }
+    }
+
+    // Reset drag state
+    isDragging.value = false
+    startX.value = 0
+    currentX.value = 0
+    dragOffset.value = 0
+}
+
+// Check if mobile and reset page if needed
+const checkMobile = () => {
+    const wasMobile = isMobile.value
+    isMobile.value = window.innerWidth < 768
+
+    // Reset to first page when switching between mobile/desktop if current page is out of bounds
+    if (wasMobile !== isMobile.value) {
+        if (currentPage.value >= totalPages.value) {
+            currentPage.value = 0
+        }
+    }
+}
+
+onMounted(() => {
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkMobile)
+})
 
 const formatDate = (dateString: string): string => {
     const date = new Date(dateString)

@@ -17,8 +17,8 @@ class ContactSeeder extends Seeder
             "address" => "Jl Mulyosari, Tumut, Sumbersari, Kec. Moyudan, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55563",
             "phone" => "088902947368",
             "email" => "suryakencana@gmail.com",
-            "map_url" => "https://maps.app.goo.gl/uwCvY1VCJAVK4mANA/"
+            "map_url" => "https://maps.app.goo.gl/uwCvY1VCJAVK4mANA/",
+            "map_location_name" => "PT. Surya Kencana Gemilang Teknik"
         ]);
-        
     }
 }

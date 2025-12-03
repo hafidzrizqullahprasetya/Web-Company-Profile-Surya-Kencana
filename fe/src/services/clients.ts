@@ -1,5 +1,5 @@
-import { apiClient } from './api-client'
 import type { OurClient } from '../types/models'
+import { apiClient } from './api-client'
 
 export const clientsApi = {
   async getClients(): Promise<OurClient[]> {
@@ -55,6 +55,15 @@ export const clientsApi = {
       await apiClient.delete('/our-client/' + id)
     } catch (error) {
       console.error('Error deleting client:', error)
+      throw error
+    }
+  },
+
+  async reorderClients(clients: Array<{ id: number; order: number }>): Promise<void> {
+    try {
+      await apiClient.post('/our-client/reorder', { clients })
+    } catch (error) {
+      console.error('Error reordering clients:', error)
       throw error
     }
   }

@@ -8,8 +8,14 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  timeout: 60000, // 60 seconds per request (increased for slow remote DB)
+  timeout: 30000, // 30 seconds
 })
+
+if (!API_BASE_URL) {
+  console.warn('⚠️ VITE_API_BASE_URL is not defined! API calls may fail or hit the wrong endpoint.')
+} else {
+  console.log(`🔌 API Client initialized with baseURL: ${API_BASE_URL}`)
+}
 
 // Retry configuration
 const MAX_RETRIES = 0

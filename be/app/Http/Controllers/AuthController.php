@@ -104,6 +104,8 @@ class AuthController extends Controller
         // Use a single query to check both admin and superadmin tables
         $admin = Admin::where('username', $request->username)->first();
         if ($admin && Hash::check($request->password, $admin->password)) {
+            // Delete existing tokens with the same name
+            $admin->tokens()->where('name', 'auth_token')->delete();
             $token = $admin->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -111,13 +113,16 @@ class AuthController extends Controller
                 'token' => $token,
                 'admin' => [
                     'id' => $admin->id,
-                    'username' => $admin->username
+                    'username' => $admin->username,
+                    'role' => 'admin'
                 ]
             ]);
         }
 
         $superadmin = SuperAdmin::where('username', $request->username)->first();
         if ($superadmin && Hash::check($request->password, $superadmin->password)) {
+            // Delete existing tokens with the same name
+            $superadmin->tokens()->where('name', 'auth_token')->delete();
             $token = $superadmin->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -125,7 +130,8 @@ class AuthController extends Controller
                 'token' => $token,
                 'admin' => [
                     'id' => $superadmin->id,
-                    'username' => $superadmin->username
+                    'username' => $superadmin->username,
+                    'role' => 'superadmin'
                 ]
             ]);
         }

@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\StorageImageTrait;
-use App\Traits\ClearsLandingPageCache;
 
 class CompanyHistory extends Model
 {
-    use StorageImageTrait, ClearsLandingPageCache;
+    use StorageImageTrait;
 
     protected $fillable = [
         'tahun',
@@ -16,6 +15,7 @@ class CompanyHistory extends Model
         'deskripsi',
         'image_path',
         'images',
+        'order',
     ];
 
     protected $casts = [
@@ -38,9 +38,6 @@ class CompanyHistory extends Model
         return [];
     }
 
-    /**
-     * Scope to select only required fields for better performance
-     */
     public function scopePerformanceSelect($query)
     {
         return $query->select(
@@ -50,6 +47,7 @@ class CompanyHistory extends Model
             'deskripsi',
             'image_path',
             'images',
+            'order',
             'created_at',
             'updated_at'
         );

@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/frontend/Home.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,9 +59,9 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: 'riwayat',
+          path: 'admin',
           name: 'admin-history',
-          component: () => import('@/views/admin/riwayat/AdminManagement.vue'),
+          component: () => import('@/views/admin/admin/AdminManagement.vue'),
           meta: { requiresAuth: true, requiresSuperAdmin: true },
         },
         {

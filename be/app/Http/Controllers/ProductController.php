@@ -58,17 +58,21 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $cacheKey = config(
-                "performance.cached_endpoints.product.key",
-                "products_list",
-            );
-            $cacheTtl = config(
-                "performance.cached_endpoints.product.ttl",
-                3600,
-            );
-
-            $products = cache()->remember($cacheKey, $cacheTtl, function () {
-                return Product::with([
+            return response()->json(
+                Product::select([
+                    'id',
+                    'client_id',
+                    'name',
+                    'description',
+                    'image_path',
+                    'price',
+                    'hide_price',
+                    'images',
+                    'order',
+                    'created_at',
+                    'updated_at',
+                ])
+                ->with([
                     "client" => function ($query) {
                         $query->select(
                             "id",
@@ -77,10 +81,10 @@ class ProductController extends Controller
                             "logo_path",
                         );
                     },
-                ])->get();
-            });
-
-            return response()->json($products);
+                ])
+                ->orderBy('order', 'asc')
+                ->get()
+            );
         } catch (\Exception $e) {
             \Log::error("Error fetching products: " . $e->getMessage());
             return response()->json(
@@ -240,6 +244,8 @@ class ProductController extends Controller
             "client_id" => "nullable|integer|exists:our_clients,id",
             "name" => "required|string",
             "price" => "required|numeric",
+            "hide_price" => "nullable|boolean",
+            "order" => "nullable|integer|min:1",
             "description" => "required|string",
             "image_path" =>
                 "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
@@ -263,24 +269,22 @@ class ProductController extends Controller
             }
         }
 
+        // Get max order and increment
+        $maxOrder = Product::max('order') ?? 0;
+
+        // Use provided order or auto-increment
+        $order = $request->order ?? ($maxOrder + 1);
+
         $product = Product::create([
             "client_id" => $request->client_id,
             "name" => $request->name,
             "price" => $request->price,
+            "hide_price" => $request->hide_price ?? false,
             "description" => $request->description,
             "image_path" => $imagePath,
             "images" => $imagesPaths,
+            "order" => $order,
         ]);
-
-        cache()->forget(
-            config("performance.cached_endpoints.product.key", "products_list"),
-        );
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.landing_page.key",
-                "landing_page",
-            ),
-        );
 
         return response()->json(
             [
@@ -405,6 +409,8 @@ class ProductController extends Controller
             "client_id" => "nullable|integer|exists:our_clients,id",
             "name" => "sometimes|string",
             "price" => "sometimes|numeric",
+            "hide_price" => "nullable|boolean",
+            "order" => "nullable|integer|min:1",
             "description" => "sometimes|string",
             "image_path" =>
                 "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
@@ -464,20 +470,12 @@ class ProductController extends Controller
             "client_id",
             "name",
             "price",
+            "hide_price",
+            "order",
             "description",
         ]);
         $product->fill($updateData);
         $product->save();
-
-        cache()->forget(
-            config("performance.cached_endpoints.product.key", "products_list"),
-        );
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.landing_page.key",
-                "landing_page",
-            ),
-        );
 
         return response()->json([
             "message" => "Product updated successfully",
@@ -541,24 +539,85 @@ class ProductController extends Controller
 
             $product->delete();
 
-            cache()->forget(
-                config(
-                    "performance.cached_endpoints.product.key",
-                    "products_list",
-                ),
-            );
-            cache()->forget(
-                config(
-                    "performance.cached_endpoints.landing_page.key",
-                    "landing_page",
-                ),
-            );
-
             return response()->json([
                 "message" => "Product deleted successfully",
             ]);
         } else {
             return response()->json(["message" => "Product not found"], 404);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/product/reorder",
+     *     summary="Update urutan produk",
+     *     description="Mengupdate urutan tampilan produk",
+     *     operationId="reorderProducts",
+     *     tags={"Product"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"products"},
+     *             @OA\Property(
+     *                 property="products",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="order", type="integer", example=0)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Urutan produk berhasil diupdate",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Product order updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
+    public function reorder(Request $request)
+    {
+        try {
+            $request->validate([
+                'products' => 'required|array',
+                'products.*.id' => 'required|integer|exists:products,id',
+                'products.*.order' => 'required|integer',
+            ]);
+
+            $products = $request->input('products');
+
+            foreach ($products as $productData) {
+                Product::where('id', $productData['id'])
+                    ->update(['order' => $productData['order']]);
+            }
+
+            $updatedProducts = Product::orderBy('order', 'asc')->get();
+
+            return response()->json([
+                "message" => "Product order updated successfully",
+                "data" => $updatedProducts,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error reordering products: " . $e->getMessage());
+            return response()->json(
+                [
+                    "message" => "Error reordering products",
+                    "error" => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 }

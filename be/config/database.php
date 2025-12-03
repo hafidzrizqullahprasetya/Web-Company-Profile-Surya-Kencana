@@ -42,13 +42,14 @@ return [
             "collation" => env("DB_COLLATION", "utf8mb4_unicode_ci"),
             "prefix" => "",
             "prefix_indexes" => true,
-            "strict" => true,
+            "strict" => false,
             "engine" => null,
             "options" => extension_loaded("pdo_mysql")
                 ? array_filter([
-                    \PDO::ATTR_PERSISTENT => true,
-                    \PDO::ATTR_TIMEOUT => 10,
-                    \PDO::ATTR_EMULATE_PREPARES => false,
+                    1014 => false,
+                    2 => 30,
+                    20 => true,
+                    1009 => 1,
                 ])
                 : [],
         ],

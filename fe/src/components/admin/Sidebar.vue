@@ -1,262 +1,245 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <aside
-    :class="{
-      'bg-primary text-white shadow-lg min-h-screen transition-all duration-300 sticky top-0 h-screen': true,
-      'w-64': isOpen,
-      'w-20': !isOpen,
-    }"
-  >
-    <div class="p-5 border-b border-primary-light flex items-center justify-between">
-      <h1 v-if="isOpen" class="text-xl text-white font-bold">Admin Panel</h1>
-      <button @click="toggleSidebar" class="p-2 hover:bg-primary-light rounded-lg transition">
-        <i v-if="isOpen" class="fa-solid fa-bars w-5 h-5"></i>
-        <i v-else class="fa-solid fa-table-columns w-5 h-5"></i>
-      </button>
-    </div>
-    <nav class="p-3 overflow-y-auto h-[calc(100vh-76px)]">
-      <ul class="space-y-2">
-        <li>
-          <router-link
-            :to="{ name: 'admin-dashboard' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-dashboard',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-dashboard',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Dashboard' : ''"
-          >
-            <i class="fa-solid fa-home" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Dashboard</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-product' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-product',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-product',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Produk' : ''"
-          >
-            <i class="fa-solid fa-box" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Produk</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-client' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-client',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-client',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Our Client' : ''"
-          >
-            <i class="fa-solid fa-users" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Our Client</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-testimonial' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-testimonial',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-testimonial',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Testimonial' : ''"
-          >
-            <i class="fa-solid fa-comment" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Testimoni</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-vision-mission' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-vision-mission',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-vision-mission',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Visi & Misi' : ''"
-          >
-            <i class="fa-solid fa-file-alt" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Visi & Misi</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-contact' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-contact',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-contact',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Kontak' : ''"
-          >
-            <i class="fa-solid fa-phone" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Kontak</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-hero' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-hero',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-hero',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Bagian Hero' : ''"
-          >
-            <i class="fa-solid fa-layer-group" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Bagian Hero</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-company-history' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-company-history',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-company-history',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Company History' : ''"
-          >
-            <i class="fa-solid fa-calendar" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Riwayat Perusahaan</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            :to="{ name: 'admin-settings' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-settings',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-settings',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Pengaturan Situs' : ''"
-          >
-            <i class="fa-solid fa-cog" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Pengaturan Situs</span>
-          </router-link>
-        </li>
-        <li v-if="isAdminSuperadmin">
-          <router-link
-            :to="{ name: 'admin-history' }"
-            :class="{
-              'flex items-center p-3 rounded-lg transition-colors duration-200': true,
-              'bg-cream text-primary': $route.name === 'admin-history',
-              'hover:bg-cream hover:text-primary': $route.name !== 'admin-history',
-              'justify-center': !isOpen,
-            }"
-            :title="!isOpen ? 'Manajemen Admin' : ''"
-          >
-            <i class="fa-solid fa-user-cog" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-            <span v-if="isOpen">Manajemen Admin</span>
-          </router-link>
-        </li>
-      </ul>
+    <!-- Mobile Drawer Overlay -->
+    <div v-if="isOpen && isMobile" @click="closeSidebarOnMobile" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
-      <div class="mt-8 pt-4 border-t border-primary-light">
-        <button
-          @click="showLogoutConfirmation"
-          :class="{
-            'w-full flex items-center p-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg transition-colors duration-200': true,
-            'justify-center': !isOpen,
-          }"
-          :title="!isOpen ? 'Logout' : ''"
-        >
-          <i class="fa-solid fa-sign-out-alt" :class="isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'"></i>
-          <span v-if="isOpen">Logout</span>
-        </button>
-      </div>
-    </nav>
-  </aside>
+    <!-- Sidebar -->
+    <aside :class="{
+        'bg-primary text-white shadow-lg transition-all duration-300 flex flex-col flex-shrink-0': true,
+        'fixed top-0 left-0 h-screen z-50 w-64': isMobile,
+        'translate-x-0': isMobile && isOpen,
+        '-translate-x-full': isMobile && !isOpen,
+        'h-screen': !isMobile,
+        'w-64': !isMobile && isOpen,
+        'w-16 sm:w-20': !isMobile && !isOpen,
+    }" ref="sidebarElement">
+        <!-- Header -->
+        <div class="p-3 sm:p-5 border-b border-primary-light flex items-center justify-between flex-shrink-0">
+            <h1 v-if="isOpen" class="text-lg sm:text-xl text-white font-bold line-clamp-1">
+                {{ panelTitle }}
+            </h1>
+            <button @click="toggleSidebar" class="p-2 hover:bg-white/10 rounded-lg transition flex-shrink-0">
+                <i v-if="isOpen" class="fa-solid fa-bars w-5 h-5"></i>
+                <i v-else class="fa-solid fa-bars w-4 h-4 sm:w-5 sm:h-5"></i>
+            </button>
+        </div>
 
-  <!-- Logout Confirmation Modal -->
-  <div
-    v-if="showLogoutModal"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    @click="closeLogoutModal"
-  >
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6" @click.stop>
-      <div class="text-center">
-        <div
-          class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
-        >
-          <i class="fa-solid fa-right-from-bracket h-6 w-6 text-red-600"></i>
-        </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Logout?</h3>
-        <p class="text-sm text-gray-500 mb-6">Apakah Anda yakin ingin keluar dari akun admin?</p>
-        <div class="flex gap-3">
-          <button
-            @click="closeLogoutModal"
-            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-          >
-            Batal
-          </button>
-          <button
-            @click="confirmLogout"
-            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+        <!-- Navigation -->
+        <nav class="p-2 sm:p-3 overflow-y-auto flex-1">
+            <ul class="space-y-1 sm:space-y-2" draggable="false">
+                <li v-for="(item, index) in visibleMenuItems" :key="item.name" v-show="item.visible !== false"
+                    draggable="true" @dragstart="handleDragStart(index)" @dragover.prevent="handleDragOver(index)"
+                    @drop.prevent="handleDrop()" @dragend="handleDragEnd"
+                    :class="{ 'opacity-50 bg-white/10 rounded-lg': draggedIndex === index }"
+                    class="transition-all duration-200">
+                    <router-link :to="{ name: item.name }" :class="{
+                        'flex items-center p-2 sm:p-3 rounded-lg transition-colors duration-200': true,
+                        'bg-white text-primary': $route.name === item.name,
+                        'hover:bg-white hover:text-primary': $route.name !== item.name,
+                        'justify-center': !isOpen,
+                    }" :title="!isOpen ? item.label : ''" @click="handleNavClick">
+                        <i :class="[item.icon, isOpen ? 'w-5 h-5 mr-2 sm:mr-3' : 'w-4 h-4 sm:w-5 sm:h-5']"></i>
+                        <span v-if="isOpen" class="text-sm sm:text-base">{{ item.label }}</span>
+                    </router-link>
+                </li>
+            </ul>
+
+            <!-- Logout Section -->
+            <div class="mt-6 sm:mt-8 pt-3 sm:pt-4 border-t border-primary-light">
+                <button @click="handleLogout" :class="{
+                    'w-full flex items-center p-2 sm:p-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg transition-colors duration-200': true,
+                    'justify-center': !isOpen,
+                }" :title="!isOpen ? 'Logout' : ''">
+                    <i class="fa-solid fa-sign-out-alt"
+                        :class="isOpen ? 'w-5 h-5 mr-2 sm:mr-3' : 'w-4 h-4 sm:w-5 sm:h-5'"></i>
+                    <span v-if="isOpen" class="text-sm sm:text-base">Logout</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { adminPreferencesApi } from '@/services/admin-preferences'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
-const isAdminSuperadmin = ref(false)
-const isOpen = ref(true)
-const showLogoutModal = ref(false)
+const { logout } = useAuth()
+const sidebarElement = ref<HTMLElement | null>(null)
+const isOpen = ref(false)
+const isMobile = ref(false)
+const userRole = ref<string>('admin')
+const adminId = ref<number>(0)
+const draggedIndex = ref<number | null>(null)
 
-onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    isAdminSuperadmin.value = true
-  }
+interface MenuItem {
+    name: string
+    label: string
+    icon: string
+    visible?: boolean
+}
+
+const allMenuItems: MenuItem[] = [
+    { name: 'admin-dashboard', label: 'Dashboard', icon: 'fa-solid fa-home' },
+    { name: 'admin-product', label: 'Produk', icon: 'fa-solid fa-box' },
+    { name: 'admin-client', label: 'Our Client', icon: 'fa-solid fa-users' },
+    { name: 'admin-testimonial', label: 'Testimoni', icon: 'fa-solid fa-comment' },
+    { name: 'admin-vision-mission', label: 'Visi & Misi', icon: 'fa-solid fa-file-alt' },
+    { name: 'admin-contact', label: 'Kontak', icon: 'fa-solid fa-phone' },
+    { name: 'admin-hero', label: 'Hero', icon: 'fa-solid fa-layer-group' },
+    { name: 'admin-company-history', label: 'Riwayat Perusahaan', icon: 'fa-solid fa-calendar' },
+    { name: 'admin-settings', label: 'Pengaturan Situs', icon: 'fa-solid fa-cog' },
+    { name: 'admin-history', label: 'Manajemen Admin', icon: 'fa-solid fa-user-cog', visible: false },
+]
+
+const menuItems = ref<MenuItem[]>(allMenuItems)
+
+const visibleMenuItems = computed(() => {
+    return menuItems.value.filter(item => {
+        if (item.name === 'admin-history') {
+            return userRole.value === 'superadmin'
+        }
+        return true
+    })
 })
 
+const panelTitle = computed(() => {
+    return userRole.value === 'superadmin' ? 'Panel Superadmin' : 'Panel Admin'
+})
+
+const checkMobile = () => {
+    const wasMobile = isMobile.value
+    isMobile.value = window.innerWidth < 1024
+
+    if (!wasMobile && isMobile.value) {
+        isOpen.value = false
+    } else if (wasMobile && !isMobile.value) {
+        isOpen.value = true
+    }
+}
+
 const toggleSidebar = () => {
-  isOpen.value = !isOpen.value
+    isOpen.value = !isOpen.value
+    if (!isMobile.value && adminId.value && userRole.value !== 'superadmin') {
+        savePreferences()
+    }
 }
 
-const showLogoutConfirmation = () => {
-  showLogoutModal.value = true
+const handleMobileToggle = () => {
+    if (isMobile.value) {
+        isOpen.value = !isOpen.value
+    }
 }
 
-const closeLogoutModal = () => {
-  showLogoutModal.value = false
+const closeSidebarOnMobile = () => {
+    if (isMobile.value) {
+        isOpen.value = false
+    }
 }
 
-const confirmLogout = async () => {
-  try {
-    await api.logout()
-    router.push('/login')
-  } catch (error) {
-    console.error('Logout error:', error)
-    localStorage.removeItem('token')
-    router.push('/login')
-  } finally {
-    showLogoutModal.value = false
-  }
+const handleNavClick = () => {
+    if (isMobile.value) {
+        isOpen.value = false
+    }
 }
+
+const handleDragStart = (index: number) => {
+    draggedIndex.value = index
+}
+
+const handleDragOver = (index: number) => {
+    if (draggedIndex.value === null || draggedIndex.value === index) return
+
+    const items = [...menuItems.value]
+    const draggedItem = items[draggedIndex.value]
+    if (draggedItem) {
+        items.splice(draggedIndex.value, 1)
+        items.splice(index, 0, draggedItem!)
+        menuItems.value = items
+    }
+    draggedIndex.value = index
+}
+
+const handleDrop = () => {
+    const orderMap: Record<string, number> = {}
+    menuItems.value.forEach((item, index) => {
+        orderMap[item.name] = index
+    })
+    if (adminId.value && userRole.value !== 'superadmin') {
+        saveMenuOrder(orderMap)
+    }
+}
+
+const handleDragEnd = () => {
+    draggedIndex.value = null
+}
+
+const handleLogout = async () => {
+    await logout()
+}
+
+const savePreferences = async () => {
+    if (!adminId.value || userRole.value === 'superadmin') return
+    try {
+        await adminPreferencesApi.updateSidebarState(adminId.value, isOpen.value ? 'open' : 'closed')
+    } catch (error) {
+        console.error('Error saving preferences:', error)
+    }
+}
+
+const saveMenuOrder = async (orderMap: Record<string, number>) => {
+    if (!adminId.value || userRole.value === 'superadmin') return
+    try {
+        await adminPreferencesApi.updateMenuOrder(adminId.value, orderMap)
+    } catch (error) {
+        console.error('Error saving menu order:', error)
+    }
+}
+
+const loadPreferences = async () => {
+    if (!adminId.value || userRole.value === 'superadmin') return
+    try {
+        const prefs = await adminPreferencesApi.getPreferences(adminId.value)
+
+        if (prefs.sidebar_state === 'closed' && !isMobile.value) {
+            isOpen.value = false
+        }
+
+        if (prefs.menu_order) {
+            const orderMap = typeof prefs.menu_order === 'string'
+                ? JSON.parse(prefs.menu_order)
+                : prefs.menu_order
+            menuItems.value.sort((a, b) => (orderMap[a.name] || 0) - (orderMap[b.name] || 0))
+        }
+    } catch (error: any) {
+        console.error('Error loading preferences:', error)
+        if ((error as any).response?.status === 404) {
+            console.warn('Admin not found')
+        }
+    }
+}
+
+onMounted(async () => {
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    window.addEventListener('toggleMobileSidebar', handleMobileToggle)
+
+    try {
+        const response = await api.getCurrentAdmin()
+        userRole.value = response.role || 'admin'
+        adminId.value = response.id || 0
+
+        await loadPreferences()
+    } catch (error) {
+        console.error('Error fetching user role:', error)
+    }
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkMobile)
+    window.removeEventListener('toggleMobileSidebar', handleMobileToggle)
+})
 </script>

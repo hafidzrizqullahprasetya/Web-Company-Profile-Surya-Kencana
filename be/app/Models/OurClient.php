@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Traits\StorageImageTrait;
-use App\Traits\ClearsLandingPageCache;
 
 class OurClient extends Model
 {
-    use StorageImageTrait, ClearsLandingPageCache;
+    use StorageImageTrait;
 
     protected $fillable = [
         'client_name',
         'institution',
         'logo_path',
+        'order',
     ];
 
     protected $appends = ['logo_url'];
@@ -26,9 +26,6 @@ class OurClient extends Model
         );
     }
 
-    /**
-     * Scope to select only required fields for better performance
-     */
     public function scopePerformanceSelect($query)
     {
         return $query->select(

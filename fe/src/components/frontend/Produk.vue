@@ -1,30 +1,36 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <section class="relative py-10 md:py-14 lg:py-15 bg-cream-light scroll-mt-[100px] md:scroll-mt-[100px]" id="produk">
+    <section class="relative py-10 md:py-14 lg:py-15 bg-cream-light scroll-mt-[-60px] md:scroll-mt-[100px]" id="produk">
         <div class="container mx-auto px-4">
-            <SectionTitle :label="settings?.produk_label" :title="formatTitle(settings?.produk_title)"
-                :icon="['fas', 'box']" label-variant="default" title-variant="default"
-                margin-bottom="mb-8 md:mb-10 lg:mb-12" />
+            <SectionTitle :label="settings?.produk_label ?? undefined"
+                :title="formatTitle(settings?.produk_title ?? undefined) ?? undefined" :icon="['fas', 'box']"
+                label-variant="default" title-variant="default" margin-bottom="mb-8 md:mb-10 lg:mb-12" />
 
             <!-- Products Display - Carousel with Pagination -->
             <div class="flex flex-col items-center gap-6 md:gap-8 lg:gap-10">
                 <!-- Carousel Container -->
                 <div class="relative w-full max-w-7xl overflow-hidden">
                     <!-- Sliding Track -->
-                    <div class="flex transition-transform duration-700 ease-in-out"
-                        :style="{ transform: `translateX(-${currentPage * 100}%)` }">
+                    <div class="flex cursor-grab active:cursor-grabbing select-none"
+                        :class="{ 'transition-transform duration-700 ease-in-out': !isDragging }"
+                        :style="{ transform: `translateX(calc(-${currentPage * 100}% + ${dragOffset}px))` }"
+                        @mousedown="handleDragStart" @touchstart="handleTouchStart" @mousemove="handleDragMove"
+                        @touchmove="handleTouchMove" @mouseup="handleDragEnd" @touchend="handleTouchEnd"
+                        @mouseleave="handleDragEnd">
                         <!-- Each Product -->
-                        <div v-for="(product, index) in products" :key="product.id" class="w-full flex-shrink-0">
-                            <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 lg:gap-14 items-start">
+                        <div v-for="(product, index) in products" :key="product.id"
+                            class="w-full flex-shrink-0 px-4 md:px-6 lg:px-8">
+                            <div
+                                class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 md:gap-12 lg:gap-14 items-start">
                                 <template v-if="isLoading">
                                     <!-- Skeleton Main Image -->
                                     <div
-                                        class="relative bg-gray-200 rounded-xl p-8 shadow-xl animate-pulse h-[400px] md:h-[500px] lg:h-[500px]">
+                                        class="relative bg-gray-200 rounded-xl p-4 md:p-8 shadow-xl animate-pulse h-[300px] md:h-[500px] lg:h-[500px]">
                                         <div class="w-full h-full bg-gray-300 rounded-lg"></div>
                                     </div>
                                     <!-- Skeleton Info -->
                                     <div
-                                        class="bg-gray-200 rounded-xl p-8 shadow-xl animate-pulse h-[400px] md:h-[500px] lg:h-[500px]">
+                                        class="bg-gray-200 rounded-xl p-4 md:p-8 shadow-xl animate-pulse h-[300px] md:h-[500px] lg:h-[500px]">
                                         <div class="bg-gray-300 h-6 w-3/4 rounded mb-4"></div>
                                         <div class="bg-gray-300 h-4 w-full rounded mb-2"></div>
                                         <div class="bg-gray-300 h-4 w-5/6 rounded mb-2"></div>
@@ -33,24 +39,30 @@
                                 </template>
                                 <template v-else>
                                     <!-- Main Image - Fixed Height -->
-                                    <div class="relative bg-primary rounded-xl p-6 md:p-8 shadow-xl group cursor-pointer h-[400px] md:h-[500px] lg:h-[500px]"
+                                    <div class="relative bg-primary rounded-xl p-4 md:p-8 shadow-xl group cursor-pointer h-[300px] md:h-[500px] lg:h-[500px]"
                                         @click="openModal(product)">
                                         <div class="relative w-full h-full overflow-hidden rounded-lg">
-                                            <picture>
-                                                <source
-                                                    :srcset="getImageUrlForFormat(getProductMainImage(product), 'webp')"
-                                                    type="image/webp" />
-                                                <source :srcset="getProductMainImage(product)" type="image/jpeg" />
-                                                <img v-lazy="getProductMainImage(product)" :alt="product.name"
-                                                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                    @error="handleImageError" />
-                                            </picture>
+                                            <template v-if="getProductMainImage(product)">
+                                                <picture>
+                                                    <source
+                                                        :srcset="getImageUrlForFormat(getProductMainImage(product), 'webp')"
+                                                        type="image/webp" />
+                                                    <source :srcset="getProductMainImage(product)" type="image/jpeg" />
+                                                    <img v-lazy="getProductMainImage(product)" :alt="product.name"
+                                                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                        @error="handleImageError" />
+                                                </picture>
+                                            </template>
+                                            <template v-else>
+                                                <ImagePlaceholder variant="image" size="xl" text="No Product Image"
+                                                    altText="Gambar produk tidak ditemukan" />
+                                            </template>
 
                                             <!-- Overlay "Lihat Detail" -->
                                             <div
                                                 class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center rounded-lg">
                                                 <div
-                                                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary px-6 py-3 rounded-full text-base font-semibold flex items-center gap-2">
+                                                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary px-4 md:px-6 py-2 md:py-3 rounded-full text-sm md:text-base font-semibold flex items-center gap-2">
                                                     <span>Lihat Detail</span>
                                                     <i class="fa-solid fa-arrow-right w-5 h-5"></i>
                                                 </div>
@@ -60,40 +72,53 @@
 
                                     <!-- Product Info Card - Fixed Height -->
                                     <div
-                                        class="bg-primary rounded-xl overflow-hidden shadow-xl sticky top-5 h-[400px] md:h-[500px] lg:h-[500px]">
-                                        <div class="p-6 md:p-7 bg-primary h-full flex flex-col">
+                                        class="bg-primary rounded-xl overflow-hidden shadow-xl sticky top-5 h-[300px] md:h-[500px] lg:h-[500px]">
+                                        <div class="p-4 md:p-7 bg-primary h-full flex flex-col">
                                             <!-- Product Name - Fixed Height -->
-                                            <div class="mb-2 pb-2 border-b border-white/10 min-h-[60px]">
+                                            <div
+                                                class="mb-2 pb-2 border-b border-white/10 min-h-[45px] md:min-h-[60px]">
                                                 <h3
-                                                    class="text-xl md:text-2xl font-epilogue font-bold text-white uppercase tracking-wide line-clamp-2">
+                                                    class="text-base md:text-2xl font-epilogue font-bold text-white uppercase tracking-wide line-clamp-2">
                                                     {{ product.name }}
                                                 </h3>
                                             </div>
 
                                             <!-- Description - Responsive with Scroll -->
-                                            <div class="mb-6 flex-1 min-h-0">
+                                            <div class="mb-3 md:mb-6 flex-1 min-h-0">
                                                 <div
                                                     class="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                                                    <p class="text-white/90 text-base leading-relaxed">
+                                                    <p class="text-white/90 text-xs md:text-base leading-relaxed">
                                                         {{ product.description }}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             <!-- Price - Responsive -->
-                                            <div class="mb-6 p-4 bg-white/10 rounded-lg">
+                                            <div v-if="!product.hide_price"
+                                                class="mb-3 md:mb-6 p-3 md:p-4 bg-white/10 rounded-lg">
                                                 <div
-                                                    class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/70 mb-2">
-                                                    <i class="fa-solid fa-tag w-4 h-4"></i>
+                                                    class="flex items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-wide text-white/70 mb-1 md:mb-2">
+                                                    <i class="fa-solid fa-tag w-3 h-3 md:w-4 md:h-4"></i>
                                                     <span>HARGA</span>
                                                 </div>
-                                                <div class="text-2xl md:text-3xl font-epilogue font-bold text-white">
+                                                <div class="text-lg md:text-3xl font-epilogue font-bold text-white">
                                                     {{ formatPrice(product.price) }}
+                                                </div>
+                                            </div>
+                                            <div v-else class="mb-3 md:mb-6 p-3 md:p-4 bg-white/10 rounded-lg">
+                                                <div
+                                                    class="flex items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-wide text-white/70 mb-1 md:mb-2">
+                                                    <i class="fa-solid fa-tag w-3 h-3 md:w-4 md:h-4"></i>
+                                                    <span>HARGA</span>
+                                                </div>
+                                                <div
+                                                    class="text-lg md:text-xl font-epilogue font-medium text-white/80 italic">
+                                                    Hubungi kami untuk informasi harga
                                                 </div>
                                             </div>
 
                                             <!-- Button - Fixed at Bottom -->
-                                            <div class="pt-6 border-t border-white/10">
+                                            <div class="pt-3 md:pt-6 border-t border-white/10">
                                                 <BadgeButton :href="getWhatsappUrl(product.name)" target="_blank"
                                                     variant="inverted" class="w-full">
                                                     <span>Hubungi Kami</span>
@@ -110,14 +135,15 @@
 
                 <!-- Navigation Controls -->
                 <Pagination v-if="!isLoading && products && products.length > 0" :current-page="currentPage"
-                    :total-pages="products.length" variant="inverted" @prev="prevPage" @next="nextPage" @goto="goToPage" />
+                    :total-pages="products.length" variant="inverted" @prev="prevPage" @next="nextPage"
+                    @goto="goToPage" />
             </div>
         </div>
 
         <!-- Detail Modal -->
         <ImageGalleryModal :show="showModal" :images="selectedProduct ? getProductImageUrls(selectedProduct) : []"
             :title="selectedProduct?.name || ''" :description="selectedProduct?.description || ''"
-            :badge="selectedProduct?.price !== undefined ? formatPrice(selectedProduct.price) : ''"
+            :badge="selectedProduct?.price !== undefined && !selectedProduct?.hide_price ? formatPrice(selectedProduct.price) : (selectedProduct?.hide_price ? 'Harga tidak dicantumkan' : '')"
             @close="closeModal" />
     </section>
 </template>
@@ -130,6 +156,7 @@ import SectionTitle from './SectionTitle.vue'
 import BadgeButton from './BadgeButton.vue'
 import Pagination from './Pagination.vue'
 import ImageGalleryModal from './ImageGalleryModal.vue'
+import ImagePlaceholder from '@/components/common/ImagePlaceholder.vue'
 
 const { data: landingPageData, isLoading } = useLandingPageData()
 const { getImageUrl, getImageUrlForFormat } = useImageUrl()
@@ -142,6 +169,13 @@ const settings = computed(() => landingPageData.value?.siteSettings || null)
 const contactInfo = computed(() => landingPageData.value?.contact || null)
 
 const currentPage = ref(0)
+
+// Touch/Drag state
+const isDragging = ref(false)
+const startX = ref(0)
+const currentX = ref(0)
+const dragOffset = ref(0)
+const dragThreshold = 50
 
 // Modal state
 const showModal = ref(false)
@@ -166,6 +200,71 @@ const goToPage = (page: number) => {
     }
 }
 
+// Touch/Drag handlers
+const handleTouchStart = (e: TouchEvent) => {
+    if (products.value.length <= 1) return
+    isDragging.value = true
+    if (e.touches && e.touches[0]) {
+        startX.value = e.touches[0].clientX
+        currentX.value = e.touches[0].clientX
+    }
+    dragOffset.value = 0
+}
+
+const handleDragStart = (e: MouseEvent) => {
+    if (products.value.length <= 1) return
+    isDragging.value = true
+    startX.value = e.clientX
+    currentX.value = e.clientX
+    dragOffset.value = 0
+    e.preventDefault()
+}
+
+const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging.value) return
+    if (e.touches && e.touches[0]) {
+        currentX.value = e.touches[0].clientX
+    }
+    dragOffset.value = currentX.value - startX.value
+}
+
+const handleDragMove = (e: MouseEvent) => {
+    if (!isDragging.value) return
+    currentX.value = e.clientX
+    dragOffset.value = currentX.value - startX.value
+}
+
+const handleTouchEnd = () => {
+    if (!isDragging.value) return
+    handleSwipe()
+}
+
+const handleDragEnd = () => {
+    if (!isDragging.value) return
+    handleSwipe()
+}
+
+const handleSwipe = () => {
+    const diff = dragOffset.value
+
+    // Check if drag distance exceeds threshold
+    if (Math.abs(diff) > dragThreshold) {
+        if (diff < 0) {
+            // Dragged left - next page
+            nextPage()
+        } else {
+            // Dragged right - prev page
+            prevPage()
+        }
+    }
+
+    // Reset drag state
+    isDragging.value = false
+    startX.value = 0
+    currentX.value = 0
+    dragOffset.value = 0
+}
+
 const getProductImageUrls = (product: Product): string[] => {
     const urls: string[] = []
     if (product.image_urls && product.image_urls.length > 0) {
@@ -179,7 +278,7 @@ const getProductImageUrls = (product: Product): string[] => {
 
 const getProductMainImage = (product: Product): string => {
     if (product.image_url) return product.image_url
-    if (product.image_urls && product.image_urls.length > 0) return product.image_urls[0]
+    if (product.image_urls && product.image_urls.length > 0) return product.image_urls[0]!
     return 'https://placehold.co/800x600/e5e7eb/6b7280?text=No+Image'
 }
 

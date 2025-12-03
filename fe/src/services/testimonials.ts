@@ -1,5 +1,5 @@
-import { apiClient } from './api-client'
 import type { Testimonial } from '../types/models'
+import { apiClient } from './api-client'
 
 export const testimonialsApi = {
   async getTestimonials(): Promise<Testimonial[]> {
@@ -47,6 +47,15 @@ export const testimonialsApi = {
       await apiClient.delete('/testimonial/' + id)
     } catch (error) {
       console.error('Error deleting testimonial:', error)
+      throw error
+    }
+  },
+
+  async reorderTestimonials(testimonials: Array<{ id: number; order: number }>): Promise<void> {
+    try {
+      await apiClient.post('/testimonial/reorder', { testimonials })
+    } catch (error) {
+      console.error('Error reordering testimonials:', error)
       throw error
     }
   }

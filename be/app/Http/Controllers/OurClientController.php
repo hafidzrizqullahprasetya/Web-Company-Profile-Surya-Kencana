@@ -41,17 +41,22 @@ class OurClientController extends Controller
      */
     public function index()
     {
-        // Caching untuk endpoint ini untuk meningkatkan kinerja
-        $cacheKey = config("performance.cached_endpoints.our_client.key");
-        $cacheTtl = config("performance.cached_endpoints.our_client.ttl");
-
-        $clients = cache()->remember($cacheKey, $cacheTtl, function () {
-            return OurClient::performanceSelect()
-                ->orderBy("client_name", "asc")
-                ->get();
-        });
-
-        return response()->json($clients);
+        try {
+            return response()->json(
+                OurClient::performanceSelect()
+                    ->orderBy("order", "asc")
+                    ->get()
+            );
+        } catch (\Exception $e) {
+            \Log::error("Error fetching clients: " . $e->getMessage());
+            return response()->json(
+                [
+                    "message" => "Error fetching clients",
+                    "error" => $e->getMessage(),
+                ],
+                500,
+            );
+        }
     }
 
     /**
@@ -182,7 +187,8 @@ class OurClientController extends Controller
     {
         $request->validate([
             "client_name" => "required|string",
-            "institution" => "required|string",
+            "institution" => "nullable|string",
+            "order" => "nullable|integer|min:1",
             "logo_path" =>
                 "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);
@@ -193,24 +199,18 @@ class OurClientController extends Controller
             "ourClients",
         );
 
+        // Get max order and increment
+        $maxOrder = OurClient::max('order') ?? 0;
+
+        // Use provided order or auto-increment
+        $order = $request->order ?? ($maxOrder + 1);
+
         $client = OurClient::create([
             "client_name" => $request->client_name,
             "institution" => $request->institution,
             "logo_path" => $logoPath,
+            "order" => $order,
         ]);
-
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.our_client.key",
-                "clients_list",
-            ),
-        );
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.landing_page.key",
-                "landing_page",
-            ),
-        );
 
         return response()->json(
             [
@@ -318,12 +318,14 @@ class OurClientController extends Controller
         }
 
         $request->validate([
-            "client_name" => "required|string",
-            "institution" => "required|string",
+            "client_name" => "sometimes|string",
+            "institution" => "nullable|string",
+            "order" => "nullable|integer|min:1",
             "logo_path" =>
                 "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);
 
+        // Handle logo upload
         if ($request->hasFile("logo_path")) {
             if ($client->logo_path) {
                 // Delete old logo from storage
@@ -335,22 +337,13 @@ class OurClientController extends Controller
             );
         }
 
-        $updateData = $request->only(["client_name", "institution"]);
+        $updateData = $request->only([
+            "client_name",
+            "institution",
+            "order",
+        ]);
         $client->fill($updateData);
         $client->save();
-
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.our_client.key",
-                "clients_list",
-            ),
-        );
-        cache()->forget(
-            config(
-                "performance.cached_endpoints.landing_page.key",
-                "landing_page",
-            ),
-        );
 
         return response()->json([
             "message" => "Client updated successfully",
@@ -407,24 +400,76 @@ class OurClientController extends Controller
 
             $client->delete();
 
-            cache()->forget(
-                config(
-                    "performance.cached_endpoints.our_client.key",
-                    "clients_list",
-                ),
-            );
-            cache()->forget(
-                config(
-                    "performance.cached_endpoints.landing_page.key",
-                    "landing_page",
-                ),
-            );
-
             return response()->json([
                 "message" => "Client deleted successfully",
             ]);
         } else {
             return response()->json(["message" => "Client not found"], 404);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/our-client/reorder",
+     *     summary="Update urutan client",
+     *     description="Mengupdate urutan tampilan client",
+     *     operationId="reorderClients",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"clients"},
+     *             @OA\Property(
+     *                 property="clients",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="order", type="integer", example=0)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Urutan client berhasil diupdate",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Client order updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
+    public function reorder(Request $request)
+    {
+        try {
+            $clients = $request->input('clients');
+
+            foreach ($clients as $client) {
+                OurClient::where('id', $client['id'])
+                    ->update(['order' => $client['order']]);
+            }
+
+            return response()->json([
+                "message" => "Client order updated successfully",
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error reordering clients: " . $e->getMessage());
+            return response()->json(
+                [
+                    "message" => "Error reordering clients",
+                    "error" => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 }

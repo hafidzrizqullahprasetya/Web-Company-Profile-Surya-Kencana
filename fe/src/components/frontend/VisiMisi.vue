@@ -1,11 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <section class="relative py-10 md:py-14 lg:py-15 bg-white overflow-hidden scroll-mt-[100px] md:scroll-mt-[100px]"
+    <section class="relative py-10 md:py-14 lg:py-15 bg-white overflow-hidden scroll-mt-[-70px] md:scroll-mt-[100px]"
         id="visi-misi">
         <div class="container mx-auto px-4">
-            <SectionTitle :label="siteSettings?.visi_misi_label" :title="siteSettings?.visi_misi_title"
-                :icon="['fas', 'lightbulb']" label-variant="default" title-variant="default"
-                margin-bottom="mb-8 md:mb-10 lg:mb-12" />
+            <SectionTitle :label="siteSettings?.visi_misi_label ?? undefined"
+                :title="siteSettings?.visi_misi_title ?? undefined" :icon="['fas', 'lightbulb']" label-variant="default"
+                title-variant="default" margin-bottom="mb-8 md:mb-10 lg:mb-12" />
 
             <!-- Main Content Grid -->
             <template v-if="isLoading || !visiMisi">
@@ -62,19 +62,19 @@
                 </div>
             </template>
             <template v-else>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-18 mb-16 lg:mb-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-18 mb-10 md:mb-16 lg:mb-20">
                     <!-- Vision Card  -->
                     <div
-                        class="relative p-8 lg:p-10 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
+                        class="relative p-5 md:p-8 lg:p-10 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/30">
                         </div>
-                        <div class="mb-5 lg:mb-6">
+                        <div class="mb-4 md:mb-5 lg:mb-6">
                             <div
-                                class="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 lg:mb-4 transition-all duration-300 hover:scale-110">
-                                <i class="fa-solid fa-eye text-xl md:text-2xl lg:text-3xl text-white"></i>
+                                class="w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/20 rounded-full flex items-center justify-center mb-2 md:mb-3 lg:mb-4 transition-all duration-300 hover:scale-110">
+                                <i class="fa-solid fa-eye text-lg md:text-2xl lg:text-3xl text-white"></i>
                             </div>
                             <h3
-                                class="text-xl md:text-2xl lg:text-3xl font-epilogue font-bold uppercase tracking-wider mb-2 lg:mb-2 text-white">
+                                class="text-lg md:text-2xl lg:text-3xl font-epilogue font-bold uppercase tracking-wider mb-1.5 md:mb-2 lg:mb-2 text-white">
                                 VISI KAMI
                             </h3>
                             <div class="w-16 h-0.5 bg-white"></div>
@@ -88,28 +88,28 @@
 
                     <!-- Mission Card  -->
                     <div
-                        class="relative p-8 lg:p-10 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
+                        class="relative p-5 md:p-8 lg:p-10 bg-primary text-white rounded-xl shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
                         <div class="absolute top-5 right-5 flex gap-1.5">
                             <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
                             <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
                             <span class="w-2 h-2 bg-white rounded-full opacity-60"></span>
                         </div>
-                        <div class="mb-5 lg:mb-6">
+                        <div class="mb-4 md:mb-5 lg:mb-6">
                             <div
-                                class="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 lg:mb-4 transition-all duration-300 hover:scale-110">
-                                <i class="fa-solid fa-star text-xl md:text-2xl lg:text-3xl text-white"></i>
+                                class="w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/20 rounded-full flex items-center justify-center mb-2 md:mb-3 lg:mb-4 transition-all duration-300 hover:scale-110">
+                                <i class="fa-solid fa-star text-lg md:text-2xl lg:text-3xl text-white"></i>
                             </div>
                             <h3
-                                class="text-xl md:text-2xl lg:text-3xl font-epilogue font-bold uppercase tracking-wider mb-2 lg:mb-2 text-white">
+                                class="text-lg md:text-2xl lg:text-3xl font-epilogue font-bold uppercase tracking-wider mb-1.5 md:mb-2 lg:mb-2 text-white">
                                 MISI KAMI
                             </h3>
                             <div class="w-16 h-0.5 bg-white"></div>
                         </div>
                         <div>
                             <!-- Bullet Points for Mission -->
-                            <ul class="space-y-2 lg:space-y-3">
+                            <ul class="space-y-1.5 md:space-y-2 lg:space-y-3">
                                 <li v-for="(item, index) in missionItems" :key="index"
-                                    class="flex items-start gap-2 text-sm md:text-base lg:text-base leading-relaxed text-white">
+                                    class="flex items-start gap-2 text-xs md:text-base lg:text-base leading-relaxed text-white">
                                     <span class="flex-shrink-0 w-2 h-2 bg-white rounded-full mt-2 opacity-80"></span>
                                     <span>{{ item }}</span>
                                 </li>
