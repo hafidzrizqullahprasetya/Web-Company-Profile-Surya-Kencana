@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: "/up",
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
+        // --- [WAJIB ADA] TAMBAHKAN BARIS INI! ---
+        // Tanpa ini, Laravel mengabaikan Cloudflare & Coolify
+        $middleware->trustProxies(at: '*');
+        // ----------------------------------------
+
         // Configure authentication to return JSON for API requests instead of redirecting
         $middleware->redirectGuestsTo(
             fn(Request $request) => $request->expectsJson() ||
