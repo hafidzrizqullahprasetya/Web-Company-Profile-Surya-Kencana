@@ -79,13 +79,15 @@
                         </picture>
                     </template>
                     <template v-else>
-                        <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
-                            <ImagePlaceholder variant="image" size="xl" text="Hero Background" altText="Gambar background hero tidak ditemukan" />
+                        <div
+                            class="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
+                            <ImagePlaceholder variant="image" size="xl" text="Hero Background"
+                                altText="Gambar background hero tidak ditemukan" />
                         </div>
                     </template>
                 </div>
             </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-secondary/35 to-secondary/50 z-10"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 to-black/60 z-10"></div>
 
             <div class="container mx-auto px-4 relative z-20">
                 <div class="flex items-center justify-start min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh]">
