@@ -169,12 +169,12 @@
                     <!-- Manual Order Input (Mobile Only) -->
                     <div class="md:hidden">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Urutan Produk <span class="text-red-500">*</span>
+                            Urutan Produk (Opsional)
                         </label>
                         <input v-model.number="formData.order" type="number" min="1"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                            placeholder="1, 2, 3, dst..." />
-                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor urutan produk (1 = paling depan)</p>
+                            placeholder="1, 2, 3, dst... (kosongkan untuk otomatis)" />
+                        <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menambahkan di urutan paling akhir</p>
                     </div>
 
                     <!-- Deskripsi -->
@@ -258,7 +258,7 @@
                             class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition">
                             <span v-if="!isSubmitting">{{
                                 editMode ? 'Simpan Perubahan' : 'Tambah Produk'
-                            }}</span>
+                                }}</span>
                             <span v-else class="flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-spinner animate-spin"></i>
                                 Menyimpan...
