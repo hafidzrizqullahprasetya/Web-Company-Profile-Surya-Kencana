@@ -134,7 +134,7 @@
                     </button>
                 </div>
 
-                <form @submit.prevent="handleSubmit"
+                <form @submit.prevent="handleSubmit" novalidate
                     class="p-4 sm:p-6 space-y-5 max-h-[calc(90vh-100px)] overflow-y-auto">
                     <!-- Nama Produk -->
                     <div>
@@ -493,6 +493,25 @@ const handleSubmit = async () => {
     try {
         isSubmitting.value = true
         errorMessage.value = ''
+
+        // Manual validation for required fields
+        if (!formData.value.name || !formData.value.name.trim()) {
+            errorMessage.value = 'Nama produk wajib diisi'
+            isSubmitting.value = false
+            return
+        }
+
+        if (!formData.value.price || formData.value.price <= 0) {
+            errorMessage.value = 'Harga produk wajib diisi dan harus lebih dari 0'
+            isSubmitting.value = false
+            return
+        }
+
+        if (!formData.value.description || !formData.value.description.trim()) {
+            errorMessage.value = 'Deskripsi produk wajib diisi'
+            isSubmitting.value = false
+            return
+        }
 
         showLoading('Menyimpan produk...')
 
