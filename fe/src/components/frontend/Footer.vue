@@ -9,8 +9,8 @@
                         <div class="mb-3 md:mb-5 lg:mb-6">
                             <router-link to="/">
                                 <!-- Loading skeleton -->
-                                <div v-if="isLoading"
-                                    class="max-w-[150px] h-12 bg-white/20 animate-pulse rounded"></div>
+                                <div v-if="isLoading" class="max-w-[150px] h-12 bg-white/20 animate-pulse rounded">
+                                </div>
                                 <!-- Logo -->
                                 <template v-else-if="siteSettings?.company_logo_url">
                                     <picture class="inline-block bg-white p-3 rounded-lg shadow-sm">
@@ -26,8 +26,10 @@
                                     </picture>
                                 </template>
                                 <template v-else>
-                                    <div class="inline-block bg-white p-3 rounded-lg shadow-sm flex items-center justify-center">
-                                        <ImagePlaceholder variant="logo" size="md" text="Logo" altText="Logo perusahaan tidak ditemukan" />
+                                    <div
+                                        class="inline-block bg-white p-3 rounded-lg shadow-sm flex items-center justify-center">
+                                        <ImagePlaceholder variant="logo" size="md" text="Logo"
+                                            altText="Logo perusahaan tidak ditemukan" />
                                     </div>
                                 </template>
                             </router-link>
@@ -145,7 +147,7 @@
                         <ul v-if="contactInfo" class="space-y-2 md:space-y-3.5 lg:space-y-4">
                             <li v-if="contactInfo.address" class="flex items-start">
                                 <i
-                                    class="fa-solid fa-map-marker-alt text-cream w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
+                                    class="fa-solid fa-map-marker-alt text-white w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
                                 <div>
                                     <span class="text-white/80 text-xs md:text-sm"
                                         v-html="contactInfo.address.replace(/\n/g, '<br>')"></span>
@@ -153,7 +155,7 @@
                             </li>
                             <li v-if="contactInfo.phone" class="flex items-start">
                                 <i
-                                    class="fa-solid fa-phone text-cream w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
+                                    class="fa-solid fa-phone text-white w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
                                 <div>
                                     <a :href="`tel:${contactInfo.phone}`"
                                         class="text-white/80 text-xs md:text-sm hover:text-cream transition-colors">
@@ -163,7 +165,7 @@
                             </li>
                             <li v-if="contactInfo.email" class="flex items-start">
                                 <i
-                                    class="fa-solid fa-envelope text-cream w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
+                                    class="fa-solid fa-envelope text-white w-3.5 md:w-5 h-3.5 md:h-5 mr-2 md:mr-3 mt-0.5 md:mt-1 flex-shrink-0"></i>
                                 <div>
                                     <a :href="`mailto:${contactInfo.email}`"
                                         class="text-white/80 text-xs md:text-sm hover:text-cream transition-colors">
