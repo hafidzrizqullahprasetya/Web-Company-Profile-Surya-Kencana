@@ -258,7 +258,7 @@
                             class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition">
                             <span v-if="!isSubmitting">{{
                                 editMode ? 'Simpan Perubahan' : 'Tambah Produk'
-                                }}</span>
+                            }}</span>
                             <span v-else class="flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-spinner animate-spin"></i>
                                 Menyimpan...
@@ -501,8 +501,9 @@ const handleSubmit = async () => {
             return
         }
 
-        if (!formData.value.price || formData.value.price <= 0) {
-            errorMessage.value = 'Harga produk wajib diisi dan harus lebih dari 0'
+        // Skip price validation if hide_price is enabled
+        if (!formData.value.hide_price && (!formData.value.price || formData.value.price < 0)) {
+            errorMessage.value = 'Harga produk wajib diisi'
             isSubmitting.value = false
             return
         }
