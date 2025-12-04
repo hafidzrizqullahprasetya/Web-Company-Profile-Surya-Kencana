@@ -124,7 +124,7 @@
                     </button>
                 </div>
 
-                <form @submit.prevent="handleSubmit"
+                <form @submit.prevent="handleSubmit" novalidate
                     class="p-4 sm:p-6 space-y-5 max-h-[calc(90vh-100px)] overflow-y-auto">
                     <!-- Nama Client -->
                     <div>
@@ -139,12 +139,12 @@
                     <!-- Manual Order Input (Mobile Only) -->
                     <div class="md:hidden">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Urutan Client <span class="text-red-500">*</span>
+                            Urutan Client (Opsional)
                         </label>
                         <input v-model.number="formData.order" type="number" min="1"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                            placeholder="1, 2, 3, dst..." />
-                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor urutan client (1 = paling depan)</p>
+                            placeholder="1, 2, 3, dst... (kosongkan untuk otomatis)" />
+                        <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menambahkan di urutan paling akhir</p>
                     </div>
 
                     <!-- Logo -->
@@ -172,7 +172,7 @@
                             class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition">
                             <span v-if="!isSubmitting">{{
                                 editMode ? 'Simpan Perubahan' : 'Tambah Client'
-                                }}</span>
+                            }}</span>
                             <span v-else class="flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-spinner animate-spin"></i>
                                 Menyimpan...
@@ -356,6 +356,13 @@ const handleSubmit = async () => {
         isSubmitting.value = true
         errorMessage.value = ''
 
+        // Manual validation for required fields
+        if (!formData.value.client_name || !formData.value.client_name.trim()) {
+            errorMessage.value = 'Nama client wajib diisi'
+            isSubmitting.value = false
+            return
+        }
+
         const formDataToSend = new FormData()
         formDataToSend.append('client_name', formData.value.client_name)
         if (formData.value.order > 0) {
@@ -372,6 +379,7 @@ const handleSubmit = async () => {
             showToast.success('Client berhasil diperbarui!')
         } else {
             if (!logoFile.value) {
+                closeLoading()
                 errorMessage.value = 'Logo wajib diisi'
                 isSubmitting.value = false
                 return
