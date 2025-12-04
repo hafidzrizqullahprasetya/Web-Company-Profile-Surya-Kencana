@@ -1,25 +1,24 @@
-import { apiClient } from './api-client'
 import type { LoginRequest, LoginResponse } from '../types/models'
+import { apiClient } from './api-client'
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await apiClient.post<LoginResponse>('/login', credentials)
       const data = response.data
-      
+
       // Store authentication data
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.admin || { id: 0, username: credentials.username }))
-      
-      // Determine role based on credentials since backend doesn't return role info
-      if (credentials.username === 'superadmin' && credentials.password === 'superadmin123') {
-        localStorage.setItem('userRole', 'superadmin')
-      } else if (credentials.username === 'admin' && credentials.password === 'admin123') {
-        localStorage.setItem('userRole', 'admin')
-      } else {
-        localStorage.setItem('userRole', 'admin')
+
+      // Store complete admin object including role
+      const adminData = {
+        id: data.admin?.id || 0,
+        username: data.admin?.username || credentials.username,
+        role: data.admin?.role || 'admin'
       }
-      
+      localStorage.setItem('user', JSON.stringify(adminData))
+      localStorage.setItem('userRole', adminData.role)
+
       return data
     } catch (error) {
       console.error('Error logging in:', error)
