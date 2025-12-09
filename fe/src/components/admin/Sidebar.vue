@@ -27,8 +27,8 @@
         <!-- Navigation -->
         <nav class="p-2 sm:p-3 overflow-y-auto flex-1">
             <ul class="space-y-1 sm:space-y-2" draggable="false">
-                <li v-for="(item, index) in visibleMenuItems" :key="item.name" v-show="item.visible !== false"
-                    draggable="true" @dragstart="handleDragStart(index)" @dragover.prevent="handleDragOver(index)"
+                <li v-for="(item, index) in visibleMenuItems" :key="item.name" draggable="true"
+                    @dragstart="handleDragStart(index)" @dragover.prevent="handleDragOver(index)"
                     @drop.prevent="handleDrop()" @dragend="handleDragEnd"
                     :class="{ 'opacity-50 bg-white/10 rounded-lg': draggedIndex === index }"
                     class="transition-all duration-200">
@@ -92,7 +92,7 @@ const allMenuItems: MenuItem[] = [
     { name: 'admin-hero', label: 'Hero', icon: 'fa-solid fa-layer-group' },
     { name: 'admin-company-history', label: 'Riwayat Perusahaan', icon: 'fa-solid fa-calendar' },
     { name: 'admin-settings', label: 'Pengaturan Situs', icon: 'fa-solid fa-cog' },
-    { name: 'admin-history', label: 'Manajemen Admin', icon: 'fa-solid fa-user-cog', visible: false },
+    { name: 'admin-history', label: 'Manajemen Admin', icon: 'fa-solid fa-user-cog' },
 ]
 
 const menuItems = ref<MenuItem[]>(allMenuItems)

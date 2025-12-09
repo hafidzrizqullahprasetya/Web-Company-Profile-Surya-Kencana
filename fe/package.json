@@ -11,7 +11,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "infisical run -- vite preview",
     "test:unit": "infisical run -- vitest",
-    "build-only": "infisical run -- vite build",
+    "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
@@ -27,7 +27,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.2",
+    "@tsconfig/node22": "^22.0.5",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.5.2",
     "@vitejs/plugin-vue": "^6.0.1",
