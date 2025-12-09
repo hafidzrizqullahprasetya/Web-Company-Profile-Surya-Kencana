@@ -1,0 +1,47 @@
+name: Sync FE to Deploy Branch
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'fe/**'
+
+jobs:
+  sync-fe-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync to fe-deploy branch
+        run: |
+          # Fetch fe-deploy branch
+          git fetch origin fe-deploy:fe-deploy
+          
+          # Checkout fe-deploy
+          git checkout fe-deploy
+          
+          # Remove old fe files (keep Dockerfile, nginx.conf, captain-definition, .gitignore)
+          find . -maxdepth 1 ! -name '.git' ! -name '.' ! -name 'Dockerfile' ! -name 'nginx.conf' ! -name 'captain-definition' ! -name '.gitignore' -exec rm -rf {} +
+          
+          # Copy fe folder contents from dev to root
+          git checkout dev -- fe/
+          cp -r fe/* .
+          cp fe/.* . 2>/dev/null || true
+          rm -rf fe/
+          
+          # Commit and push
+          git add -A
+          git diff --staged --quiet || git commit -m "Auto-sync FE from dev @ $(date -u +%Y-%m-%d\ %H:%M:%S)"
+          git push origin fe-deploy
+
+      - name: Summary
+        run: echo "✅ FE synced to fe-deploy branch"
