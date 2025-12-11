@@ -45,6 +45,11 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
+                            <button @click="openModal(admin)"
+                                class="p-2 text-primary hover:bg-yellow-50 rounded-lg transition flex-shrink-0"
+                                title="Edit">
+                                <i class="fa-solid fa-pen text-sm"></i>
+                            </button>
                             <button @click="confirmDelete(admin)"
                                 class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition flex-shrink-0"
                                 title="Hapus">
@@ -98,14 +103,21 @@
 
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                            Password {{ editMode ? '(kosongkan jika tidak ingin mengubah)' : '' }}
+                            Password
                             <span v-if="!editMode" class="text-red-500">*</span>
                         </label>
+                        
+                        <!-- Info Alert for Edit Mode -->
+                        <div v-if="editMode" class="mb-3 p-3 bg-blue-50 text-blue-700 rounded-lg text-xs flex gap-2 items-start">
+                            <i class="fa-solid fa-circle-info mt-0.5"></i>
+                            <p>Password lama tersembunyi demi keamanan. <b>Biarkan kosong</b> jika tidak ingin mengubah password. Isi hanya jika ingin menggantinya dengan yang baru.</p>
+                        </div>
+
                         <div class="relative">
                             <input v-model="formData.password" :type="showPassword ? 'text' : 'password'"
                                 :required="!editMode" minlength="6"
                                 class="w-full px-3 py-2 pr-12 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                                placeholder="Minimal 6 karakter" />
+                                :placeholder="editMode ? 'Password tersimpan aman (isi jika ingin ubah)' : 'Minimal 6 karakter'" />
                             <button type="button" @click="showPassword = !showPassword"
                                 class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700">
                                 <i v-if="showPassword" class="fa-solid fa-eye text-sm"></i>

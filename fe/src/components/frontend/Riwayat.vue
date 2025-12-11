@@ -104,8 +104,8 @@
                 </div>
             </div>
 
-            <!-- Navigation Controls -->
-            <Pagination v-if="!isLoading && historyItems && historyItems.length > 0" :current-page="currentPage"
+            <!-- Navigation Controls - Only show if more than 1 page -->
+            <Pagination v-if="!isLoading && historyItems && historyItems.length > 0 && totalPages > 1" :current-page="currentPage"
                 :total-pages="totalPages" @prev="prevPage" @next="nextPage" @goto="goToPage"
                 class="mt-8 md:mt-10 lg:mt-12" />
         </div>

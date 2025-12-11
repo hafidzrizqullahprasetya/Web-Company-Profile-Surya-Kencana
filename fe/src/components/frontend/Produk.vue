@@ -133,8 +133,8 @@
                     </div>
                 </div>
 
-                <!-- Navigation Controls -->
-                <Pagination v-if="!isLoading && products && products.length > 0" :current-page="currentPage"
+                <!-- Navigation Controls - Only show if more than 1 product -->
+                <Pagination v-if="!isLoading && products && products.length > 1" :current-page="currentPage"
                     :total-pages="products.length" variant="inverted" @prev="prevPage" @next="nextPage"
                     @goto="goToPage" />
             </div>

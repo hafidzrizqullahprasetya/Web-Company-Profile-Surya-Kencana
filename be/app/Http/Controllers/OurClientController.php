@@ -188,7 +188,7 @@ class OurClientController extends Controller
         $request->validate([
             "client_name" => "required|string",
             "institution" => "nullable|string",
-            "order" => "nullable|integer|min:1",
+            "order" => "nullable|integer|min:0",
             "logo_path" =>
                 "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);
@@ -204,6 +204,12 @@ class OurClientController extends Controller
 
         // Use provided order or auto-increment
         $order = $request->order ?? ($maxOrder + 1);
+
+        // If inserting at a specific position, shift existing items
+        if ($request->has('order') && $request->order <= $maxOrder) {
+            OurClient::where('order', '>=', $request->order)
+                ->increment('order');
+        }
 
         $client = OurClient::create([
             "client_name" => $request->client_name,
@@ -320,7 +326,7 @@ class OurClientController extends Controller
         $request->validate([
             "client_name" => "sometimes|string",
             "institution" => "nullable|string",
-            "order" => "nullable|integer|min:1",
+            "order" => "nullable|integer|min:0",
             "logo_path" =>
                 "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
         ]);

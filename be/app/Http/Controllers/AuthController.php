@@ -101,12 +101,17 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|max:255',
         ]);
 
+        // Detect device type from request header or default to 'web'
+        $deviceType = $request->header('X-Device-Type', 'web'); // Android should send 'mobile'
+        $tokenName = $deviceType === 'mobile' ? 'mobile_token' : 'web_token';
+
         // Use a single query to check both admin and superadmin tables
         $admin = Admin::where('username', $request->username)->first();
         if ($admin && Hash::check($request->password, $admin->password)) {
-            // Delete existing tokens with the same name
-            $admin->tokens()->where('name', 'auth_token')->delete();
-            $token = $admin->createToken('auth_token')->plainTextToken;
+            // Only delete OLD tokens with the SAME device type (keep other device types)
+            // This allows user to be logged in on both web and mobile simultaneously
+            $admin->tokens()->where('name', $tokenName)->delete();
+            $token = $admin->createToken($tokenName)->plainTextToken;
 
             return response()->json([
                 'message' => 'Login successful',
@@ -121,9 +126,10 @@ class AuthController extends Controller
 
         $superadmin = SuperAdmin::where('username', $request->username)->first();
         if ($superadmin && Hash::check($request->password, $superadmin->password)) {
-            // Delete existing tokens with the same name
-            $superadmin->tokens()->where('name', 'auth_token')->delete();
-            $token = $superadmin->createToken('auth_token')->plainTextToken;
+            // Only delete OLD tokens with the SAME device type (keep other device types)
+            // This allows user to be logged in on both web and mobile simultaneously
+            $superadmin->tokens()->where('name', $tokenName)->delete();
+            $token = $superadmin->createToken($tokenName)->plainTextToken;
 
             return response()->json([
                 'message' => 'Login successful',

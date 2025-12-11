@@ -245,7 +245,7 @@ class ProductController extends Controller
             "name" => "required|string",
             "price" => "required|numeric",
             "hide_price" => "nullable|boolean",
-            "order" => "nullable|integer|min:1",
+            "order" => "nullable|integer|min:0",
             "description" => "required|string",
             "image_path" =>
                 "required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB
@@ -274,6 +274,12 @@ class ProductController extends Controller
 
         // Use provided order or auto-increment
         $order = $request->order ?? ($maxOrder + 1);
+
+        // If inserting at a specific position, shift existing items
+        if ($request->has('order') && $request->order <= $maxOrder) {
+            Product::where('order', '>=', $request->order)
+                ->increment('order');
+        }
 
         $product = Product::create([
             "client_id" => $request->client_id,
@@ -410,7 +416,7 @@ class ProductController extends Controller
             "name" => "sometimes|string",
             "price" => "sometimes|numeric",
             "hide_price" => "nullable|boolean",
-            "order" => "nullable|integer|min:1",
+            "order" => "nullable|integer|min:0",
             "description" => "sometimes|string",
             "image_path" =>
                 "sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400", // 100MB in KB

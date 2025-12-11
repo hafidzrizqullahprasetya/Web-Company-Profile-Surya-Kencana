@@ -39,7 +39,7 @@ class CompanyHistoryController extends Controller
             'tahun' => 'required|integer|min:1900|max:' . (date('Y') + 10),
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'order' => 'nullable|integer|min:1',
+            'order' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
@@ -59,6 +59,12 @@ class CompanyHistoryController extends Controller
 
         $maxOrder = CompanyHistory::max('order') ?? 0;
         $order = $request->order ?? ($maxOrder + 1);
+
+        // If inserting at a specific position, shift existing items
+        if ($request->has('order') && $request->order <= $maxOrder) {
+            CompanyHistory::where('order', '>=', $request->order)
+                ->increment('order');
+        }
 
         $history = CompanyHistory::create([
             'tahun' => $request->tahun,
@@ -86,7 +92,7 @@ class CompanyHistoryController extends Controller
             'tahun' => 'sometimes|integer|min:1900|max:' . (date('Y') + 10),
             'judul' => 'sometimes|string|max:255',
             'deskripsi' => 'sometimes|string',
-            'order' => 'nullable|integer|min:1',
+            'order' => 'nullable|integer|min:0',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:102400',
