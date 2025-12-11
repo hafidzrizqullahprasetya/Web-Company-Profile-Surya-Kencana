@@ -13,6 +13,7 @@ use App\Http\Controllers\HeroController;
 use App\Http\Controllers\CompanyHistoryController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 |
 */
 Route::get('/landing-page', [LandingPageController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard Route
+|--------------------------------------------------------------------------
+| Endpoint untuk mendapatkan summary dashboard (statistik dan data terbaru).
+|
+| GET /dashboard     -> Menampilkan summary dashboard (public)
+|
+*/
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

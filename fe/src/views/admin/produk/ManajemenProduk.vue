@@ -43,9 +43,16 @@
 
                     <!-- Product Image -->
                     <div class="relative h-48 sm:h-56 bg-gray-200 overflow-hidden">
-                        <img :src="getImageUrl(product.image_path || '')" :alt="product.name"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            @error="handleImageError" />
+                        <template v-if="product.image_path">
+                            <img :src="getImageUrl(product.image_path)" :alt="product.name"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                @error="handleImageError" />
+                        </template>
+                        <template v-else>
+                            <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                <ImagePlaceholder variant="image" size="md" text="No Image" altText="Gambar produk tidak ditemukan" />
+                            </div>
+                        </template>
                         <div class="absolute top-2 sm:top-3 right-2 sm:right-3 flex gap-2 z-20">
                             <button @click="openModal(product)"
                                 class="p-1.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition shadow-lg"
@@ -171,7 +178,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Urutan Produk (Opsional)
                         </label>
-                        <input v-model.number="formData.order" type="number" min="1"
+                        <input v-model.number="formData.order" type="number"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                             placeholder="1, 2, 3, dst... (kosongkan untuk otomatis)" />
                         <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menambahkan di urutan paling akhir</p>
@@ -276,6 +283,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { productsApi } from '@/services'
 import type { Product } from '@/types/models'
 import ImageUpload from '@/components/common/ImageUpload.vue'
+import ImagePlaceholder from '@/components/common/ImagePlaceholder.vue'
 import SkeletonLoader from '@/components/admin/common/SkeletonLoader.vue'
 import { useImageUrl, useFormatting, useImageHandling } from '@/composables'
 import { showToast, showDeleteConfirm, showLoading, closeLoading } from '@/utils/sweetalert'
@@ -552,7 +560,8 @@ const handleSubmit = async () => {
                 showToast.error('Gambar produk wajib diisi')
                 return
             }
-            formDataToSend.append('order', String(products.value.length))
+            // Set order as the first position (0), existing items will shift
+            formDataToSend.append('order', '0')
             await productsApi.createProduct(formDataToSend)
             closeLoading()
             showToast.success('Produk berhasil ditambahkan!')
@@ -595,7 +604,8 @@ const deleteProduct = async (product: Product) => {
 
 const handleImageError = (event: Event) => {
     const img = event.target as HTMLImageElement
-    img.src = '/placeholder-image.jpg'
+    // Replace with generic placeholder image if image fails to load
+    img.src = 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image'
 }
 
 watch(searchQuery, () => {

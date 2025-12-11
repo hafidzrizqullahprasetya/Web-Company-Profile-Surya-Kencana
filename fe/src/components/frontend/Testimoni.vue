@@ -143,8 +143,8 @@
                         </div>
                     </div>
 
-                    <!-- Navigation Controls -->
-                    <Pagination :current-page="currentPage" :total-pages="totalPages" @prev="prevPage" @next="nextPage"
+                    <!-- Navigation Controls - Only show if more than 1 page -->
+                    <Pagination v-if="totalPages > 1" :current-page="currentPage" :total-pages="totalPages" @prev="prevPage" @next="nextPage"
                         @goto="goToPage" class="mt-8 md:mt-10 lg:mt-12" />
                 </div>
             </template>

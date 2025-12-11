@@ -30,12 +30,12 @@
 
         <!-- Testimonials Grid with Drag and Drop -->
         <div v-else-if="filteredTestimonials.length > 0"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 min-h-[600px] items-start">
             <div v-for="(testimonial, index) in paginatedTestimonials" :key="testimonial.id" draggable="true"
                 @dragstart="handleDragStart(index, $event)" @dragover="handleDragOver($event)"
                 @dragenter="handleDragEnter(index)" @dragleave="handleDragLeave" @drop="handleDrop(index, $event)"
                 @dragend="handleDragEnd" :class="[
-                    'bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-move flex flex-col',
+                    'bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-move flex flex-col h-[280px]',
                     draggedIndex === index ? 'opacity-50 scale-95' : '',
                     dragOverIndex === index && draggedIndex !== index ? 'ring-2 ring-primary scale-105' : ''
                 ]">
@@ -50,7 +50,7 @@
                 </div>
 
                 <!-- Order Badge -->
-                <div class="absolute bottom-2 right-2 z-20">
+                <div class="absolute top-2 right-2 z-20">
                     <span class="px-2.5 py-1 bg-primary text-white text-xs font-bold rounded-lg shadow-md">
                         #{{ (currentPage - 1) * itemsPerPage + index + 1 }}
                     </span>
@@ -114,7 +114,7 @@
 
         <!-- Pagination -->
         <div v-if="!isLoading && filteredTestimonials.length > 0"
-            class="flex justify-center items-center gap-2 mt-8 mb-8">
+            class="flex justify-center items-center gap-2 mt-6 mb-8">
             <button @click="currentPage = currentPage - 1" :disabled="currentPage === 1"
                 class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 <i class="fa-solid fa-chevron-left"></i>
@@ -436,10 +436,10 @@ const handleSubmit = async () => {
             await testimonialsApi.updateTestimonial(editingId.value, dataToSend)
             showToast.success('Testimoni berhasil diperbarui!')
         } else {
-            // Set order as the last position
+            // Set order as the first position (0), existing items will shift
             const dataWithOrder = {
                 ...dataToSend,
-                order: testimonials.value.length
+                order: 0
             }
             await testimonialsApi.createTestimonial(dataWithOrder as any)
             showToast.success('Testimoni berhasil ditambahkan!')
@@ -492,6 +492,11 @@ const deleteTestimonial = async (item: any) => {
 // Watch searchQuery to reset pagination
 watch(searchQuery, () => {
     currentPage.value = 1
+})
+
+// Watch currentPage to scroll to top when pagination changes
+watch(currentPage, () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 })
 
 onMounted(() => {

@@ -23,9 +23,28 @@ class TestimonialController extends Controller
             "institution" => "required|string",
             "feedback" => "required|string",
             "date" => "required|date",
+            "order" => "nullable|integer|min:0",
         ]);
 
-        $testimonial = Testimonial::create($request->all());
+        // Get max order
+        $maxOrder = Testimonial::max('order') ?? 0;
+        
+        // Use provided order or auto-increment
+        $order = $request->order ?? ($maxOrder + 1);
+
+        // If inserting at a specific position, shift existing items
+        if ($request->has('order') && $request->order <= $maxOrder) {
+            Testimonial::where('order', '>=', $request->order)
+                ->increment('order');
+        }
+
+        $testimonial = Testimonial::create([
+            "client_name" => $request->client_name,
+            "institution" => $request->institution,
+            "feedback" => $request->feedback,
+            "date" => $request->date,
+            "order" => $order,
+        ]);
 
         return response()->json(
             [

@@ -65,12 +65,14 @@ import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { adminPreferencesApi } from '@/services/admin-preferences'
 import { useAuth } from '@/composables/useAuth'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 const { logout } = useAuth()
 const sidebarElement = ref<HTMLElement | null>(null)
-const isOpen = ref(false)
 const isMobile = ref(false)
+// Initialize to closed first, then update during onMounted based on screen size
+const isOpen = ref(false)
 const userRole = ref<string>('admin')
 const adminId = ref<number>(0)
 const draggedIndex = ref<number | null>(null)
@@ -117,13 +119,13 @@ const checkMobile = () => {
     if (!wasMobile && isMobile.value) {
         isOpen.value = false
     } else if (wasMobile && !isMobile.value) {
-        isOpen.value = true
+        isOpen.value = true // Always open sidebar when switching from mobile to desktop
     }
 }
 
 const toggleSidebar = () => {
     isOpen.value = !isOpen.value
-    if (!isMobile.value && adminId.value && userRole.value !== 'superadmin') {
+    if (!isMobile.value && adminId.value) {
         savePreferences()
     }
 }
@@ -168,8 +170,18 @@ const handleDrop = () => {
     menuItems.value.forEach((item, index) => {
         orderMap[item.name] = index
     })
-    if (adminId.value && userRole.value !== 'superadmin') {
+    if (adminId.value) {
         saveMenuOrder(orderMap)
+        // Show success notification
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Urutan menu berhasil disimpan',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        })
     }
 }
 
@@ -182,7 +194,7 @@ const handleLogout = async () => {
 }
 
 const savePreferences = async () => {
-    if (!adminId.value || userRole.value === 'superadmin') return
+    if (!adminId.value) return
     try {
         await adminPreferencesApi.updateSidebarState(adminId.value, isOpen.value ? 'open' : 'closed')
     } catch (error) {
@@ -191,7 +203,7 @@ const savePreferences = async () => {
 }
 
 const saveMenuOrder = async (orderMap: Record<string, number>) => {
-    if (!adminId.value || userRole.value === 'superadmin') return
+    if (!adminId.value) return
     try {
         await adminPreferencesApi.updateMenuOrder(adminId.value, orderMap)
     } catch (error) {
@@ -200,12 +212,19 @@ const saveMenuOrder = async (orderMap: Record<string, number>) => {
 }
 
 const loadPreferences = async () => {
-    if (!adminId.value || userRole.value === 'superadmin') return
+    if (!adminId.value) return
     try {
         const prefs = await adminPreferencesApi.getPreferences(adminId.value)
 
-        if (prefs.sidebar_state === 'closed' && !isMobile.value) {
-            isOpen.value = false
+        // Only update sidebar state if we're on desktop
+        if (!isMobile.value) {
+            // Default to open if no preference is set, or if preference says to open
+            if (prefs.sidebar_state === 'closed') {
+                isOpen.value = false
+            } else {
+                // If no preference or preference is 'open', default to open on desktop
+                isOpen.value = true
+            }
         }
 
         if (prefs.menu_order) {
@@ -218,12 +237,17 @@ const loadPreferences = async () => {
         console.error('Error loading preferences:', error)
         if ((error as any).response?.status === 404) {
             console.warn('Admin not found')
+        } else {
+            // On error, default to open on desktop
+            if (!isMobile.value) {
+                isOpen.value = true
+            }
         }
     }
 }
 
 onMounted(async () => {
-    checkMobile()
+    checkMobile() // This sets isMobile and initializes isOpen based on screen size
     window.addEventListener('resize', checkMobile)
     window.addEventListener('toggleMobileSidebar', handleMobileToggle)
 
@@ -232,9 +256,16 @@ onMounted(async () => {
         userRole.value = response.role || 'admin'
         adminId.value = response.id || 0
 
-        await loadPreferences()
+        // Load preferences for all users
+        if (!isMobile.value && adminId.value) {
+            await loadPreferences()
+        }
     } catch (error) {
         console.error('Error fetching user role:', error)
+        // On error, default to open on desktop
+        if (!isMobile.value) {
+            isOpen.value = true
+        }
     }
 })
 

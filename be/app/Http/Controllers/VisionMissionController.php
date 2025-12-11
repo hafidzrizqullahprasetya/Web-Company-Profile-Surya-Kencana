@@ -25,24 +25,48 @@ class VisionMissionController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
-            "vision" => "sometimes|required|string",
-            "mission" => "sometimes|required|string",
-        ]);
+        try {
+            // Check if user is authenticated
+            if (!$request->user()) {
+                return response()->json(
+                    ["message" => "Unauthenticated"],
+                    401
+                );
+            }
 
-        $visionMission = VisionMission::first();
-        if ($visionMission) {
-            $visionMission->update($request->all());
+            $validated = $request->validate([
+                "vision" => "sometimes|required|string",
+                "mission" => "sometimes|required|string",
+            ]);
+
+            $visionMission = VisionMission::first();
+            
+            if (!$visionMission) {
+                return response()->json(
+                    ["message" => "Vision and Mission not found"],
+                    404
+                );
+            }
+
+            $visionMission->update($validated);
 
             return response()->json([
                 "message" => "Vision and Mission updated successfully",
                 "data" => $visionMission,
             ]);
-        } else {
-            return response()->json(
-                ["message" => "Vision and Mission not found"],
-                404,
-            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                "message" => "Validation failed",
+                "errors" => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error("Error updating vision mission: " . $e->getMessage());
+            \Log::error("Stack trace: " . $e->getTraceAsString());
+            
+            return response()->json([
+                "message" => "Failed to update Vision and Mission",
+                "error" => $e->getMessage()
+            ], 500);
         }
     }
 }

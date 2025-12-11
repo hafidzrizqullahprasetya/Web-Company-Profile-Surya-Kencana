@@ -30,19 +30,19 @@
 
         <!-- Histories Grid with Drag and Drop -->
         <div v-else-if="filteredHistories.length > 0"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 min-h-[580px] items-start">
             <template v-for="(history, index) in paginatedHistories" :key="history.id">
                 <!-- History Card -->
                 <div draggable="true" @dragstart="handleDragStart(index, $event)" @dragover="handleDragOver($event)"
                     @dragenter="handleDragEnter(index)" @dragleave="handleDragLeave" @drop="handleDrop(index, $event)"
                     @dragend="handleDragEnd"
-                    class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg overflow-hidden cursor-move transition-shadow duration-200"
+                    class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg overflow-hidden cursor-move transition-shadow duration-200 h-[270px] flex flex-col"
                     :class="{
                         'ring-2 ring-primary': dragOverIndex === index && draggedIndex !== null && draggedIndex !== index
                     }">
 
-                    <!-- History Image -->
-                    <div class="relative h-48 sm:h-56 bg-gray-200 overflow-hidden">
+                    <!-- History Image - Fixed Height -->
+                    <div class="relative h-40 bg-gray-200 overflow-hidden flex-shrink-0">
                         <img :src="history.image_url || 'https://placehold.co/800x600/e5e7eb/6b7280?text=No+Image'"
                             :alt="history.judul"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
@@ -75,16 +75,16 @@
 
                     <!-- History Info -->
                     <div class="p-4 sm:p-5">
-                        <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-2">{{ history.judul }}
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ history.judul }}
                         </h3>
-                        <p class="text-xs sm:text-sm text-gray-600 line-clamp-3">{{ history.deskripsi }}</p>
+                        <p class="text-xs sm:text-sm text-gray-600 line-clamp-2">{{ history.deskripsi }}</p>
                     </div>
                 </div>
             </template>
         </div>
 
         <!-- Pagination -->
-        <div v-if="!isLoading && filteredHistories.length > 0" class="flex justify-center items-center gap-2 mt-8 mb-8">
+        <div v-if="!isLoading && filteredHistories.length > 0" class="flex justify-center items-center gap-2 mt-6 mb-8">
             <button @click="currentPage = currentPage - 1" :disabled="currentPage === 1"
                 class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 <i class="fa-solid fa-chevron-left"></i>
@@ -147,7 +147,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Urutan Riwayat <span class="text-red-500">*</span>
                         </label>
-                        <input v-model.number="formData.order" type="number" min="1"
+                        <input v-model.number="formData.order" type="number"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                             placeholder="1, 2, 3, dst..." />
                         <p class="text-xs text-gray-500 mt-1">Masukkan nomor urutan riwayat (1 = paling depan)</p>
@@ -520,10 +520,8 @@ const handleSubmit = async () => {
                 errorMessage.value = 'Gambar utama wajib diisi'
                 return
             }
-            const maxOrder = histories.value.length > 0
-                ? Math.max(...histories.value.map(h => h.order || 0))
-                : -1
-            formDataToSend.append('order', String(maxOrder + 1))
+            // Set order as the first position (0), existing items will shift
+            formDataToSend.append('order', '0')
             await companyHistoryApi.createCompanyHistory(formDataToSend)
             showToast.success('Riwayat berhasil ditambahkan!')
         }

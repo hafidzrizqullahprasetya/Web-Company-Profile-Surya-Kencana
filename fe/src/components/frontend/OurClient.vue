@@ -63,8 +63,8 @@
                     </template>
                 </div>
 
-                <!-- Pagination Controls -->
-                <div v-if="!isLoading && clients && clients.length > 0" class="mt-8 md:mt-10 lg:mt-12">
+                <!-- Pagination Controls - Only show if more than 1 page -->
+                <div v-if="!isLoading && clients && clients.length > 0 && totalPages > 1" class="mt-8 md:mt-10 lg:mt-12">
                     <Pagination :current-page="currentPage" :total-pages="totalPages" variant="inverted"
                         @prev="prevPage" @next="nextPage" @goto="goToPage" />
                 </div>

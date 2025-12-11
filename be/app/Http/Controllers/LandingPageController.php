@@ -23,7 +23,7 @@ class LandingPageController extends Controller
                 "hero" => Hero::performanceSelect()->first(),
                 "visionMission" => VisionMission::performanceSelect()->get(),
                 "products" => Product::performanceSelect()->orderBy('order')->get(),
-                "companyHistory" => CompanyHistory::performanceSelect()->orderBy('tahun')->get(),
+                "companyHistory" => CompanyHistory::performanceSelect()->orderBy('order', 'asc')->get(),
                 "testimonials" => Testimonial::performanceSelect()->orderBy('order')->get(),
                 "clients" => OurClient::performanceSelect()->orderBy('order')->get(),
                 "contact" => Contact::performanceSelect()->first(),

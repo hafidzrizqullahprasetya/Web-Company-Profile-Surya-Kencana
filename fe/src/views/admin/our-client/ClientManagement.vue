@@ -30,13 +30,13 @@
 
         <!-- Clients Grid with Drag and Drop -->
         <div v-else-if="filteredClients.length > 0"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 min-h-[520px] items-start">
             <template v-for="(client, index) in paginatedClients" :key="client.id">
                 <!-- Client Card -->
                 <div draggable="true" @dragstart="handleDragStart(index, $event)" @dragover="handleDragOver($event)"
                     @dragenter="handleDragEnter(index)" @dragleave="handleDragLeave" @drop="handleDrop(index, $event)"
                     @dragend="handleDragEnd"
-                    class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg overflow-hidden cursor-move transition-shadow duration-200"
+                    class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg overflow-hidden cursor-move transition-shadow duration-200 h-[240px] flex flex-col"
                     :class="{
                         'ring-2 ring-primary': dragOverIndex === index && draggedIndex !== null && draggedIndex !== index
                     }">
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="!isLoading && filteredClients.length > 0" class="flex justify-center items-center gap-2 mt-8 mb-8">
+        <div v-if="!isLoading && filteredClients.length > 0" class="flex justify-center items-center gap-2 mt-6 mb-8">
             <button @click="currentPage = currentPage - 1" :disabled="currentPage === 1"
                 class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 <i class="fa-solid fa-chevron-left"></i>
@@ -141,7 +141,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Urutan Client (Opsional)
                         </label>
-                        <input v-model.number="formData.order" type="number" min="1"
+                        <input v-model.number="formData.order" type="number"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                             placeholder="1, 2, 3, dst... (kosongkan untuk otomatis)" />
                         <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menambahkan di urutan paling akhir</p>
@@ -384,8 +384,8 @@ const handleSubmit = async () => {
                 isSubmitting.value = false
                 return
             }
-            // Set order as the last position
-            formDataToSend.append('order', String(clients.value.length))
+            // Set order as the first position (0), existing items will shift
+            formDataToSend.append('order', '0')
             showLoading('Menyimpan...')
             await clientsApi.createClient(formDataToSend)
             showToast.success('Client berhasil ditambahkan!')
