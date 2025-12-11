@@ -8,19 +8,12 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     * 
+     * Note: Database sudah terisi di remote MySQL.
+     * Seeder tidak diperlukan untuk development lokal.
      */
     public function run(): void
     {
-        $this->call([
-            ContactSeeder::class,
-            HeroSeeder::class,
-            VisionMissionSeeder::class,
-            SiteSettingSeeder::class,
-            OurClientSeeder::class,
-            ProductSeeder::class,
-            CompanyHistorySeeder::class,
-            TestimonialSeeder::class,
-            SuperAdminSeeder::class,
-        ]);
+        // Database remote sudah terisi, tidak perlu seeding
     }
 }
