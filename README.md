@@ -12,90 +12,6 @@
 - **Backend API**: [https://becompro.fizualstd.my.id/api](https://becompro.fizualstd.my.id/api)
 - **API Documentation**: [https://becompro.fizualstd.my.id/api/documentation](https://becompro.fizualstd.my.id/api/documentation)
 
----
-
-## 📋 Daftar Isi
-
-- [Tech Stack](#-tech-stack)
-- [Struktur Proyek](#-struktur-proyek)
-- [Prasyarat](#-prasyarat)
-- [Cara Memulai](#-cara-memulai)
-  - [1. Clone Repository](#1-clone-repository)
-  - [2. Setup Backend](#2-setup-backend)
-  - [3. Setup Frontend](#3-setup-frontend)
-- [Menjalankan Aplikasi](#-menjalankan-aplikasi)
-- [Infisical - Manajemen Secrets](#-infisical---manajemen-secrets)
-- [Kontribusi](#-kontribusi)
-
----
-
-## 🚀 Tech Stack
-
-### Backend
-- **Framework**: Laravel 12.x
-- **Database**: MySQL 8.x (Remote)
-- **Authentication**: Laravel Sanctum
-- **API Documentation**: Swagger (L5-Swagger)
-- **Image Processing**: Intervention Image
-- **Storage**: Cloudflare R2
-
-### Frontend
-- **Framework**: Vue.js 3.x
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **HTTP Client**: Axios
-
-### DevOps
-- **Secrets Management**: Infisical
-- **Version Control**: Git
-
----
-
-## 📁 Struktur Proyek
-
-```
-Web-Company-Profile-Surya-Kencana/
-├── be/                          # Backend (Laravel)
-│   ├── app/
-│   ├── config/
-│   ├── database/
-│   ├── routes/
-│   ├── Dockerfile               # Konfigurasi Docker backend
-│   ├── captain-definition       # Konfigurasi deployment
-│   └── composer.json
-│
-├── fe/                          # Frontend (Vue.js)
-│   ├── src/
-│   ├── public/
-│   ├── Dockerfile               # Konfigurasi Docker frontend
-│   ├── nginx.conf               # Konfigurasi Nginx untuk production
-│   ├── captain-definition       # Konfigurasi deployment
-│   └── package.json
-│
-├── user-manual/                 # Dokumentasi (hanya lokal)
-├── automation/                  # Script otomasi (hanya lokal)
-└── README.md                    # File ini
-```
-
----
-
-## ✅ Prasyarat
-
-Pastikan Anda sudah menginstall tools berikut:
-
-| Tool | Versi | Download |
-|------|---------|----------|
-| **PHP** | 8.4+ | [php.net](https://www.php.net/downloads) |
-| **Composer** | 2.x | [getcomposer.org](https://getcomposer.org) |
-| **Node.js** | 20.x LTS | [nodejs.org](https://nodejs.org) |
-| **npm** | 10.x+ | (termasuk dalam Node.js) |
-| **Infisical CLI** | Latest | [infisical.com/docs/cli/overview](https://infisical.com/docs/cli/overview) |
-| **Git** | Latest | [git-scm.com](https://git-scm.com) |
-
-> **Catatan**: Proyek ini **TIDAK** memerlukan MySQL lokal karena menggunakan database remote.
-
----
-
 ## 🎯 Cara Memulai
 
 ### 1. Clone Repository
@@ -141,6 +57,30 @@ infisical secrets
 ```
 
 Anda akan melihat daftar environment variables seperti `DB_HOST`, `DB_DATABASE`, dll.
+
+#### Langkah 4: Jalankan Migrasi Database
+
+> **Penting**: Database sudah ada di remote, jadi **TIDAK PERLU seed**. Cukup jalankan migrasi untuk memastikan struktur tabel up-to-date.
+
+**Cara 1: Menggunakan Composer Script (Recommended)**
+```bash
+composer migrate
+```
+Jika ada pertanyaan "Do you want to run this command in production?", ketik `yes`.
+
+### 3. Setup Frontend
+
+#### Langkah 1: Masuk ke Direktori Frontend
+```bash
+cd ../fe 
+```
+
+#### Langkah 2: Install Dependencies
+```bash
+npm install
+```
+
+---
 
 ## 🏃 Menjalankan Aplikasi
 
@@ -197,16 +137,21 @@ Infisical adalah platform manajemen secrets yang aman. Proyek ini menggunakan In
 
 ### Perintah Infisical yang Berguna
 
-#### Melihat Semua Secrets
+#### Langkah 4: Jalankan Migrasi Database
+
+> **Penting**: Database sudah ada di remote, jadi **TIDAK PERLU seed**. Cukup jalankan migrasi untuk memastikan struktur tabel up-to-date.
+
+**Cara 1: Menggunakan Composer Script (Recommended)**
 ```bash
-infisical secrets
+composer migrate
 ```
 
-#### Menjalankan Command dengan Secrets
+**Cara 2: Manual dengan Infisical**
 ```bash
 infisical run -- php artisan migrate
-infisical run -- php artisan tinker
 ```
+
+Jika ada pertanyaan "Do you want to run this command in production?", ketik `yes`.
 
 #### Export Secrets ke File `.env` (Jika Diperlukan)
 
