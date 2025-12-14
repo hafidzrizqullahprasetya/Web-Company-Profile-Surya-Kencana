@@ -101,15 +101,14 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|max:255',
         ]);
 
-        // Detect device type from request header or default to 'web'
-        $deviceType = $request->header('X-Device-Type', 'web'); // Android should send 'mobile'
-        $tokenName = $deviceType === 'mobile' ? 'mobile_token' : 'web_token';
+        $deviceType = $request->header('X-Device-Type', 'web');
 
-        // Use a single query to check both admin and superadmin tables
+        // ✅ UNTUK ADMIN
         $admin = Admin::where('username', $request->username)->first();
         if ($admin && Hash::check($request->password, $admin->password)) {
-            // Only delete OLD tokens with the SAME device type (keep other device types)
-            // This allows user to be logged in on both web and mobile simultaneously
+            // Token format: admin_web_token atau admin_mobile_token
+            $tokenName = 'admin_' . ($deviceType === 'mobile' ? 'mobile' : 'web') . '_token';
+
             $admin->tokens()->where('name', $tokenName)->delete();
             $token = $admin->createToken($tokenName)->plainTextToken;
 
@@ -124,10 +123,12 @@ class AuthController extends Controller
             ]);
         }
 
+        // ✅ UNTUK SUPERADMIN
         $superadmin = SuperAdmin::where('username', $request->username)->first();
         if ($superadmin && Hash::check($request->password, $superadmin->password)) {
-            // Only delete OLD tokens with the SAME device type (keep other device types)
-            // This allows user to be logged in on both web and mobile simultaneously
+            // Token format: superadmin_web_token atau superadmin_mobile_token
+            $tokenName = 'superadmin_' . ($deviceType === 'mobile' ? 'mobile' : 'web') . '_token';
+
             $superadmin->tokens()->where('name', $tokenName)->delete();
             $token = $superadmin->createToken($tokenName)->plainTextToken;
 
