@@ -224,12 +224,18 @@ class AdminController extends Controller
     {
         $request->validate([
             "username" => "required|string|max:255",
-            "password" => "required|string|min:6|max:255",
+            "password" => "nullable|string|min:6|max:255",
         ]);
 
         $Admin = Admin::find($id);
         if ($Admin) {
-            $Admin->update($request->all());
+            $data = $request->all();
+
+            if (empty($data['password'])) {
+                unset($data['password']);
+            } 
+
+            $Admin->update($data);
 
             return response()->json([
                 "message" => "Admin updated successfully",
