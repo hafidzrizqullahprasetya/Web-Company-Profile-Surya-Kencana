@@ -1,0 +1,95 @@
+\babel@toc {bahasa}{}\relax 
+\contentsline {chapter}{\numberline {1}Pendahuluan}{6}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Pengertian Website Profil Perusahaan PT. Surya Kencana Gemilang Teknik}{6}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Tentang Dokumen Ini}{6}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Deskripsi Sistem}{6}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Hak Akses Pengguna}{7}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Persyaratan Sistem}{7}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Antarmuka Publik}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Struktur Halaman Utama}{8}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Hero Section}{8}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Tentang Kami (Visi \& Misi)}{9}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Produk}{10}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Gallery (Riwayat)}{11}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}Klien (Our Client)}{12}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}Testimoni}{13}{subsection.2.1.6}%
+\contentsline {subsection}{\numberline {2.1.7}Kontak}{14}{subsection.2.1.7}%
+\contentsline {section}{\numberline {2.2}Fitur Interaktif}{16}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Floating WhatsApp}{16}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Detail Produk}{17}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Mobile Menu}{18}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Smooth Scrolling}{19}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}Responsive Design}{20}{subsection.2.2.5}%
+\contentsline {chapter}{\numberline {3}Login Administrator}{22}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Langkah-Langkah Login}{22}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Langkah 1: Akses Halaman Login}{22}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Langkah 2: Masukkan Username}{23}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Langkah 3: Masukkan Password}{24}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}Langkah 4: Klik Tombol Login}{25}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}Langkah 5: Verifikasi Login dan Akses Dashboard}{26}{subsection.3.1.5}%
+\contentsline {section}{\numberline {3.2}Keamanan Akun}{27}{section.3.2}%
+\contentsline {chapter}{\numberline {4}Dashboard}{28}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Statistik Utama}{28}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Total Produk}{28}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Total Klien}{29}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Total Testimoni}{30}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Total Admin}{31}{subsection.4.1.4}%
+\contentsline {section}{\numberline {4.2}Aktivitas Terbaru}{32}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Panel Produk Terbaru}{32}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Panel Testimoni Terbaru}{33}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Navigasi Cepat}{34}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Manajemen Hero (Banner Utama)}{36}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Pengaturan Gambar Slider}{36}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Langkah 1: Akses Menu Hero}{36}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Langkah 2: Upload Gambar Background}{37}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Langkah 3: Pengelolaan Gambar}{38}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}Langkah 4: Penyesuaian Urutan Gambar}{39}{subsection.5.1.4}%
+\contentsline {section}{\numberline {5.2}Pengaturan Teks \& Statistik}{40}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Pengaturan Lokasi}{40}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Pengaturan Judul Utama}{41}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Pengaturan Subjudul}{42}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Pengaturan Statistik}{43}{subsection.5.2.4}%
+\contentsline {section}{\numberline {5.3}Pratinjau Perubahan}{44}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Tips Optimasi Hero Section}{45}{section.5.4}%
+\contentsline {chapter}{\numberline {6}Manajemen Produk}{46}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Langkah 1: Akses Menu Produk}{46}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Langkah 2: Menambah Produk Baru}{47}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Isian Form Penambahan Produk}{47}{subsection.6.2.1}%
+\contentsline {subsubsection}{Nama Produk}{47}{subsection.6.2.1}%
+\contentsline {subsubsection}{Harga Produk}{48}{figure.6.2}%
+\contentsline {subsubsection}{Opsi Sembunyikan Harga}{49}{figure.6.3}%
+\contentsline {subsubsection}{Deskripsi Produk}{50}{figure.6.4}%
+\contentsline {subsubsection}{Gambar Produk Utama}{51}{figure.6.5}%
+\contentsline {subsubsection}{Gambar Album Produk}{52}{figure.6.6}%
+\contentsline {subsection}{\numberline {6.2.2}Menyimpan Produk Baru}{53}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Mengelola Produk Eksisting}{54}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Melihat Daftar Produk}{54}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Mengatur Urutan Produk (Drag \& Drop)}{55}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Mengedit Produk}{56}{subsection.6.3.3}%
+\contentsline {subsection}{\numberline {6.3.4}Menghapus Produk}{57}{subsection.6.3.4}%
+\contentsline {section}{\numberline {6.4}Tips Manajemen Produk}{58}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Manajemen Klien \& Testimoni}{60}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Manajemen Klien (Our Client)}{60}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Manajemen Testimoni}{61}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Tips Manajemen Klien \& Testimoni}{62}{section.7.3}%
+\contentsline {chapter}{\numberline {8}Manajemen Halaman Lainnya}{63}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Visi \& Misi}{63}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Kontak}{64}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Riwayat Perusahaan (Company History)}{65}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Tips Manajemen Halaman Lainnya}{66}{section.8.4}%
+\contentsline {chapter}{\numberline {9}Pengaturan Situs (Global)}{67}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Halaman Pengaturan}{67}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}Halaman 1: Info Dasar \& Hero}{67}{subsection.9.1.1}%
+\contentsline {subsection}{\numberline {9.1.2}Halaman 2: Produk, Klien \& Riwayat}{67}{subsection.9.1.2}%
+\contentsline {subsection}{\numberline {9.1.3}Halaman 3: Testimoni \& Kontak}{68}{subsection.9.1.3}%
+\contentsline {section}{\numberline {9.2}Menyimpan Pengaturan}{70}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Tips Pengaturan Situs}{70}{section.9.3}%
+\contentsline {chapter}{\numberline {10}Manajemen Admin}{71}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Menambah Admin}{71}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Mengedit Admin}{72}{section.10.2}%
+\contentsline {section}{\numberline {10.3}Menghapus Admin}{73}{section.10.3}%
+\contentsline {section}{\numberline {10.4}Tips Manajemen Admin}{74}{section.10.4}%
+\contentsline {chapter}{\numberline {11}Penutup}{75}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Dukungan Teknis}{75}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Pembaruan Dokumentasi}{75}{section.11.2}%
+\contentsline {section}{\numberline {11.3}Kesimpulan}{75}{section.11.3}%
