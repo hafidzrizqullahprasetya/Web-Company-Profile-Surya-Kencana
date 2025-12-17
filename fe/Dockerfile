@@ -15,7 +15,7 @@ COPY . .
 # Set environment variables for build
 ENV VITE_API_BASE_URL=https://becompro.fizualstd.my.id/api
 ENV VITE_CDN_URL=https://cdn.fizualstd.my.id
-ENV VITE_GOOGLE_MAPS_API_KEY=AIzaSyBlMdLbCa8dVkBPrKjtZEU5Dy5KeKNjfKo
+ENV VITE_GOOGLE_MAPS_API_KEY=AIzaSyB1CN8gr_lJkl_sxKSz-JsTuPytFopzoD8
 
 # Build the application
 RUN npm run build
