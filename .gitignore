@@ -1,5 +1,5 @@
 # Exclude folders that should not be pushed to repository
-/user-manual
+# /user-manual  # Temporarily disabled for final compression
 /automation
 generate_screenshots.mjs
 # OS generated files
